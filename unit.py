@@ -4,7 +4,7 @@ import DFRobot_GP8403
 app = Flask(__name__)
 
 # Initialize your DAC object
-dac = DFRobot_GP8403.DFRobot_GP8403(0x10)
+dac = DFRobot_GP8403.DFRobot_GP8403(0x58)
 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)  # Set output range to 10V
 # Start with both Closed
 dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)  # Set 2V on channel 1
