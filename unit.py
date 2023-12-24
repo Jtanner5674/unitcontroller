@@ -36,7 +36,7 @@ def index():
 @app.route('/get_current_voltages', methods=['GET'])
 def get_current_voltages():
     voltages = {}
-    for dac in found_dacs
+    for dac in found_dacs:
         voltage1 = dac.read_DAC_out_voltage(DFRobot_GP8403.CHANNEL0)
         voltage2 = dac.read_DAC_out_voltage(DFRobot_GP8403.CHANNEL1)
         voltages[f'voltage{dac.address}'] = voltage1
