@@ -24,10 +24,10 @@
                     url: '/get_current_voltages',
                     type: 'GET',
                     success: function(data) {
-                        updateTextInput(1, data.voltage1);
-                        updateSliderValue(1, data.voltage1);
-                        updateTextInput(2, data.voltage2);
-                        updateSliderValue(2, data.voltage2);
+                        {% for dac in found_dacs %}
+                        updateTextInput('{{ dac.address }}', data.voltage{{ dac.address }});
+                        updateSliderValue('{{ dac.address }}', data.voltage{{ dac.address }});
+                        {% endfor %}
                     }
                 });
             }
@@ -51,31 +51,21 @@
 </head>
 <body>
     <h1>Testing DAC Control Interface</h1>
-    
-    <form action="/set_voltage1" method="post">
-        <label for="voltage1">Valve 1:</label>
-        <input type="range" id="voltage1" name="voltage1" min="0" max="100" step="1" value="0" data-channel="1"><br><br>
-        <input type="number" id="voltage1_text" name="voltage1_text" min="0" max="100" step="1" value="0" data-channel="1">
-        <input type="submit" value="Set Channel 1">
+
+    {% for dac in found_dacs %}
+    <form action="/set_voltage{{ dac.address }}" method="post">
+        <label for="voltage{{ dac.address }}">Valve {{ dac.address }}:</label>
+        <input type="range" id="voltage{{ dac.address }}" name="voltage{{ dac.address }}" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}"><br><br>
+        <input type="number" id="voltage{{ dac.address }}_text" name="voltage{{ dac.address }}_text" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}">
+        <input type="submit" value="Set Channel {{ dac.address }}">
     </form>
 
-    <a href="/closed1"><button>Close</button></a>
-    <a href="/open1"><button>Open</button></a>
+    <a href="/closed{{ dac.address }}"><button>Close Channel 0</button></a>
+    <a href="/open{{ dac.address }}"><button>Open Channel 0</button></a>
     
-    <br>
-    
-    <form action="/set_voltage2" method="post">
-        <label for="voltage2">Valve 2:</label>
-        <input type="range" id="voltage2" name="voltage2" min="0" max="100" step="1" value="0" data-channel="2"><br><br>
-        <input type="number" id="voltage2_text" name="voltage2_text" min="0" max="100" step="1" value="0" data-channel="2">
-        <input type="submit" value="Set Channel 2">
-    </form>
+    <br><br>
+    {% endfor %}
 
-    <a href="/closed2"><button>Close</button></a>
-    <a href="/open2"><button>Open</button></a>
-    
-    <br> <br>
-    
     <img src="rpi-gpio.png" alt="Raspberry Pi pins" style="max-width: 700px; Display: Relative;">
 </body>
 </html>
