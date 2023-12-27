@@ -37,15 +37,26 @@
     <h1>Testing DAC Control Interface</h1>
 
     {% for dac in found_dacs %}
-    <form action="/set_voltage{{ dac.address }}" method="post">
+    <form action="/set_voltage1{{ dac.address }}" method="post">
         <label for="voltage{{ dac.address }}">Valve {{ dac.address }}:</label>
         <input type="range" id="voltage{{ dac.address }}" name="voltage{{ dac.address }}" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}"><br><br>
         <input type="number" id="voltage{{ dac.address }}_text" name="voltage{{ dac.address }}_text" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}">
-        <input type="submit" value="Set Channel {{ dac.address }}">
+        <input type="submit" value="Set Channel 1{{ dac.address }}">
     </form>
 
-    <a href="/closed{{ dac.address }}"><button>Close Channel 0</button></a>
-    <a href="/open{{ dac.address }}"><button>Open Channel 0</button></a>
+    <a href="/close1{{ dac.address }}"><button>Close Channel 0</button></a>
+    <a href="/open1{{ dac.address }}"><button>Open Channel 0</button></a>
+
+
+    <form action="/set_voltage2{{ dac.address }}" method="post">
+        <label for="voltage{{ dac.address }}">Valve {{ dac.address }}:</label>
+        <input type="range" id="voltage{{ dac.address }}" name="voltage{{ dac.address }}" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}"><br><br>
+        <input type="number" id="voltage{{ dac.address }}_text" name="voltage{{ dac.address }}_text" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}">
+        <input type="submit" value="Set Channel 2{{ dac.address }}">
+    </form>
+
+    <a href="/close2{{ dac.address }}"><button>Close Channel 1</button></a>
+    <a href="/open2{{ dac.address }}"><button>Open Channel 1</button></a>
     
     <br><br>
     {% endfor %}

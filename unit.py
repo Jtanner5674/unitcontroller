@@ -53,29 +53,29 @@ def set_voltage2():
     dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)  # Set voltage on channel 2
     return f'Voltage set to {voltage}V for Channel 2'
 
-@app.route('/closed1<int:dac_address>')
-def set_closed1():
+@app.route('/close1<int:dac_address>')
+def close1():
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
     return f'Closed Channel 0 on DAC {dac_address}'
 
-@app.route('/closed2<int:dac_address>')
-def set_closed2():
+@app.route('/close2<int:dac_address>')
+def close2():
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
     return f'Closed Channel 1 on DAC {dac_address}'
 
 @app.route('/open1<int:dac_address>')
-def set_open1():
+def open1():
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL0)
     return f'Opened Channel 0 on DAC {dac_address}'
 
 @app.route('/open2<int:dac_address>')
-def set_open2():
+def open2():
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL1)
