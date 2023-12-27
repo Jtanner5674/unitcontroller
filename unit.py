@@ -10,15 +10,15 @@ found_dacs = []
 # Define the hexadecimal addresses for DACs
 dac_addresses = [0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F]
 
-# Initialize the I2C bus using board.I2C() only
-i2c = board.I2C()
-
 try:
+    # Initialize the I2C bus
+    i2c = busio.I2C(board.SCL, board.SDA)
+
     print("Checking I2C bus...")
     for addr in dac_addresses:
-        i2c.scan()
         if addr in i2c.scan():
-            dac = DFRobot_GP8403.DFRobot_GP8403(addr, i2c=i2c)
+            # Initialize the DAC without passing 'i2c'
+            dac = DFRobot_GP8403.DFRobot_GP8403(addr)
             dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
