@@ -10,22 +10,22 @@ found_dacs = []
 # Define the hexadecimal addresses for DACs
 dac_addresses = [0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F]
 
-# Scan for valid I2C buses and DACs
-ALL_I2C = (board.I2C(), busio.I2C(board.GP1, board.GP0))
-for bus in ALL_I2C:
-    try:
-        print("Checking I2C bus...")
-        for addr in dac_addresses:
-            bus.scan()
-            if addr in bus.scan():
-                dac = DFRobot_GP8403.DFRobot_GP8403(addr, i2c=bus)
-                dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-                dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
-                dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
-                found_dacs.append(dac)
-                print(f"DAC found at address {hex(addr)} on the valid I2C bus.")
-    except Exception as e:
-        print("Invalid bus:", e)
+# Initialize the I2C bus using board.I2C() only
+i2c = board.I2C()
+
+try:
+    print("Checking I2C bus...")
+    for addr in dac_addresses:
+        i2c.scan()
+        if addr in i2c.scan():
+            dac = DFRobot_GP8403.DFRobot_GP8403(addr, i2c=i2c)
+            dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
+            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
+            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
+            found_dacs.append(dac)
+            print(f"DAC found at address {hex(addr)} on the valid I2C bus.")
+except Exception as e:
+    print("Error while initializing DAC:", e)
 
 # Flask Routes
 
