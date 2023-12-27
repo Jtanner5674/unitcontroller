@@ -13,19 +13,19 @@ try:
 except Exception as e:
     print("Error while initializing DAC:", e)
 
-voltage = 2000 
+voltage = 2 
 x = 1
 while x == 1:  # Correct the while loop syntax
     for _ in range(8):
-        voltage += 1000
+        voltage += 1
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
-        print(f"Voltage: {voltage}")
-        time.sleep(3)
+        print(f"Voltage: {voltage/1000}")
+        time.sleep(2)
 
     for _ in range(8):
-        voltage -= 1000
+        voltage -= 1
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0) 
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
-        print(f"Voltage: {voltage}")
-        time.sleep(3)
+        print(f"Voltage: {voltage/1000}")
+        time.sleep(2)
