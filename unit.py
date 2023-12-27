@@ -11,7 +11,7 @@ found_dacs = []
 dac_addresses = [0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F]
 
 # Scan for valid I2C buses and DACs
-ALL_I2C = (board.I2C(), board.STEMMA_I2C(), busio.I2C(board.GP1, board.GP0))
+ALL_I2C = (board.I2C(), busio.I2C(board.GP1, board.GP0))
 for bus in ALL_I2C:
     try:
         print("Checking I2C bus...")
