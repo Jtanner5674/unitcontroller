@@ -5,20 +5,17 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            function updateSliderValue(channel, value) {
-                const slider = document.getElementById(`voltage${channel}`);
-                const textInput = document.getElementById(`voltage${channel}_text`);
-                slider.value = value;
-                textInput.value = value;
-            }
+            $('input[type="range"]').on('input', function() {
+                let channel = $(this).attr('data-channel');
+                let value = $(this).val();
+                $(`#voltage${channel}_text`).val(value);
+            });
 
-            function updateTextInput(channel, value) {
-                const slider = document.getElementById(`voltage${channel}`);
-                const textInput = document.getElementById(`voltage${channel}_text`);
-                textInput.value = value;
-                slider.value = value;
-            }
-
+            $('input[type="number"]').on('input', function() {
+                let channel = $(this).attr('data-channel');
+                let value = $(this).val();
+                $(`#voltage${channel}`).val(value);
+            });
         });
     </script>
 </head>
@@ -27,14 +24,22 @@
 
     {% for dac in found_dacs %}
     <form action="/set_voltage{{ dac.address }}" method="post">
-        <label for="voltage{{ dac.address }}">Valve {{ dac.address }}:</label>
+        <label for="channel_select{{ dac.address }}">Select Channel for DAC {{ dac.address }}:</label>
+        <select id="channel_select{{ dac.address }}" name="channel{{ dac.address }}">
+            <option value="1">Channel 1</option>
+            <option value="2">Channel 2</option>
+        </select>
+        <br><br>
+        <label for="voltage{{ dac.address }}">Voltage for Channel {{ dac.address }}:</label>
         <input type="range" id="voltage{{ dac.address }}" name="voltage{{ dac.address }}" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}"><br><br>
         <input type="number" id="voltage{{ dac.address }}_text" name="voltage{{ dac.address }}_text" min="0" max="100" step="1" value="0" data-channel="{{ dac.address }}">
-        <input type="submit" value="Set Channel {{ dac.address }}">
+        <input type="submit" value="Set Voltage for DAC {{ dac.address }}">
     </form>
 
-    <a href="/closed{{ dac.address }}"><button>Close Channel 0</button></a>
-    <a href="/open{{ dac.address }}"><button>Open Channel 0</button></a>
+    <a href="/closed1{{ dac.address }}"><button>Close Channel 1 for DAC {{ dac.address }}</button></a>
+    <a href="/closed2{{ dac.address }}"><button>Close Channel 2 for DAC {{ dac.address }}</button></a>
+    <a href="/open1{{ dac.address }}"><button>Open Channel 1 for DAC {{ dac.address }}</button></a>
+    <a href="/open2{{ dac.address }}"><button>Open Channel 2 for DAC {{ dac.address }}</button></a>
     
     <br><br>
     {% endfor %}
