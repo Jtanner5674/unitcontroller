@@ -34,7 +34,7 @@ def index():
     return render_template('index.html', found_dacs=found_dacs)
 
 @app.route('/set_voltage1<int:dac_address>', methods=['POST'])
-def set_voltage1():
+def set_voltage1(dac_address):
     global percentage1  # Declare the variable as global
 
     percentage = float(request.form['voltage1'])
@@ -44,7 +44,7 @@ def set_voltage1():
     return f'Voltage set to {voltage}V for Channel 1'
 
 @app.route('/set_voltage2<int:dac_address>', methods=['POST'])
-def set_voltage2():
+def set_voltage2(dac_address):
     global percentage2  # Declare the variable as global
 
     percentage = float(request.form['voltage2'])
@@ -54,28 +54,28 @@ def set_voltage2():
     return f'Voltage set to {voltage}V for Channel 2'
 
 @app.route('/close1<int:dac_address>')
-def close1():
+def close1(dac_address):
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
     return f'Closed Channel 0 on DAC {dac_address}'
 
 @app.route('/close2<int:dac_address>')
-def close2():
+def close2(dac_address):
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
     return f'Closed Channel 1 on DAC {dac_address}'
 
 @app.route('/open1<int:dac_address>')
-def open1():
+def open1(dac_address):
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL0)
     return f'Opened Channel 0 on DAC {dac_address}'
 
 @app.route('/open2<int:dac_address>')
-def open2():
+def open2(dac_address):
     for dac in found_dacs:
         if dac.address == dac_address:
             dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL1)
