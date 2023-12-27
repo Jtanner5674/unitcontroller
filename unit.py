@@ -20,8 +20,8 @@ try:
             # Initialize the DAC without passing 'i2c'
             dac = DFRobot_GP8403.DFRobot_GP8403(addr)
             dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
-            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
+            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0) #close ch0
+            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1) #close ch1
             found_dacs.append(dac)
             print(f"DAC found at address {hex(addr)} on the valid I2C bus.")
 except Exception as e:
@@ -32,16 +32,6 @@ except Exception as e:
 @app.route('/')
 def index():
     return render_template('index.html', found_dacs=found_dacs)
-
-@app.route('/get_current_voltages', methods=['GET'])
-def get_current_voltages():
-    voltages = {}
-    for dac in found_dacs:
-        voltage1 = dac.read_DAC_out_voltage(DFRobot_GP8403.CHANNEL0)
-        voltage2 = dac.read_DAC_out_voltage(DFRobot_GP8403.CHANNEL1)
-        voltages[f'voltage{dac.address}'] = voltage1
-        voltages[f'voltage{dac.address}_ch1'] = voltage2
-    return jsonify(voltages)
 
 @app.route('/set_voltage<int:dac_address>', methods=['POST'])
 def set_voltage(dac_address):
