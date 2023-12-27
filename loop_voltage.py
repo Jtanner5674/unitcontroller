@@ -21,11 +21,11 @@ while x == 1:  # Correct the while loop syntax
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
         print(f"Voltage: {voltage}")
-        time.sleep(2)
+        time.sleep(11)
 
     for _ in range(8):
         voltage -= 1000
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0) 
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
         print(f"Voltage: {voltage}")
-        time.sleep(2)
+        time.sleep(11)
