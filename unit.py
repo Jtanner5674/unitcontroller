@@ -21,6 +21,7 @@ try:
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
             dac_objects[index] = dac
+            dac_addresses[index] = addr
             print(f"DAC found at address {hex(addr)} with ID {index}.")
             index += 1
         except Exception as e:
@@ -35,27 +36,27 @@ except Exception as e:
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
-
 @app.route('/set_voltage<int:dac_id>', methods=['POST'])
 def set_voltage(dac_id):
-    dac = dac_objects.get(dac_id)
+    dac_addresses[dac_id] = addr
+    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
         percentage = float(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)
-        return f'Voltage set to {voltage}V for Channel 1 on {dac} with id {dac_id}'
+        return f'Voltage set to {voltage}V for Channel 1 on address {addr} with id {dac_id}'
     else:
         return 'Invalid DAC ID'
 
 @app.route('/set_voltage2<int:dac_id>', methods=['POST'])
 def set_voltage2(dac_id):
-    dac = dac_objects.get(dac_id)
+    dac_addresses[dac_id] = addr
+    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
-        percentage = float(request.form['voltage2'])
+        percentage = float(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
-        
-        return f'Voltage set to {voltage}V for Channel 2 on {dac} with id {dac_id}'
+        return f'Voltage set to {voltage}V for Channel 2 on address {addr} with id {dac_id}'
     else:
         return 'Invalid DAC ID'
 
