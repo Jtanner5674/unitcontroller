@@ -20,7 +20,7 @@ try:
             dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
-            dac_objects[index] = dac  # Store DAC object with ID
+            dac_objects[index] = dac
             print(f"DAC found at address {hex(addr)} with ID {index}.")
             index += 1
         except Exception as e:
@@ -28,7 +28,7 @@ try:
             continue
 except Exception as e:
     print("Error while scanning for DACs:", e)
-    
+
 # Flask Routes
 
 @app.route('/')
@@ -43,7 +43,7 @@ def set_voltage(dac_id):
         percentage = float(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)
-        return f'Voltage set to {voltage}V for Channel 1 on DAC {dac_id}'
+        return f'Voltage set to {voltage}V for Channel 1 on {dac} with id {dac_id}'
     else:
         return 'Invalid DAC ID'
 
@@ -54,7 +54,8 @@ def set_voltage2(dac_id):
         percentage = float(request.form['voltage2'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
-        return f'Voltage set to {voltage}V for Channel 2 on DAC {dac_id}'
+        
+        return f'Voltage set to {voltage}V for Channel 2 on {dac} with id {dac_id}'
     else:
         return 'Invalid DAC ID'
 
