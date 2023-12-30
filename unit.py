@@ -5,27 +5,27 @@ import DFRobot_GP8403
 
 app = Flask(__name__)
 
-dac_objects = {}  # Dictionary to store DAC objects with IDs
+dac_objects = {}  # Dictionary to store DACS with IDs
 
-# Define the hexadecimal addresses for DACs
-dac_addresses = [0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F]
-
+        #Locate the DACS
 try:
-    # Initialize the I2C bus
     i2c = busio.I2C(board.SCL, board.SDA)
 
-    print("Checking I2C bus...")
-    for index, addr in enumerate(dac_addresses):
-        if addr in i2c.scan():
-            # Initialize the DAC without passing 'i2c'
+    print("Scanning I2C bus for DACs...")
+    index = 0
+    for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
+        addr = 0x50 + o 
+        try:
             dac = DFRobot_GP8403.DFRobot_GP8403(addr)
             dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
             dac_objects[index] = dac  # Store DAC object with ID
-            print(f"DAC found at address {hex(addr)} on the valid I2C bus with ID {index}.")
-except Exception as e:
-    print("Error while initializing DAC:", e)
+            print(f"DAC found at address {hex(addr)} with ID {index}.")
+            index += 1
+        except Exception as e:
+            print(f"No DAC found at address {hex(addr)}")
+            continue
 
 # Flask Routes
 
