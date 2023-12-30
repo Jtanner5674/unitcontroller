@@ -45,9 +45,11 @@ def set_voltage(dac_id):
         percentage = float(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)
-        return f'Voltage set to {voltage}V for Channel 1 on address {hex(addr)} with id {dac_id}'
+         errval = f'Voltage set to {voltage}V for Channel 1 on address {hex(addr)} with id {dac_id}'
     else:
-        return 'Invalid DAC ID'
+        errval = "Invalid DAC ID"
+    print errval
+    return errval
 
 @app.route('/set_voltage2<int:dac_id>', methods=['POST'])
 def set_voltage2(dac_id):
@@ -57,9 +59,11 @@ def set_voltage2(dac_id):
         percentage = int(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
-        return f'Voltage set to {voltage}V for Channel 2 on address {hex(addr)} with id {dac_id}'
+        errval = f'Voltage set to {voltage}V for Channel 2 on address {hex(addr)} with id {dac_id}'
     else:
-        return 'Invalid DAC ID'
+        errval = "Invalid DAC ID"
+    print errval
+    return errval
 
 @app.route('/close1<int:dac_id>')
 def close1(dac_id):
