@@ -19,8 +19,8 @@ try:
         try:
             dac = DFRobot_GP8403.DFRobot_GP8403(addr)
             dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
-            dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
+            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
+            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
             dac_objects[index] = dac
             dac_addresses[index] = addr
             print(f"DAC found at address {hex(addr)} with ID {index}.")
