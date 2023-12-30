@@ -22,7 +22,7 @@ try:
             dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
             dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
-            found_dacs.append(dac)
+            found_dac_addresses.append(dac)
             print(f"DAC found at address {hex(addr)} on the valid I2C bus.")
 except Exception as e:
     print("Error while initializing DAC:", e)
@@ -32,6 +32,7 @@ except Exception as e:
 @app.route('/')
 def index():
     return render_template('index.html', found_dac_addresses=found_dac_addresses)
+
 
 @app.route('/set_voltage1<int:dac_address>', methods=['POST'])
 def set_voltage1(dac_address):
