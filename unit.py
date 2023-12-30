@@ -5,7 +5,7 @@ import DFRobot_GP8403
 
 app = Flask(__name__)
 
-found_dacs = []
+found_dac_addresses = []
 
 # Define the hexadecimal addresses for DACs
 dac_addresses = [0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F]
