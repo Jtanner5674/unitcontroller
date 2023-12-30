@@ -48,8 +48,8 @@ def set_voltage(dac_id):
         errval = f'Voltage set to {voltage}V for Channel 1 on address {hex(addr)} with id {dac_id}'
     else:
         errval = "Invalid DAC ID"
-    print errval
-    return errval
+    print (errval)
+    return (errval)
 
 @app.route('/set_voltage2<int:dac_id>', methods=['POST'])
 def set_voltage2(dac_id):
@@ -62,8 +62,8 @@ def set_voltage2(dac_id):
         errval = f'Voltage set to {voltage}V for Channel 2 on address {hex(addr)} with id {dac_id}'
     else:
         errval = "Invalid DAC ID"
-    print errval
-    return errval
+    print (errval)
+    return (errval)
 
 @app.route('/close1<int:dac_id>')
 def close1(dac_id):
