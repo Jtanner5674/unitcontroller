@@ -31,7 +31,7 @@ except Exception as e:
 
 @app.route('/')
 def index():
-    return render_template('index.html', found_dacs=found_dacs, dac_addresses=dac_addresses)
+    return render_template('index.html', found_dac_addresses=found_dac_addresses)
 
 @app.route('/set_voltage1<int:dac_address>', methods=['POST'])
 def set_voltage1(dac_address):
