@@ -8,26 +8,27 @@
     <h1>DAC Control Interface</h1>
 
     <!-- Generate forms/links based on found DACs -->
-    {% for dac_address in found_dac_addresses %}
-    <!-- Form to set voltage for Channel 1 -->
-        <form action="/set_voltage1/{{ dac_address }}" method="post">
-            <label for="voltage1_{{ dac_address }}">Enter voltage for Channel 1 (0-100%):</label>
-            <input type="number" id="voltage1_{{ dac_address }}" name="voltage1" min="0" max="100" step="any">
-            <button type="submit">Set Voltage for Channel 1 on DAC {{ dac_address }}</button>
+    {% for dac_id, dac in dac_objects.items() %}
+        <!-- Form to set voltage for Channel 1 -->
+        <form action="/set_voltage{{ dac_id }}" method="post">
+            <label for="voltage1_{{ dac_id }}">Enter voltage for Channel 1 (0-100%):</label>
+            <input type="number" id="voltage1_{{ dac_id }}" name="voltage1" min="0" max="100" step="any">
+            <button type="submit">Set Voltage for Channel 1 on DAC {{ dac_id }}</button>
         </form>
 
         <!-- Form to set voltage for Channel 2 -->
-        <form action="/set_voltage2/{{ dac_address }}" method="post">
-            <label for="voltage2_{{ dac_address }}">Enter voltage for Channel 2 (0-100%):</label>
-            <input type="number" id="voltage2_{{ dac_address }}" name="voltage2" min="0" max="100" step="any">
-            <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_address }}</button>
+        <form action="/set_voltage2{{ dac_id }}" method="post">
+            <label for="voltage2_{{ dac_id }}">Enter voltage for Channel 2 (0-100%):</label>
+            <input type="number" id="voltage2_{{ dac_id }}" name="voltage2" min="0" max="100" step="any">
+            <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_id }}</button>
         </form>
 
         <!-- Links to open/close channels -->
-        <a href="/open1/{{ dac_address }}">Open Channel 1 on DAC {{ dac_address }}</a>
-        <a href="/close1/{{ dac_address }}">Close Channel 1 on DAC {{ dac_address }}</a>
-        <a href="/open2/{{ dac_address }}">Open Channel 2 on DAC {{ dac_address }}</a>
-        <a href="/close2/{{ dac_address }}">Close Channel 2 on DAC {{ dac_address }}</a>
+        <a href="/open1{{ dac_id }}">Open Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/close1{{ dac_id }}">Close Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/open2{{ dac_id }}">Open Channel 2 on DAC {{ dac_id }}</a>
+        <a href="/close2{{ dac_id }}">Close Channel 2 on DAC {{ dac_id }}</a>
+        <br><br>
     {% endfor %}
 </body>
 </html>
