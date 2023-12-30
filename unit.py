@@ -39,7 +39,7 @@ def index():
 
 @app.route('/set_voltage<int:dac_id>', methods=['POST'])
 def set_voltage(dac_id):
-    dac_addresses[dac_id] = addr
+    addr = dac_addresses.get(dac_id)
     dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
         percentage = float(request.form['voltage1'])
@@ -51,7 +51,7 @@ def set_voltage(dac_id):
 
 @app.route('/set_voltage2<int:dac_id>', methods=['POST'])
 def set_voltage2(dac_id):
-    dac_addresses[dac_id] = addr
+    addr = dac_addresses.get(dac_id)
     dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
         percentage = int(request.form['voltage1'])
