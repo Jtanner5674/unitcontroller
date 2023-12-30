@@ -26,7 +26,9 @@ try:
         except Exception as e:
             print(f"No DAC found at address {hex(addr)}")
             continue
-
+except Exception as e:
+    print("Error while scanning for DACs:", e)
+    
 # Flask Routes
 
 @app.route('/')
