@@ -71,7 +71,7 @@ def set_voltage2(dac_id):
 def close1(dac_id):
     dac = dac_objects.get(dac_id)
     if dac:
-        dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)
+        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
         return f'Closed Channel 0 on DAC {dac_id}'
     else:
         return 'Invalid DAC ID'
@@ -80,7 +80,7 @@ def close1(dac_id):
 def close2(dac_id):
     dac = dac_objects.get(dac_id)
     if dac:
-        dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)
+        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
         return f'Closed Channel 1 on DAC {dac_id}'
     else:
         return 'Invalid DAC ID'
@@ -89,7 +89,7 @@ def close2(dac_id):
 def open1(dac_id):
     dac = dac_objects.get(dac_id)
     if dac:
-        dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL0)
+        dac.set_DAC_out_voltage(10000, DFRobot_GP8403.CHANNEL0)
         return f'Opened Channel 0 on DAC {dac_id}'
     else:
         return 'Invalid DAC ID'
@@ -98,8 +98,8 @@ def open1(dac_id):
 def open2(dac_id):
     dac = dac_objects.get(dac_id)
     if dac:
-        dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL1)
-        return f'Opened Channel 1 on DAC {dac_id}'
+        dac.set_DAC_out_voltage(10000, DFRobot_GP8403.CHANNEL1)
+        return f'Opened Channel 2 on DAC {dac_id}'
     else:
         return 'Invalid DAC ID'
 
