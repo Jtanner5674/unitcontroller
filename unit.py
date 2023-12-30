@@ -42,7 +42,7 @@ def set_voltage(dac_id):
     dac_addresses[dac_id] = addr
     dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
-        percentage = float(request.form['voltage1{dac_id}'])
+        percentage = float(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)
         return f'Voltage set to {voltage}V for Channel 1 on address {addr} with id {dac_id}'
@@ -54,7 +54,7 @@ def set_voltage2(dac_id):
     dac_addresses[dac_id] = addr
     dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
-        percentage = int(request.form['voltage1{dac_id}'])
+        percentage = int(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)
         return f'Voltage set to {voltage}V for Channel 2 on address {addr} with id {dac_id}'
