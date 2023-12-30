@@ -43,7 +43,7 @@ def set_voltage(dac_id):
         percentage = float(request.form['voltage1'])
         voltage = 2 + (percentage / 100) * 8
         dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)
-        return f'Voltage set to {voltage}V for Channel 1 on {hex(dac)} with id {dac_id}'
+        return f'Voltage set to {voltage}V for Channel 1 on {dac} with id {dac_id}'
     else:
         return 'Invalid DAC ID'
 
