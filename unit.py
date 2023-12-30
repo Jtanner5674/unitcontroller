@@ -5,7 +5,8 @@ import DFRobot_GP8403
 
 app = Flask(__name__)
 
-dac_objects = {}  # Dictionary to store DACS with IDs
+dac_objects = {}
+dac_addresses = {}
 
         #Locate the DACS
 try:
