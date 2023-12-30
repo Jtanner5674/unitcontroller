@@ -8,7 +8,7 @@
     <h1>DAC Control Interface</h1>
 
     <!-- Generate forms/links based on found DACs -->
-    {% for dac_address in dac_addresses %}
+    {% for dac_address in found_dacs %}
         <!-- Form to set voltage for Channel 1 -->
         <form action="/set_voltage1/{{ dac_address }}" method="post">
             <label for="voltage1_{{ dac_address }}">Enter voltage for Channel 1 (0-100%):</label>
