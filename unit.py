@@ -67,6 +67,10 @@ def save_config():
         with open('config.json', 'w') as config_file:
             json.dump(updated_config, config_file, indent=4)
         return 'Config updated successfully!', 200
+    except FileNotFoundError as file_err:
+        return f'File not found error: {str(file_err)}', 500
+    except json.JSONDecodeError as json_err:
+        return f'JSON decoding error: {str(json_err)}', 500
     except Exception as e:
         return f'Error: {str(e)}', 500
 
