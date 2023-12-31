@@ -35,7 +35,7 @@ except Exception as e:
 
 @app.route('/')
 def index():
-    return render_template('index.html', dac_objects=dac_objects, dac_addresses=dac_addresses)
+    return render_template('index.html', dac_objects=dac_objects)
 
 @app.route('/settings')
 def settings():
