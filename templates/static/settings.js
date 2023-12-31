@@ -3,11 +3,11 @@
 fetch('/getConfig')
     .then(response => response.json())
     .then(config => {
-        // Handle the received config data, populate the settings on the page
+        generateSettings('DAC', config.DACS); // Generate DAC settings based on received data
+        // Call functions to generate settings for other device types if needed
     })
     .catch(error => console.error('Error:', error));
 
-// Function to generate settings for each device type
 function generateSettings(type, devices) {
     const container = document.getElementById(`${type.toLowerCase()}Settings`);
     container.innerHTML = '';
