@@ -14,7 +14,7 @@ if not os.path.exists(config_file_path):
     with open(config_file_path, 'w') as new_config_file:
         new_config_file.write('{}')
         
-        #Locate the DACS
+#Locate the DACS
 try:
     i2c = busio.I2C(board.SCL, board.SDA)
 
