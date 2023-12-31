@@ -33,6 +33,8 @@ except Exception as e:
 
 # Page initializers
 
+app.static_folder = 'static'
+
 @app.route('/')
 def index():
     return render_template('index.html', dac_objects=dac_objects)
