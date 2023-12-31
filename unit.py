@@ -31,11 +31,36 @@ try:
 except Exception as e:
     print("Error while scanning for DACs:", e)
 
-# Flask Routes
+# Page initializers
 
 @app.route('/')
 def index():
-    return render_template('index.html', dac_objects=dac_objects)
+    return render_template('index.html', dac_objects=dac_objects, dac_addresses=dac_addresses)
+
+@app.route('/settings')
+def settings():
+    return render_template('settings/index.html')
+
+# Function Routes
+
+@app.route('/getConfig', methods=['GET'])
+def get_config():
+    try:
+        with open('config.json', 'r') as config_file:
+            config_data = json.load(config_file)
+            return jsonify(config_data)
+    except FileNotFoundError:
+        return jsonify({}) 
+
+@app.route('/saveConfig', methods=['POST'])
+def save_config():
+    try:
+        updated_config = request.json  
+        with open('config.json', 'w') as config_file:
+            json.dump(updated_config, config_file, indent=4)
+        return 'Config updated successfully!', 200
+    except Exception as e:
+        return f'Error: {str(e)}', 500
 
 @app.route('/set_voltage<int:dac_id>', methods=['POST'])
 def set_voltage(dac_id):
