@@ -44,11 +44,29 @@
             <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_id }}</button>
         </form>
         
-        <a href="/close1{{ dac_id }}" class="button" method="post">Close Channel 1 on DAC {{ dac_id }}</a>
-        <a href="/close2{{ dac_id }}" class="button" method="post">Close Channel 2 on DAC {{ dac_id }}</a>
-        <a href="/open1{{ dac_id }}" class="button" method="post">Open Channel 1 on DAC {{ dac_id }}</a>
-        <a href="/open2{{ dac_id }}" class="button" method="post">Open Channel 2 on DAC {{ dac_id }}</a>
-
+        <a href="#" onclick="sendPostRequest('/close1{{ dac_id }}')">Close Channel 1 on DAC {{ dac_id }}</a>
+        <a href="#" onclick="sendPostRequest('/close2{{ dac_id }}')">Close Channel 2 on DAC {{ dac_id }}</a>
+        <a href="#" onclick="sendPostRequest('/open1{{ dac_id }}')">Open Channel 1 on DAC {{ dac_id }}</a>
+        <a href="#" onclick="sendPostRequest('/open2{{ dac_id }}')">Open Channel 2 on DAC {{ dac_id }}</a>
+        
+        
+        <script>
+            function sendPostRequest(url) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({}) // Add any payload if required
+                })
+                .then(response => {
+                    // Handle the response as needed
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        </script>
 
     {% endfor %}
 </body>
