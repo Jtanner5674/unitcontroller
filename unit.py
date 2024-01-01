@@ -51,6 +51,7 @@ def settings():
 
 # Function Routes
 
+<<<<<<< Updated upstream
 @app.route('/set_voltage<int:dac_id>', methods=['POST'])
 def set_voltage(dac_id):
     addr = dac_addresses.get(dac_id)
@@ -99,6 +100,79 @@ def close2(dac_id):
     else:
         return 'Invalid DAC ID'
 
+=======
+@app.route('/getConfig', methods=['GET'])
+def get_config():
+    try:
+        with open('config.json', 'r') as config_file:
+            config_data = json.load(config_file)
+            return jsonify(config_data)
+    except FileNotFoundError:
+        return jsonify({}) 
+
+@app.route('/saveConfig', methods=['POST'])
+def save_config():
+    try:
+        updated_config = request.json  
+        with open('config.json', 'w') as config_file:
+            json.dump(updated_config, config_file, indent=4)
+        return 'Config updated successfully!', 200
+    except FileNotFoundError as file_err:
+        return f'File not found error: {str(file_err)}', 500
+    except json.JSONDecodeError as json_err:
+        return f'JSON decoding error: {str(json_err)}', 500
+    except Exception as e:
+        return f'Error: {str(e)}', 500
+
+@app.route('/set_voltage<int:dac_id>', methods=['POST'])
+def set_voltage(dac_id):
+    addr = dac_addresses.get(dac_id)
+    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
+    if dac:
+        percentage = float(request.form['voltage1'])
+        voltage = 2 + (percentage / 100) * 8
+        volts = voltage * 500
+        dac.set_DAC_out_voltage(volts, DFRobot_GP8403.CHANNEL0)
+        errval = f'Voltage set to {voltage}V for Channel 0 on address {hex(addr)} with id {dac_id}'
+    else:
+        errval = "Invalid DAC ID"
+    print (errval)
+    return (errval)
+
+@app.route('/set_voltage2<int:dac_id>', methods=['POST'])
+def set_voltage2(dac_id):
+    addr = dac_addresses.get(dac_id)
+    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
+    if dac:
+        percentage = int(request.form['voltage2'])
+        voltage = 2 + (percentage / 100) * 8
+        volts = voltage * 500
+        dac.set_DAC_out_voltage(volts, DFRobot_GP8403.CHANNEL1)
+        errval = f'Voltage set to {voltage}V for Channel 1 on address {hex(addr)} with id {dac_id}'
+    else:
+        errval = "Invalid DAC ID"
+    print (errval)
+    return (errval)
+
+@app.route('/close1<int:dac_id>')
+def close1(dac_id):
+    dac = dac_objects.get(dac_id)
+    if dac:
+        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
+        return f'Closed Channel 0 on DAC {dac_id}'
+    else:
+        return 'Invalid DAC ID'
+
+@app.route('/close2<int:dac_id>')
+def close2(dac_id):
+    dac = dac_objects.get(dac_id)
+    if dac:
+        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
+        return f'Closed Channel 1 on DAC {dac_id}'
+    else:
+        return 'Invalid DAC ID'
+
+>>>>>>> Stashed changes
 @app.route('/open1<int:dac_id>')
 def open1(dac_id):
     dac = dac_objects.get(dac_id)
