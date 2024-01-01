@@ -1,144 +1,58 @@
 from flask import Flask, render_template, request, jsonify
-import busio
-import board
-import DFRobot_GP8403
-import os
-import json
+from DFRobot_GP8403 import DFRobot_GP8403
 
 app = Flask(__name__)
 
-dac_objects = {}
-dac_addresses = {}
+# Initialize your DAC object
+dac = DFRobot_GP8403(0x58)  # Replace 0x58 with your DAC's address
 
-config_file_path = 'config.json'
-
-if not os.path.exists(config_file_path):
-    with open(config_file_path, 'w') as new_config_file:
-        new_config_file.write('{}')
-        
-#Locate the DACS
-try:
-    i2c = busio.I2C(board.SCL, board.SDA)
-
-    print("Scanning I2C bus for DACs...")
-    index = 0
-    for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
-        addr = 0x50 + o 
-        try:
-            dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-            dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-            dac_objects[index] = dac
-            dac_addresses[index] = addr
-            print(f"DAC found at address {hex(addr)} with ID {index}.")
-            index += 1
-        except Exception as e:
-            print(f"No DAC found at address {hex(addr)}")
-            continue
-except Exception as e:
-    print("Error while scanning for DACs:", e)
-
-# Page initializers
+# Start with both Closed
+dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)  # Set 2V on channel 1
+dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)  # Set 2V on channel 2
 
 @app.route('/')
 def index():
-    return render_template('index.html', dac_objects=dac_objects)
+    return render_template('index.html')
 
-@app.route('/settings')
-def settings():
-    return render_template('settings/index.html')
+@app.route('/get_current_voltages', methods=['GET'])
+def get_current_voltages():
+    voltage1 = dac.read_DAC_out_voltage(DFRobot_GP8403.CHANNEL0)
+    voltage2 = dac.read_DAC_out_voltage(DFRobot_GP8403.CHANNEL1)
+    return jsonify({'voltage1': voltage1, 'voltage2': voltage2})
 
-# Function Routes
+@app.route('/set_voltage1', methods=['POST'])
+def set_voltage1():
+    percentage = float(request.form['voltage1'])
+    voltage = 2 + (percentage / 100) * 8  # Convert percentage to the 2-10 range
+    dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL0)  # Set voltage on channel 1
+    return f'Voltage set to {voltage}V for Channel 1'
 
-@app.route('/getConfig', methods=['GET'])
-def get_config():
-    try:
-        with open('config.json', 'r') as config_file:
-            config_data = json.load(config_file)
-            return jsonify(config_data)
-    except FileNotFoundError:
-        return jsonify({}) 
+@app.route('/set_voltage2', methods=['POST'])
+def set_voltage2():
+    percentage = float(request.form['voltage2'])
+    voltage = 2 + (percentage / 100) * 8  # Convert percentage to the 2-10 range
+    dac.set_DAC_out_voltage(voltage, DFRobot_GP8403.CHANNEL1)  # Set voltage on channel 2
+    return f'Voltage set to {voltage}V for Channel 2'
 
-@app.route('/saveConfig', methods=['POST'])
-def save_config():
-    try:
-        updated_config = request.json  
-        with open('config.json', 'w') as config_file:
-            json.dump(updated_config, config_file, indent=4)
-        return 'Config updated successfully!', 200
-    except FileNotFoundError as file_err:
-        return f'File not found error: {str(file_err)}', 500
-    except json.JSONDecodeError as json_err:
-        return f'JSON decoding error: {str(json_err)}', 500
-    except Exception as e:
-        return f'Error: {str(e)}', 500
+@app.route('/closed1')
+def set_closed1():
+    dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL0)  # Set 2V on channel 1
+    return 'Closed'
 
-@app.route('/set_voltage<int:dac_id>', methods=['POST'])
-def set_voltage(dac_id):
-    addr = dac_addresses.get(dac_id)
-    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-    if dac:
-        percentage = float(request.form['voltage1'])
-        voltage = 2 + (percentage / 100) * 8
-        volts = voltage * 500
-        dac.set_DAC_out_voltage(volts, DFRobot_GP8403.CHANNEL0)
-        errval = f'Voltage set to {voltage}V for Channel 0 on address {hex(addr)} with id {dac_id}'
-    else:
-        errval = "Invalid DAC ID"
-    print (errval)
-    return (errval)
+@app.route('/open1')
+def set_open1():
+    dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL0)  # Set 10V on channel 1
+    return 'Open'
 
-@app.route('/set_voltage2<int:dac_id>', methods=['POST'])
-def set_voltage2(dac_id):
-    addr = dac_addresses.get(dac_id)
-    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-    if dac:
-        percentage = int(request.form['voltage2'])
-        voltage = 2 + (percentage / 100) * 8
-        volts = voltage * 500
-        dac.set_DAC_out_voltage(volts, DFRobot_GP8403.CHANNEL1)
-        errval = f'Voltage set to {voltage}V for Channel 1 on address {hex(addr)} with id {dac_id}'
-    else:
-        errval = "Invalid DAC ID"
-    print (errval)
-    return (errval)
+@app.route('/closed2')
+def set_closed2():
+    dac.set_DAC_out_voltage(2, DFRobot_GP8403.CHANNEL1)  # Set 2V on channel 2
+    return 'Closed'
 
-@app.route('/close1<int:dac_id>')
-def close1(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-        return f'Closed Channel 0 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
-
-@app.route('/close2<int:dac_id>')
-def close2(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-        return f'Closed Channel 1 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
-
-@app.route('/open1<int:dac_id>')
-def open1(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(10000, DFRobot_GP8403.CHANNEL0)
-        return f'Opened Channel 0 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
-
-@app.route('/open2<int:dac_id>')
-def open2(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(10000, DFRobot_GP8403.CHANNEL1)
-        return f'Opened Channel 2 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
+@app.route('/open2')
+def set_open2():
+    dac.set_DAC_out_voltage(10, DFRobot_GP8403.CHANNEL1)  # Set 10V on channel 2
+    return 'Open'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
