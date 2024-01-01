@@ -12,6 +12,7 @@
                 method: 'POST',
                 body: formData
             })
+            console.log(formData)
             .then(response => {
                 // Handle the response from the Flask server if needed
                 console.log('Form submitted successfully!');
@@ -42,8 +43,8 @@
         </form>
 
         <!-- Links to open/close channels -->
-        <a href="/open1{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/open1{{ dac_id }}')">Open Channel 1 on DAC {{ dac_id }}</a>
-        <a href="/close1{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/close1{{ dac_id }}')">Close Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/open1{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/open1{{ dac_id }}')" method="post"></a>Open Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/close1{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/close1{{ dac_id }}')" method="post">Close Channel 1 on DAC {{ dac_id }}</a>
         <a href="/open2{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/open2{{ dac_id }}')">Open Channel 2 on DAC {{ dac_id }}</a>
         <a href="/close2{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/close2{{ dac_id }}')">Close Channel 2 on DAC {{ dac_id }}</a>
         <br><br>
