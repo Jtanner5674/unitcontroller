@@ -54,7 +54,7 @@ def get_config():
             config_data = json.load(config_file)
             return jsonify(config_data)
     except FileNotFoundError:
-        return jsonify({}) 
+        return jsonify() 
 
 @app.route('/saveConfig', methods=['POST'])
 def save_config():
