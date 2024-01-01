@@ -2,21 +2,13 @@ from flask import Flask, render_template, request, jsonify
 import busio
 import board
 import DFRobot_GP8403
-import os
-import json
 
 app = Flask(__name__)
 
 dac_objects = {}
 dac_addresses = {}
 
-config_file_path = 'config.json'
-
-if not os.path.exists(config_file_path):
-    with open(config_file_path, 'w') as new_config_file:
-        new_config_file.write('{}')
-        
-#Locate the DACS
+        #Locate the DACS
 try:
     i2c = busio.I2C(board.SCL, board.SDA)
 
@@ -39,17 +31,11 @@ try:
 except Exception as e:
     print("Error while scanning for DACs:", e)
 
-# Page initializers
+# Flask Routes
 
 @app.route('/')
 def index():
     return render_template('index.html', dac_objects=dac_objects)
-
-@app.route('/settings')
-def settings():
-    return render_template('settings/index.html')
-
-# Function Routes
 
 @app.route('/set_voltage<int:dac_id>', methods=['POST'])
 def set_voltage(dac_id):
