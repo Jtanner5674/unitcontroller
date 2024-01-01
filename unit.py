@@ -57,19 +57,19 @@ def set_voltage2(dac_id):
     voltage = float(request.form['voltage2'])
     return set_voltage_action(dac_id, 2, voltage)
 
-@app.route('/close1<int:dac_id>')
+@app.route('/close1<int:dac_id>', methods=['POST'])
 def close1(dac_id):
     return set_voltage_action(dac_id, 1, 2000)
 
-@app.route('/close2<int:dac_id>')
+@app.route('/close2<int:dac_id>', methods=['POST'])
 def close2(dac_id):
     return set_voltage_action(dac_id, 2, 2000)
 
-@app.route('/open1<int:dac_id>')
+@app.route('/open1<int:dac_id>', methods=['POST'])
 def open1(dac_id):
     return set_voltage_action(dac_id, 1, 10000)
 
-@app.route('/open2<int:dac_id>')
+@app.route('/open2<int:dac_id>', methods=['POST'])
 def open2(dac_id):
     return set_voltage_action(dac_id, 2, 10000)
 
