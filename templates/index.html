@@ -44,19 +44,12 @@
             <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_id }}</button>
         </form>
         
-        <!-- For closing Channel 1 on a specific DAC -->
-        <a href="/close1{{ dac_id }}" class="button">Close Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/close1{{ dac_id }}" class="button" method="post">Close Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/close2{{ dac_id }}" class="button" method="post">Close Channel 2 on DAC {{ dac_id }}</a>
+        <a href="/open1{{ dac_id }}" class="button" method="post">Open Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/open2{{ dac_id }}" class="button" method="post">Open Channel 2 on DAC {{ dac_id }}</a>
 
-        <!-- For closing Channel 2 on a specific DAC -->
-        <a href="/close2{{ dac_id }}" class="button">Close Channel 2 on DAC {{ dac_id }}</a>
 
-        <!-- For opening Channel 1 on a specific DAC -->
-        <a href="/open1{{ dac_id }}" class="button">Open Channel 1 on DAC {{ dac_id }}</a>
-
-        <!-- For opening Channel 2 on a specific DAC -->
-        <a href="/open2{{ dac_id }}" class="button">Open Channel 2 on DAC {{ dac_id }}</a>
-
-    
     {% endfor %}
 </body>
 </html>
