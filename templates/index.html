@@ -6,23 +6,23 @@
     <script>
         // Function to handle form submissions asynchronously
         function submitForm(event, url) {
-            console.log('Form submitted:', url, event);
-            event.preventDefault(); // Prevent default form submission behavior
-            let formData = new FormData(event.target);
-            fetch(url, {
-                method: 'POST',
-                body: formData
-            })
-            console.log(formData)
-            .then(response => {
-                // Handle the response from the Flask server if needed
-                console.log('Form submitted successfully!');
-            })
-            .catch(error => {
-                // Handle any errors that occurred during the fetch
-                console.error('Error submitting form:', error);
-            });
-        }
+        console.log('Form submitted:', url, event);
+        event.preventDefault(); // Prevent default form submission behavior
+        let formData = new FormData(event.target);
+        console.log(formData); // Move this statement here
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            // Handle the response from the Flask server if needed
+            console.log('Form submitted successfully!');
+        })
+        .catch(error => {
+            // Handle any errors that occurred during the fetch
+            console.error('Error submitting form:', error);
+        });
+    }
     </script>
 </head>
 <body>
