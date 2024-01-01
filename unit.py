@@ -37,55 +37,41 @@ except Exception as e:
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
-def set_voltage_action(dac_id, channel):
-    addr = dac_addresses.get(dac_id)
-    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-    if dac:
-        percentage = float(request.form[f'voltage{channel}'])
-        voltage = 2 + (percentage / 100) * 8
-        volts = voltage * 500
-        channel_num = DFRobot_GP8403.CHANNEL0 if channel == 1 else DFRobot_GP8403.CHANNEL1
-        dac.set_DAC_out_voltage(volts, channel_num)
-        errval = f'Voltage set to {voltage}V for Channel {channel_num} on address {hex(addr)} with id {dac_id}'
-        return jsonify({'message': errval})  
-    else:
-        return jsonify({'error': 'Invalid DAC ID'})
-
-@app.route('/set_voltage<int:dac_id>', methods=['POST'])
-def set_voltage1(dac_id):
-    return set_voltage_action(dac_id, 1)
-
-@app.route('/set_voltage2<int:dac_id>', methods=['POST'])
-def set_voltage2(dac_id):
-    return set_voltage_action(dac_id, 2)
-
-def channel_action(dac_id, channel, value):
+def set_voltage_action(dac_id, channel, value):
     addr = dac_addresses.get(dac_id)
     dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
         channel_num = DFRobot_GP8403.CHANNEL0 if channel == 1 else DFRobot_GP8403.CHANNEL1
         dac.set_DAC_out_voltage(value, channel_num)
-        errval = f'Voltage set to {value}V for Channel {channel_num} on address {hex(addr)} with id {dac_id}'
-        return jsonify({'message': errval})  
+        return jsonify({'message': f'Voltage set to {value}V for Channel {channel_num} on address {hex(addr)} with id {dac_id}'})
     else:
         return jsonify({'error': 'Invalid DAC ID'})
 
+@app.route('/set_voltage<int:dac_id>', methods=['POST'])
+def set_voltage1(dac_id):
+    voltage = int(request.form['voltage1'])
+    return set_voltage_action(dac_id, 1, voltage)
+
+@app.route('/set_voltage2<int:dac_id>', methods=['POST'])
+def set_voltage2(dac_id):
+    voltage = int(request.form['voltage2'])
+    return set_voltage_action(dac_id, 2, voltage)
 
 @app.route('/close1<int:dac_id>')
 def close1(dac_id):
-    return channel_action(dac_id, 1, 2000)
+    return set_voltage_action(dac_id, 1, 2000)
 
 @app.route('/close2<int:dac_id>')
 def close2(dac_id):
-    return channel_action(dac_id, 2, 2000)
+    return set_voltage_action(dac_id, 2, 2000)
 
 @app.route('/open1<int:dac_id>')
 def open1(dac_id):
-    return channel_action(dac_id, 1, 10000)
+    return set_voltage_action(dac_id, 1, 10000)
 
 @app.route('/open2<int:dac_id>')
 def open2(dac_id):
-    return channel_action(dac_id, 2, 10000)
+    return set_voltage_action(dac_id, 2, 10000)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
