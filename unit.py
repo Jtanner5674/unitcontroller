@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 
 dac_objects = {}
-dac_addresses = {}
+dac_addresses = []
 
 config_file_path = 'config.json'
 
@@ -30,7 +30,7 @@ try:
             dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
             dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
             dac_objects[index] = dac
-            dac_addresses[index] = addr
+            dac_addresses[index] = {hex(addr)}
             print(f"DAC found at address {hex(addr)} with ID {index}.")
             index += 1
         except Exception as e:
@@ -47,7 +47,7 @@ def index():
 
 @app.route('/settings')
 def settings():
-    return render_template('settings/index.html')
+    return render_template('settings/index.html', dac_addresses=dac_addresses)
 
 # Function Routes
 

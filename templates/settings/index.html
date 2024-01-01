@@ -7,29 +7,45 @@
 <body>
     <h1>DAC Settings</h1>
     <div id="dacSettings">
-        <!-- Dynamically generated DAC settings will be added here -->
+
     </div>
 
     <h1>Relay Settings</h1>
     <div id="relaySettings">
-        <!-- Dynamically generated relay settings will be added here -->
+
     </div>
 
     <h1>Level Sensor Settings</h1>
     <div id="sensorSettings">
-        <!-- Dynamically generated sensor settings will be added here -->
+
     </div>
 
     <button onclick="saveConfig()">Save Settings</button>
 
     <script>
-
+        const dacAddresses = {{ dac_addresses | tojson | safe }};
+        
         fetch('/getConfig')
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    const defaultConfig = {
+                        DACS: dacAddresses.map((address, index) => ({
+                            ADDR: address,
+                            NAME: `DAC ${index}`,
+                            CHANNEL: '0'  // Set default channel here if needed
+                        }))
+                    };
+                    return defaultConfig;
+                }
+            })
             .then(config => {
                 generateSettings('DAC', config.DACS);
             })
             .catch(error => console.error('Error:', error));
+
+
         
         function generateSettings(type, devices) {
             const container = document.getElementById(`${type.toLowerCase()}Settings`);
