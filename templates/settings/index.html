@@ -7,46 +7,29 @@
 <body>
     <h1>DAC Settings</h1>
     <div id="dacSettings">
-
+        <!-- Dynamically generated DAC settings will be added here -->
     </div>
 
     <h1>Relay Settings</h1>
     <div id="relaySettings">
-
+        <!-- Dynamically generated relay settings will be added here -->
     </div>
 
     <h1>Level Sensor Settings</h1>
     <div id="sensorSettings">
-
+        <!-- Dynamically generated sensor settings will be added here -->
     </div>
 
     <button onclick="saveConfig()">Save Settings</button>
 
     <script>
-        const dacAddresses = {{ dac_addresses | tojson | safe }};
-        
+
         fetch('/getConfig')
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    const defaultConfig = {
-                        DACS: dacAddresses.map((address, index) => ({
-                            ADDR: address,
-                            NAME: `DAC ${index}`,
-                            CHANNEL: '0'  // Set default channel here if needed
-                        }))
-                    };
-                    return defaultConfig;
-                }
-            })
+            .then(response => response.json())
             .then(config => {
-                console.print('generating:', defaultConfig)
                 generateSettings('DAC', config.DACS);
             })
             .catch(error => console.error('Error:', error));
-
-
         
         function generateSettings(type, devices) {
             const container = document.getElementById(`${type.toLowerCase()}Settings`);
@@ -73,39 +56,24 @@
                 container.appendChild(div);
             });
         }
-
         
-        function saveConfig() {
-            const dacSettings = Array.from(document.querySelectorAll('#dacSettings input[type="text"]'));
-            const updatedConfig = { DACS: [] };
-
-            dacSettings.forEach((input, index) => {
-                const [address, name] = input.value.split(',');
-                const channel = document.getElementById(`dac_${index}_channel`).value;
-
-                updatedConfig.DACS.push({
-                    ADDR: address,
-                    NAME: name,
-                    CHANNEL: channel
-                });
-            });
-
+        function saveConfig(updatedConfig) {
             fetch('/saveConfig', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(updatedConfig)
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Config updated successfully!');
-                } else {
-                    console.error('Config update failed.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedConfig)
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Config updated successfully!');
+            } else {
+                console.error('Config update failed.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
     </script>
 
 </body>
