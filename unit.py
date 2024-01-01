@@ -72,7 +72,7 @@ def channel_action(dac_id, channel, value):
 
 @app.route('/close1<int:dac_id>')
 def close1(dac_id):
-    return jsonify({'message': channel_action(dac_id, 1, 'close')})
+    return channel_action(dac_id, 1, 'open')
 
 @app.route('/close2<int:dac_id>')
 def close2(dac_id):
