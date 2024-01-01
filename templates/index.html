@@ -6,6 +6,7 @@
     <script>
         // Function to handle form submissions asynchronously
         function submitForm(event, url) {
+            console.log('Form submitted:', url, event);
             event.preventDefault(); // Prevent default form submission behavior
             let formData = new FormData(event.target);
             fetch(url, {
