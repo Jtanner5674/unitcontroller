@@ -24,8 +24,10 @@
         });
     }
     
-    function setAction(action) {
+    function setActionAndSubmit(action) {
         document.getElementById('action').value = action;
+        document.getElementById('actionForm').action = `/${action}<int:dac_id>`;
+        document.getElementById('actionForm').submit();
     }
     </script>
 </head>
@@ -50,10 +52,10 @@
         <!-- Form to open or close the channels-->
         <form action="/perform_action{{ dac_id }}" method="post">
             <input type="hidden" name="action" id="action" value="">
-            <button type="submit" onclick="setAction('close1')">Close Channel 1</button>
-            <button type="submit" onclick="setAction('close2')">Close Channel 2</button>
-            <button type="submit" onclick="setAction('open1')">Open Channel 1</button>
-            <button type="submit" onclick="setAction('open2')">Open Channel 2</button>
+            <button type="button" onclick="setActionAndSubmit('close1')">Close Channel 1</button>
+            <button type="button" onclick="setActionAndSubmit('close2')">Close Channel 2</button>
+            <button type="button" onclick="setActionAndSubmit('open1')">Open Channel 1</button>
+            <button type="button" onclick="setActionAndSubmit('open2')">Open Channel 2</button>        
         </form>
 
     {% endfor %}
