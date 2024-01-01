@@ -1,81 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Settings Page</title>
+    <meta charset="UTF-8">
+    <title>Device Settings</title>
 </head>
 <body>
-  <h1>Settings Page</h1>
+    <h1>DAC Settings</h1>
+    <div id="dacSettings">
+        <!-- Dynamically generated DAC settings will be added here -->
+    </div>
 
-  <div id="settingsContainer">
-    <!-- Settings will be dynamically generated here -->
-  </div>
+    <h1>Relay Settings</h1>
+    <div id="relaySettings">
+        <!-- Dynamically generated relay settings will be added here -->
+    </div>
 
-  <button onclick="saveSettings()">Save Settings</button>
+    <h1>Level Sensor Settings</h1>
+    <div id="sensorSettings">
+        <!-- Dynamically generated sensor settings will be added here -->
+    </div>
 
-  <script>
-    // Simulated list of DAC addresses
-    const dac_addresses = dac_addresses;
-    console.prinSt(dac_addresses);
-    // Create settings based on the list of DAC addresses
-    const settings = dac_addresses.map(address => ({ address: address, channel:0, name: ''  }));
+    <button onclick="saveConfig()">Save Settings</button>
 
-    function createSettingElement(setting) {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <label>${setting.name}</label>
-        <input type="text" id="${setting.name.replace(/\s+/g, '_').toLowerCase()}" value="${setting.value}">
-        <br>
-      `;
-      return div;
-    }
+    <script>
 
-    function populateSettings() {
-      const settingsContainer = document.getElementById('settingsContainer');
-      settings.forEach(setting => {
-        const settingElement = createSettingElement(setting);
-        settingsContainer.appendChild(settingElement);
-      });
-    }
+        fetch('/getConfig')
+            .then(response => response.json())
+            .then(config => {
+                generateSettings('DAC', config.DACS);
+            })
+            .catch(error => console.error('Error:', error));
+        
+        function generateSettings(type, devices) {
+            const container = document.getElementById(`${type.toLowerCase()}Settings`);
+            container.innerHTML = '';
 
-    function saveSettings() {
-      const data = {};
-      settings.forEach(setting => {
-        const settingValue = document.getElementById(setting.name.replace(/\s+/g, '_').toLowerCase()).value;
-        data[setting.name] = settingValue;
-      });
+            devices.forEach((device, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label for="${type}_${index}_addr">Address:</label>
+                    <input type="text" id="${type}_${index}_addr" value="${device.ADDR}" disabled>
 
-      const jsonContent = JSON.stringify(data, null, 2);
+                    <label for="${type}_${index}_name">Name:</label>
+                    <input type="text" id="${type}_${index}_name" value="${device.NAME}">
 
-      // Save JSON content to a file (e.g., using Blob)
-      const blob = new Blob([jsonContent], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'settings.json';
-      a.click();
-    }
-
-    // Check if settings file exists and populate settings accordingly
-    fetch('settings.json')
-      .then(response => {
-        if (response.ok) {
-          return response.json();
+                    ${type === 'DAC' ? `
+                        <label for="${type}_${index}_channel">Channel:</label>
+                        <select id="${type}_${index}_channel">
+                            <option value="0" ${device.CHANNEL === '0' ? 'selected' : ''}>0</option>
+                            <option value="1" ${device.CHANNEL === '1' ? 'selected' : ''}>1</option>
+                        </select>
+                    ` : ''}
+                    <br><br>
+                `;
+                container.appendChild(div);
+            });
         }
-        throw new Error('Settings file not found');
-      })
-      .then(data => {
-        settings.forEach(setting => {
-          if (data.hasOwnProperty(setting.name)) {
-            const settingValue = data[setting.name];
-            document.getElementById(setting.name.replace(/\s+/g, '_').toLowerCase()).value = settingValue;
-          }
-        });
-      })
-      .catch(error => {
-        console.error(error);
-        // Handle file not found or other errors
-      });
+        
+        function saveConfig(updatedConfig) {
+            fetch('/saveConfig', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedConfig)
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Config updated successfully!');
+            } else {
+                console.error('Config update failed.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+    </script>
 
-    populateSettings();
-  </script>
 </body>
 </html>

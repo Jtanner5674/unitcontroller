@@ -47,7 +47,7 @@ def index():
 
 @app.route('/settings')
 def settings():
-    return render_template('settings/index.html', dac_addresses=dac_addresses)
+    return render_template('settings/index.html')
 
 # Function Routes
 
