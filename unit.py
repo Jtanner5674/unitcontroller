@@ -65,9 +65,10 @@ def channel_action(dac_id, channel, value):
         voltage = 10000 if value == 'open' else 2000
         channel_num = DFRobot_GP8403.CHANNEL0 if channel == 1 else DFRobot_GP8403.CHANNEL1
         dac.set_DAC_out_voltage(voltage, channel_num)
-        return f'{value.capitalize()}ed Channel {channel_num} on DAC {dac_id}'
+        return jsonify({'message': f'{value.capitalize()}ed Channel {channel_num} on DAC {dac_id}'})
     else:
-        return 'Invalid DAC ID'
+        return jsonify({'error': 'Invalid DAC ID'})
+
 
 @app.route('/close1<int:dac_id>')
 def close1(dac_id):
