@@ -41,6 +41,7 @@
                 }
             })
             .then(config => {
+                console.print('generating:', defaultConfig)
                 generateSettings('DAC', config.DACS);
             })
             .catch(error => console.error('Error:', error));
