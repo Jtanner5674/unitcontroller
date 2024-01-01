@@ -3,31 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <title>DAC Control</title>
+    <script>
+        // Function to handle form submissions asynchronously
+        function submitForm(event, url) {
+            event.preventDefault(); // Prevent default form submission behavior
+            let formData = new FormData(event.target);
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Handle the response from the Flask server if needed
+                console.log('Form submitted successfully!');
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the fetch
+                console.error('Error submitting form:', error);
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>DAC Control Interface</h1>
 
-    <!-- Generate forms/links based on found DACs -->
     {% for dac_id, dac in dac_objects.items() %}
         <!-- Form to set voltage for Channel 1 -->
-        <form action="/set_voltage{{ dac_id }}" method="post">
+        <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
             <label for="voltage1_{{ dac_id }}">Enter voltage for Channel 1 (0-100%):</label>
             <input type="range" id="voltage1_{{ dac_id }}" name="voltage1" min="0" max="100" step=".1">
             <button type="submit">Set Voltage for Channel 1 on DAC {{ dac_id }}</button>
         </form>
 
         <!-- Form to set voltage for Channel 2 -->
-        <form action="/set_voltage2{{ dac_id }}" method="post">
+        <form onsubmit="submitForm(event, '/set_voltage2{{ dac_id }}')" method="post">
             <label for="voltage2_{{ dac_id }}">Enter voltage for Channel 2 (0-100%):</label>
             <input type="range" id="voltage2_{{ dac_id }}" name="voltage2" min="0" max="100" step=".1">
             <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_id }}</button>
         </form>
 
         <!-- Links to open/close channels -->
-        <a href="/open1{{ dac_id }}">Open Channel 1 on DAC {{ dac_id }}</a>
-        <a href="/close1{{ dac_id }}">Close Channel 1 on DAC {{ dac_id }}</a>
-        <a href="/open2{{ dac_id }}">Open Channel 2 on DAC {{ dac_id }}</a>
-        <a href="/close2{{ dac_id }}">Close Channel 2 on DAC {{ dac_id }}</a>
+        <a href="/open1{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/open1{{ dac_id }}')">Open Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/close1{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/close1{{ dac_id }}')">Close Channel 1 on DAC {{ dac_id }}</a>
+        <a href="/open2{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/open2{{ dac_id }}')">Open Channel 2 on DAC {{ dac_id }}</a>
+        <a href="/close2{{ dac_id }}" onclick="event.preventDefault(); submitForm(event, '/close2{{ dac_id }}')">Close Channel 2 on DAC {{ dac_id }}</a>
         <br><br>
     {% endfor %}
 </body>

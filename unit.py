@@ -37,71 +37,53 @@ except Exception as e:
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
-@app.route('/set_voltage<int:dac_id>', methods=['POST'])
-def set_voltage(dac_id):
+def set_voltage_action(dac_id, channel):
     addr = dac_addresses.get(dac_id)
     dac = DFRobot_GP8403.DFRobot_GP8403(addr)
     if dac:
-        percentage = float(request.form['voltage1'])
+        percentage = float(request.form[f'voltage{channel}'])
         voltage = 2 + (percentage / 100) * 8
         volts = voltage * 500
-        dac.set_DAC_out_voltage(volts, DFRobot_GP8403.CHANNEL0)
-        errval = f'Voltage set to {voltage}V for Channel 0 on address {hex(addr)} with id {dac_id}'
+        channel_num = DFRobot_GP8403.CHANNEL0 if channel == 1 else DFRobot_GP8403.CHANNEL1
+        dac.set_DAC_out_voltage(volts, channel_num)
+        errval = f'Voltage set to {voltage}V for Channel {channel_num} on address {hex(addr)} with id {dac_id}'
+        return jsonify({'message': errval})  # Return a JSON response for AJAX handling
     else:
-        errval = "Invalid DAC ID"
-    print (errval)
-    return (errval)
+        return jsonify({'error': 'Invalid DAC ID'})
+
+@app.route('/set_voltage<int:dac_id>', methods=['POST'])
+def set_voltage1(dac_id):
+    return set_voltage_action(dac_id, 1)
 
 @app.route('/set_voltage2<int:dac_id>', methods=['POST'])
 def set_voltage2(dac_id):
-    addr = dac_addresses.get(dac_id)
-    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
+    return set_voltage_action(dac_id, 2)
+
+def channel_action(dac_id, channel, value):
+    dac = dac_objects.get(dac_id)
     if dac:
-        percentage = int(request.form['voltage2'])
-        voltage = 2 + (percentage / 100) * 8
-        volts = voltage * 500
-        dac.set_DAC_out_voltage(volts, DFRobot_GP8403.CHANNEL1)
-        errval = f'Voltage set to {voltage}V for Channel 1 on address {hex(addr)} with id {dac_id}'
+        voltage = 10000 if value == 'open' else 2000
+        channel_num = DFRobot_GP8403.CHANNEL0 if channel == 1 else DFRobot_GP8403.CHANNEL1
+        dac.set_DAC_out_voltage(voltage, channel_num)
+        return f'{value.capitalize()}ed Channel {channel_num} on DAC {dac_id}'
     else:
-        errval = "Invalid DAC ID"
-    print (errval)
-    return (errval)
+        return 'Invalid DAC ID'
 
 @app.route('/close1<int:dac_id>')
 def close1(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-        return f'Closed Channel 0 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
+    return jsonify({'message': channel_action(dac_id, 1, 'close')})
 
 @app.route('/close2<int:dac_id>')
 def close2(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-        return f'Closed Channel 1 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
+    return jsonify({'message': channel_action(dac_id, 2, 'close')})
 
 @app.route('/open1<int:dac_id>')
 def open1(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(10000, DFRobot_GP8403.CHANNEL0)
-        return f'Opened Channel 0 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
+    return jsonify({'message': channel_action(dac_id, 1, 'open')})
 
 @app.route('/open2<int:dac_id>')
 def open2(dac_id):
-    dac = dac_objects.get(dac_id)
-    if dac:
-        dac.set_DAC_out_voltage(10000, DFRobot_GP8403.CHANNEL1)
-        return f'Opened Channel 2 on DAC {dac_id}'
-    else:
-        return 'Invalid DAC ID'
+    return jsonify({'message': channel_action(dac_id, 2, 'open')})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
