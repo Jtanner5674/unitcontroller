@@ -77,15 +77,15 @@ def close1(dac_id):
 
 @app.route('/close2<int:dac_id>')
 def close2(dac_id):
-    return jsonify({'message': channel_action(dac_id, 2, 2000)})
+    return channel_action(dac_id, 2, 2000)
 
 @app.route('/open1<int:dac_id>')
 def open1(dac_id):
-    return jsonify({'message': channel_action(dac_id, 1, 10000)})
+    return channel_action(dac_id, 1, 10000)
 
 @app.route('/open2<int:dac_id>')
 def open2(dac_id):
-    return jsonify({'message': channel_action(dac_id, 2, 10000)})
+    return channel_action(dac_id, 2, 10000)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
