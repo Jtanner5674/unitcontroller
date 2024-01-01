@@ -57,23 +57,37 @@
             });
         }
         
-        function saveConfig(updatedConfig) {
+        function saveConfig() {
+            const dacSettings = Array.from(document.querySelectorAll('#dacSettings input[type="text"]'));
+            const updatedConfig = { DACS: [] };
+
+            dacSettings.forEach((input, index) => {
+                const [address, name] = input.value.split(',');
+                const channel = document.getElementById(`dac_${index}_channel`).value;
+
+                updatedConfig.DACS.push({
+                    ADDR: address,
+                    NAME: name,
+                    CHANNEL: channel
+                });
+            });
+
             fetch('/saveConfig', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updatedConfig)
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log('Config updated successfully!');
-            } else {
-                console.error('Config update failed.');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedConfig)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Config updated successfully!');
+                } else {
+                    console.error('Config update failed.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
     </script>
 
 </body>
