@@ -49,12 +49,12 @@ def set_voltage_action(dac_id, channel, value):
 
 @app.route('/set_voltage<int:dac_id>', methods=['POST'])
 def set_voltage1(dac_id):
-    voltage = int(request.form['voltage1'])
+    voltage = float(request.form['voltage1'])
     return set_voltage_action(dac_id, 1, voltage)
 
 @app.route('/set_voltage2<int:dac_id>', methods=['POST'])
 def set_voltage2(dac_id):
-    voltage = int(request.form['voltage2'])
+    voltage = float(request.form['voltage2'])
     return set_voltage_action(dac_id, 2, voltage)
 
 @app.route('/close1<int:dac_id>')
