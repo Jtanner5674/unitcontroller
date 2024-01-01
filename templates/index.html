@@ -23,12 +23,7 @@
             console.error('Error submitting form:', error);
         });
     }
-    
-    function setActionAndSubmit(action) {
-        document.getElementById('action').value = action;
-        document.getElementById('actionForm').action = `/${action}<int:dac_id>`;
-        document.getElementById('actionForm').submit();
-    }
+
     </script>
 </head>
 <body>
@@ -49,15 +44,19 @@
             <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_id }}</button>
         </form>
         
-        <!-- Form to open or close the channels-->
-        <form action="/perform_action{{ dac_id }}" method="post">
-            <input type="hidden" name="action" id="action" value="">
-            <button type="button" onclick="setActionAndSubmit('close1')">Close Channel 1</button>
-            <button type="button" onclick="setActionAndSubmit('close2')">Close Channel 2</button>
-            <button type="button" onclick="setActionAndSubmit('open1')">Open Channel 1</button>
-            <button type="button" onclick="setActionAndSubmit('open2')">Open Channel 2</button>        
-        </form>
+        <!-- For closing Channel 1 on a specific DAC -->
+        <a href="/close1{{ dac_id }}" class="button">Close Channel 1 on DAC {{ dac_id }}</a>
 
+        <!-- For closing Channel 2 on a specific DAC -->
+        <a href="/close2{{ dac_id }}" class="button">Close Channel 2 on DAC {{ dac_id }}</a>
+
+        <!-- For opening Channel 1 on a specific DAC -->
+        <a href="/open1{{ dac_id }}" class="button">Open Channel 1 on DAC {{ dac_id }}</a>
+
+        <!-- For opening Channel 2 on a specific DAC -->
+        <a href="/open2{{ dac_id }}" class="button">Open Channel 2 on DAC {{ dac_id }}</a>
+
+    
     {% endfor %}
 </body>
 </html>
