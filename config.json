@@ -12,12 +12,14 @@
         } 
     ],
     "RELAYS": [
-        "ADDR": "0x61"
-        "NAME": "Starter"
+        {
+            "ADDR": "0x61",
+            "NAME": "Starter"
+        }
     ],
     "LEVEL-SENSORS": [
         {
-            "ADDR": "0x81"
+            "ADDR": "0x81",
             "NAME": "Water tank"
         }
     ]
