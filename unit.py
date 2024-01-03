@@ -97,8 +97,8 @@ def update_config_form(section, index):
 # Route to get the entire configuration
 @app.route('/config', methods=['GET'])
 def get_config():
-    data = load_config()
-    return jsonify(data)
+    existing_configs = load_config()
+    return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
 
 # Route to update a specific configuration item
 @app.route('/config/<string:section>/<int:index>', methods=['PUT'])
