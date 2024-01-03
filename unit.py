@@ -37,9 +37,9 @@ except Exception as e:
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
-@app.route('/settings')
-def settings():
-    return render_template('settings/index.html')
+@app.route('/config')
+def config():
+    return render_template('config/index.html')
 
 
 def set_voltage_action(dac_id, channel, value):
