@@ -37,10 +37,6 @@ except Exception as e:
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
-@app.route('/config', methods=['GET'])
-def get_config():
-    return jsonify({'dac_addresses': dac_addresses})
-
 
 def set_voltage_action(dac_id, channel, value):
     addr = dac_addresses.get(dac_id)
@@ -96,7 +92,7 @@ def update_config_form(section, index):
 
 # Route to get the entire configuration
 @app.route('/config', methods=['GET'])
-def get_config():
+def get_dac_config():
     existing_configs = load_config()
     return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
 
