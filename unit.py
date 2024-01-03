@@ -92,7 +92,7 @@ def update_config_form(section, index):
 
 # Route to get the entire configuration
 @app.route('/config', methods=['GET'])
-def get_dac_config():
+def get_config():
     existing_configs = load_config()
     return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
 
