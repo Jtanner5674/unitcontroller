@@ -2,9 +2,9 @@ import json
 from flask import Flask, render_template, jsonify, request
 app = Flask(__name__)
 
-@app.route('/settings/')
+@app.route('/settings')
 def index():
-    return render_template('index.html')
+    return render_template('/index.html')
 
 # Function to load JSON data from a file
 def load_config():
