@@ -1,14 +1,14 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, request, jsonify
 import busio
 import board
 import DFRobot_GP8403
-import json
 
 app = Flask(__name__)
 
 dac_objects = {}
 dac_addresses = {}
 
+        #Locate the DACS
 try:
     i2c = busio.I2C(board.SCL, board.SDA)
 
