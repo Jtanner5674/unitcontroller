@@ -36,5 +36,5 @@ def update_config(section, index):
     save_config(data)  # Save updated data to the file
     return jsonify(data[section][index])
 
-    if __name__ == '__main__':
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
