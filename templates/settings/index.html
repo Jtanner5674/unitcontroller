@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Settings</title>
+    <style>
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Settings</h1>
+    <form id="settingsForm">
+        <h2>DAC Settings</h2>
+        <div id="dacSettings"></div>
+        <h2>Relay Settings</h2>
+        <div id="relaySettings"></div>
+        <button type="submit">Save</button>
+    </form>
+
+    <script>
+        // Fetch JSON data
+        fetch('/config')
+            .then(response => response.json())
+            .then(data => {
+                // Function to generate input fields based on JSON data
+                function generateInputs(section, items) {
+                    const container = document.getElementById(section + 'Settings');
+                    items.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<label>${item.name}</label>`;
+                        for (const key in item) {
+                            if (key !== 'name') {
+                                const input = document.createElement('input');
+                                input.setAttribute('name', `${section}[${index}][${key}]`);
+                                input.setAttribute('value', item[key]);
+                                div.appendChild(input);
+                            }
+                        }
+                        container.appendChild(div);
+                    });
+                }
+
+                // Generate inputs for DAC settings
+                generateInputs('dac', data.dac);
+
+                // Generate inputs for Relay settings
+                generateInputs('relay', data.relay);
+            });
+
+        // Submit form data to update configuration
+        document.getElementById('settingsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            fetch('/config', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(Object.fromEntries(formData))
+            })
+            .then(response => response.json())
+            .then(updatedData => {
+                // Handle updated data as needed
+                console.log('Updated Data:', updatedData);
+            });
+        });
+    </script>
+</body>
+</html>

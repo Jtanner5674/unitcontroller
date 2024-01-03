@@ -1,0 +1,25 @@
+{
+  "dac": [
+    {
+      "name": "existing_dac_1",
+      "id": "0x10",
+      "chan": 0
+    },
+    {
+      "name": "existing_dac_2",
+      "id": "0x20",
+      "chan": 0
+    },
+    {
+      "name": "new_dac",
+      "id": "0x60",
+      "chan": 1
+    }
+  ],
+  "relay": [
+    {
+      "name": "relay_1",
+      "id": "0x40"
+    }
+  ]
+}
