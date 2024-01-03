@@ -8,6 +8,8 @@
             margin-top: 10px;
         }
     </style>
+
+    
 </head>
 <body>
     <h1>Edit Settings</h1>
@@ -20,52 +22,68 @@
     </form>
 
     <script>
-        // Fetch JSON data
-        fetch('/config')
-            .then(response => response.json())
-            .then(data => {
-                // Function to generate input fields based on JSON data
-                function generateInputs(section, items) {
-                    const container = document.getElementById(section + 'Settings');
-                    items.forEach((item, index) => {
-                        const div = document.createElement('div');
-                        div.innerHTML = `<label>${item.name}</label>`;
-                        for (const key in item) {
-                            if (key !== 'name') {
-                                const input = document.createElement('input');
-                                input.setAttribute('name', `${section}[${index}][${key}]`);
-                                input.setAttribute('value', item[key]);
-                                div.appendChild(input);
-                            }
-                        }
-                        container.appendChild(div);
-                    });
-                }
+    // Function to generate input fields based on detected DAC addresses
+    function generateInputs(section, addresses) {
+        const container = document.getElementById(section + 'Settings');
+        addresses.forEach((address, index) => {
+            const div = document.createElement('div');
+            div.innerHTML = `<label>Address: ${address}</label>`;  // Non-editable address field
 
-                // Generate inputs for DAC settings
-                generateInputs('dac', data.dac);
+            // Search for matching DAC configuration from JSON using address
+            fetch('/config')
+                .then(response => response.json())
+                .then(jsonData => {
+                    const matchedConfig = jsonData.dac.find(config => config.address === address);
+                    if (matchedConfig) {
+                        // Fill fields from JSON if a match is found
+                        const name = matchedConfig.name || '';
+                        const channel = matchedConfig.channel || 0;
 
-                // Generate inputs for Relay settings
-                generateInputs('relay', data.relay);
-            });
+                        const nameLabel = document.createElement('label');
+                        nameLabel.textContent = 'Name:';
+                        const nameInput = document.createElement('input');
+                        nameInput.setAttribute('type', 'text');
+                        nameInput.setAttribute('name', `${section}[${index}][name]`);
+                        nameInput.setAttribute('value', name);
+                        div.appendChild(nameLabel);
+                        div.appendChild(nameInput);
 
-        // Submit form data to update configuration
-        document.getElementById('settingsForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-            fetch('/config', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(Object.fromEntries(formData))
-            })
-            .then(response => response.json())
-            .then(updatedData => {
-                // Handle updated data as needed
-                console.log('Updated Data:', updatedData);
-            });
+                        const channelLabel = document.createElement('label');
+                        channelLabel.textContent = 'Channel (0 or 1):';
+                        const channelInput = document.createElement('input');
+                        channelInput.setAttribute('type', 'number');
+                        channelInput.setAttribute('name', `${section}[${index}][channel]`);
+                        channelInput.setAttribute('value', channel);
+                        channelInput.setAttribute('min', '0');
+                        channelInput.setAttribute('max', '1');
+                        div.appendChild(channelLabel);
+                        div.appendChild(channelInput);
+                    } else {
+                        // If no match found, create blank fields
+                        const nameInput = document.createElement('input');
+                        nameInput.setAttribute('type', 'text');
+                        nameInput.setAttribute('name', `${section}[${index}][name]`);
+                        div.appendChild(nameInput);
+
+                        const channelInput = document.createElement('input');
+                        channelInput.setAttribute('type', 'number');
+                        channelInput.setAttribute('name', `${section}[${index}][channel]`);
+                        channelInput.setAttribute('value', '0'); // Default to 0
+                        channelInput.setAttribute('min', '0');
+                        channelInput.setAttribute('max', '1');
+                        div.appendChild(channelInput);
+                    }
+                    container.appendChild(div);
+                })
+                .catch(error => {
+                    console.error('Error fetching JSON:', error);
+                });
         });
+    }
+
+    // Generate inputs for DAC settings using the detected addresses
+    generateInputs('dac', detectedAddresses);
+
     </script>
 </body>
 </html>

@@ -6,7 +6,7 @@ import DFRobot_GP8403
 app = Flask(__name__)
 
 dac_objects = {}
-dac_addresses = {}
+dac_addresses = []
 
         #Locate the DACS
 try:
@@ -37,9 +37,9 @@ except Exception as e:
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
-@app.route('/config')
-def config():
-    return render_template('config/index.html')
+@app.route('/config', methods=['GET'])
+def get_config():
+    return jsonify({'dac_addresses': dac_addresses})
 
 
 def set_voltage_action(dac_id, channel, value):
@@ -77,6 +77,7 @@ def open1(dac_id):
 @app.route('/open2<int:dac_id>', methods=['POST'])
 def open2(dac_id):
     return set_voltage_action(dac_id, 2, 10000)
+
 
 # Function to load JSON data from a file
 def load_config():
