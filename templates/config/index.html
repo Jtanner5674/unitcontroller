@@ -26,22 +26,19 @@
                         const settingsBox = document.createElement('div');
                         settingsBox.innerHTML = `
                             <h2>${hexAddress}</h2>
-                            <label for="chan">Channel:</label>
-                            <input type="text" id="chan-${address}" name="chan" value="">
-                            <label for="id">ID:</label>
-                            <input type="text" id="id-${address}" name="id" value="">
-                            <label for="name">Name:</label>
-                            <input type="text" id="name-${address}" name="name" value="">
-                            <button onclick="saveConfig(${address})">Save</button>
+                            <label for="chan-${hexAddress}">Channel:</label>
+                            <input type="text" id="chan-${hexAddress}" name="chan" value="${hexAddress}">
+                            <label for="name-${hexAddress}">Name:</label>
+                            <input type="text" id="name-${hexAddress}" name="name" value="">
+                            <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
+                            <button onclick="saveConfig('${hexAddress}')">Save</button>
                         `;
                         document.getElementById('dacSettings').appendChild(settingsBox);
 
-                        // Pre-fill input fields with existingConfigs if available
-                        const existingConfig = existingConfigs.find(config => config.chan === parseInt(address));
+                        // Find existing config based on the address
+                        const existingConfig = existingConfigs.find(config => config.id === hexAddress);
                         if (existingConfig) {
-                            document.getElementById(`chan-${address}`).value = existingConfig.chan;
-                            document.getElementById(`id-${address}`).value = existingConfig.id;
-                            document.getElementById(`name-${address}`).value = existingConfig.name;
+                            document.getElementById(`name-${hexAddress}`).value = existingConfig.name;
                         }
                     }
                 })
@@ -49,8 +46,6 @@
         }
 
         function saveConfig(address) {
-            const chan = document.getElementById(`chan-${address}`).value;
-            const id = document.getElementById(`id-${address}`).value;
             const name = document.getElementById(`name-${address}`).value;
 
             fetch(`/config/dac/${address}`, {
@@ -58,7 +53,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ chan, id, name })
+                body: JSON.stringify({ id: address, name })
             })
                 .then(response => response.json())
                 .then(updatedConfig => {
@@ -72,4 +67,3 @@
     </script>
 </body>
 </html>
-
