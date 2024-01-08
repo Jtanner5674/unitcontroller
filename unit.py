@@ -39,6 +39,17 @@ def index():
     return render_template('index.html', dac_objects=dac_objects)
 
 
+# # Route to get the entire configuration
+# @app.route('/config', methods=['GET'])
+# def get_dac_config():
+#     existing_configs = load_config()
+#     return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
+
+@app.route('/settings')
+def settings():
+    return render_template('config/index.html')
+
+
 def set_voltage_action(dac_id, channel, value):
     addr = dac_addresses.get(dac_id)
     dac = DFRobot_GP8403.DFRobot_GP8403(addr)
@@ -90,12 +101,6 @@ def save_config(data):
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
 def update_config_form(section, index):
     return render_template('update_config.html', section=section, index=index)
-
-# Route to get the entire configuration
-@app.route('/config', methods=['GET'])
-def get_dac_config():
-    existing_configs = load_config()
-    return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
 
 # Route to update a specific configuration item
 @app.route('/config/<string:section>/<int:index>', methods=['PUT'])
