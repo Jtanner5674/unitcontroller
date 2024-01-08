@@ -94,25 +94,27 @@
 
         function saveAllConfig() {
             const allSettings = [];
-            
+
             // Get all online DAC settings
             const onlineSettings = document.querySelectorAll('[id^=chan-]');
             onlineSettings.forEach(setting => {
                 const id = setting.id.split('-')[1];
                 const chan = setting.value;
-                const name = document.getElementById(`name-${id}`).value;
+                const nameField = document.getElementById(`name-${id}`);
+                const name = nameField ? nameField.value : '';
                 allSettings.push({ id, chan, name });
             });
-            
+
             // Get all offline DAC settings
             const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
             offlineSettings.forEach(setting => {
                 const id = setting.id.split('-')[2];
                 const chan = setting.value;
-                const name = document.getElementById(`name-offline-${id}`).value;
+                const nameField = document.getElementById(`name-offline-${id}`);
+                const name = nameField ? nameField.value : '';
                 allSettings.push({ id, chan, name });
             });
-            
+
             // Send all settings to update the JSON configuration
             fetch('/config', {
                 method: 'PUT',
@@ -121,12 +123,12 @@
                 },
                 body: JSON.stringify(allSettings)
             })
-                .then(response => response.json())
-                .then(updatedConfig => {
-                    console.log('Updated config:', updatedConfig);
-                    // Optional: Handle confirmation or further actions upon successful update
-                })
-                .catch(error => console.error('Error:', error));
+            .then(response => response.json())
+            .then(updatedConfig => {
+                console.log('Updated config:', updatedConfig);
+                // Optional: Handle confirmation or further actions upon successful update
+            })
+            .catch(error => console.error('Error:', error));
         }
 
         document.addEventListener('DOMContentLoaded', fetchConfig);
