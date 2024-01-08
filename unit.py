@@ -8,7 +8,7 @@ app = Flask(__name__)
 dac_objects = {}
 dac_addresses = {}
 
-        #Locate the DACS
+        #Scan for the DACS
 try:
     i2c = busio.I2C(board.SCL, board.SDA)
 
