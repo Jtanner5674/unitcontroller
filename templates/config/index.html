@@ -53,15 +53,21 @@
     }
 
     fetch('/config')
-        .then(response => response.json())
-        .then(jsonData => {
-            console.log(jsonData); // Log the received data
-            generateInputs('dac', jsonData.dac);
-            generateInputs('relay', jsonData.relay);
-        })
-        .catch(error => {
-            console.error('Error fetching JSON:', error);
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(jsonData => {
+        console.log(jsonData);
+        generateInputs('dac', jsonData.dac);
+        generateInputs('relay', jsonData.relay);
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+
 
         
     </script>
