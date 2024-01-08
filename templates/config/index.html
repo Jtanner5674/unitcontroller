@@ -102,11 +102,7 @@
                 const chan = setting.value;
                 const nameField = document.getElementById(`name-${id}`);
                 const name = nameField ? nameField.value : '';
-
-                // Only add to settings if ID is not 'offline' or empty
-                if (id !== 'offline' && id.trim() !== '') {
-                    allSettings.push({ id, chan, name });
-                }
+                allSettings.push({ id, chan, name });
             });
 
             // Get all offline DAC settings
@@ -116,11 +112,7 @@
                 const chan = setting.value;
                 const nameField = document.getElementById(`name-offline-${id}`);
                 const name = nameField ? nameField.value : '';
-
-                // Only add to settings if ID is not 'offline' or empty
-                if (id !== 'offline' && id.trim() !== '') {
-                    allSettings.push({ id, chan, name });
-                }
+                allSettings.push({ id, chan, name });
             });
 
             // Send all settings to update the JSON configuration
@@ -154,5 +146,3 @@
     </script>
 </body>
 </html>
-
- 
