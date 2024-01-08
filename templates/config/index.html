@@ -1,75 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Edit Settings</title>
-    <style>
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <title>DAC Configuration</title>
 </head>
 <body>
-    <h1>Edit Settings</h1>
-    <form id="settingsForm">
-        <h2>DAC Settings</h2>
-        <div id="dacSettings"></div>
-        <h2>Relay Settings</h2>
-        <div id="relaySettings"></div>
-        <button type="submit">Save</button>
-    </form>
+    <h1>DAC Configuration</h1>
+    
+    <div id="dacSettings">
+        <!-- Settings boxes will be dynamically generated here -->
+    </div>
 
     <script>
-    function generateInputs(section, data) {
-        const container = document.getElementById(section + 'Settings');
-        data.forEach((item, index) => {
-            const div = document.createElement('div');
-            div.innerHTML = `<label>Address: ${item.id}</label>`;  // Non-editable address field
+        function fetchConfig() {
+            fetch('/config')
+                .then(response => response.json())
+                .then(data => {
+                    const dacAddresses = data.dac_addresses;
+                    const existingConfigs = data.existing_configs.dac;
+                    
+                    for (const address in dacAddresses) {
+                        const decimalAddress = dacAddresses[address];
+                        const hexAddress = "0x" + decimalAddress.toString(16);
 
-            const nameLabel = document.createElement('label');
-            nameLabel.textContent = 'Name:';
-            const nameInput = document.createElement('input');
-            nameInput.setAttribute('type', 'text');
-            nameInput.setAttribute('name', `${section}[${index}][name]`);
-            nameInput.setAttribute('value', item.name || '');
-            div.appendChild(nameLabel);
-            div.appendChild(nameInput);
+                        const settingsBox = document.createElement('div');
+                        settingsBox.innerHTML = `
+                            <h2>${hexAddress}</h2>
+                            <label for="chan">Channel:</label>
+                            <input type="text" id="chan-${address}" name="chan" value="">
+                            <label for="id">ID:</label>
+                            <input type="text" id="id-${address}" name="id" value="">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name-${address}" name="name" value="">
+                            <button onclick="saveConfig(${address})">Save</button>
+                        `;
+                        document.getElementById('dacSettings').appendChild(settingsBox);
 
-            if (section === 'dac') {
-                const channelLabel = document.createElement('label');
-                channelLabel.textContent = 'Channel (0 or 1):';
-                const channelInput = document.createElement('input');
-                channelInput.setAttribute('type', 'number');
-                channelInput.setAttribute('name', `${section}[${index}][channel]`);
-                channelInput.setAttribute('value', item.chan || 0);
-                channelInput.setAttribute('min', '0');
-                channelInput.setAttribute('max', '1');
-                div.appendChild(channelLabel);
-                div.appendChild(channelInput);
-            }
-
-            container.appendChild(div);
-        });
-    }
-
-    fetch('/config')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+                        // Pre-fill input fields with existingConfigs if available
+                        const existingConfig = existingConfigs.find(config => config.chan === parseInt(address));
+                        if (existingConfig) {
+                            document.getElementById(`chan-${address}`).value = existingConfig.chan;
+                            document.getElementById(`id-${address}`).value = existingConfig.id;
+                            document.getElementById(`name-${address}`).value = existingConfig.name;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
-        return response.json();
-    })
-    .then(jsonData => {
-        console.log(jsonData);
-        generateInputs('dac', jsonData.dac);
-        generateInputs('relay', jsonData.relay);
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-    });
 
+        function saveConfig(address) {
+            const chan = document.getElementById(`chan-${address}`).value;
+            const id = document.getElementById(`id-${address}`).value;
+            const name = document.getElementById(`name-${address}`).value;
 
-        
+            fetch(`/config/dac/${address}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ chan, id, name })
+            })
+                .then(response => response.json())
+                .then(updatedConfig => {
+                    // Display confirmation or handle updated config data
+                    console.log('Updated config:', updatedConfig);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        fetchConfig();
     </script>
 </body>
 </html>
