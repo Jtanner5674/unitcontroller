@@ -92,6 +92,16 @@
                 .catch(error => console.error('Error:', error));
         }
 
+        // Execute fetchConfig when the page is loaded or reloaded
+        document.addEventListener('DOMContentLoaded', fetchConfig);
+
+        // Additional function to handle manual refresh
+        function refreshConfig() {
+            document.getElementById('dacSettings').innerHTML = '';
+            document.getElementById('offlineSettings').innerHTML = '';
+            fetchConfig();
+        }
+        
         function saveAllConfig() {
             const allSettings = [];
 
@@ -146,3 +156,5 @@
     </script>
 </body>
 </html>
+ .
+
