@@ -3,12 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>DAC Configuration</title>
+    <style>
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
+
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+    </style>
 </head>
 <body>
     <h1>DAC Configuration</h1>
     
+    <button class="collapsible">Offline DACs</button>
+    <div class="content">
+        <div id="offlineSettings">
+            <!-- Offline DACs will be dynamically generated here -->
+        </div>
+    </div>
+
     <div id="dacSettings">
-        <!-- Settings boxes will be dynamically generated here -->
+        <!-- Active DACs settings boxes will be dynamically generated here -->
     </div>
 
     <script>
@@ -18,7 +49,8 @@
                 .then(data => {
                     const dacAddresses = data.dac_addresses;
                     const existingConfigs = data.existing_configs.dac;
-                    
+                    const offlineDacs = existingConfigs.filter(config => !Object.values(dacAddresses).includes(config.chan));
+
                     for (const address in dacAddresses) {
                         const decimalAddress = dacAddresses[address];
                         const hexAddress = "0x" + decimalAddress.toString(16);
@@ -42,20 +74,33 @@
                             document.getElementById(`name-${hexAddress}`).value = existingConfig.name;
                         }
                     }
+
+                    for (const offlineDac of offlineDacs) {
+                        const settingsBox = document.createElement('div');
+                        settingsBox.innerHTML = `
+                            <h2>${offlineDac.id}</h2>
+                            <label for="name-offline-${offlineDac.id}">Name:</label>
+                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name}">
+                            <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
+                            <button onclick="saveConfig('offline-${offlineDac.id}')">Save</button>
+                        `;
+                        document.getElementById('offlineSettings').appendChild(settingsBox);
+                    }
                 })
                 .catch(error => console.error('Error:', error));
         }
 
         function saveConfig(address) {
-            const chan = document.getElementById(`chan-${address}`).value;
-            const name = document.getElementById(`name-${address}`).value;
+            const [type, id] = address.split('-');
+            const chan = type === 'offline' ? null : document.getElementById(`chan-${id}`).value;
+            const name = document.getElementById(`name-${type}-${id}`).value;
 
-            fetch(`/config/dac/${address}`, {
+            fetch(`/config/dac/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ chan, id: address, name })
+                body: JSON.stringify({ chan, id, name })
             })
                 .then(response => response.json())
                 .then(updatedConfig => {
@@ -65,7 +110,18 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        fetchConfig();
+        document.addEventListener('DOMContentLoaded', fetchConfig);
+        
+        const coll = document.querySelector('.collapsible');
+        coll.addEventListener('click', function () {
+            this.classList.toggle('active');
+            const content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        });
     </script>
 </body>
 </html>
