@@ -1,122 +1,146 @@
-from flask import Flask, render_template, request, jsonify
-import busio
-import board
-import DFRobot_GP8403
-import json
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DAC Configuration</title>
+    <style>
+        .collapsible {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
 
-app = Flask(__name__)
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
 
-dac_objects = {}
-dac_addresses = {}
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <h1>DAC Configuration</h1>
+    
+    <div id="dacSettings">
+        <!-- Active DACs settings boxes will be dynamically generated here -->
+    </div>
 
-        #Scan for the DACS
-try:
-    i2c = busio.I2C(board.SCL, board.SDA)
+    <button class="collapsible">Offline DACs</button>
+    <div class="content">
+        <div id="offlineSettings">
+            <!-- Offline DACs will be dynamically generated here -->
+        </div>
+    </div>
 
-    print("Scanning I2C bus for DACs...")
-    index = 0
-    for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
-        addr = 0x50 + o 
-        try:
-            dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-            dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-            dac_objects[index] = dac
-            dac_addresses[index] = addr
-            print(f"DAC found at address {hex(addr)} with ID {index}.")
-            index += 1
-        except Exception as e:
-            print(f"No DAC found at address {hex(addr)}")
-            continue
-except Exception as e:
-    print("Error while scanning for DACs:", e)
+    <button onclick="saveAllConfig()">Save All</button>
 
-# Flask Routes
+    <script>
+        function fetchConfig() {
+            fetch('/config')
+                .then(response => response.json())
+                .then(data => {
+                    const dacAddresses = data.dac_addresses;
+                    const existingConfigs = data.existing_configs.dac;
+                    const offlineDacs = existingConfigs.filter(config => !Object.values(dacAddresses).includes(config.chan));
 
-@app.route('/')
-def index():
-    return render_template('index.html', dac_objects=dac_objects)
+                    for (const address in dacAddresses) {
+                        const decimalAddress = dacAddresses[address];
+                        const hexAddress = "0x" + decimalAddress.toString(16);
 
-@app.route('/settings')
-def settings():
-    return render_template('config/index.html')
+                        const settingsBox = document.createElement('div');
+                        settingsBox.innerHTML = `
+                            <h2>${hexAddress}</h2>
+                            <label for="chan-${hexAddress}">Channel:</label>
+                            <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1">
+                            <label for="name-${hexAddress}">Name:</label>
+                            <input type="text" id="name-${hexAddress}" name="name">
+                            <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
+                        `;
+                        document.getElementById('dacSettings').appendChild(settingsBox);
 
+                        // Find existing config based on the address
+                        const existingConfig = existingConfigs.find(config => config.id === hexAddress);
+                        if (existingConfig) {
+                            document.getElementById(`chan-${hexAddress}`).value = existingConfig.chan;
+                            document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
+                        }
+                    }
 
-def set_voltage_action(dac_id, channel, value):
-    addr = dac_addresses.get(dac_id)
-    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-    if dac:
-        channel_num = DFRobot_GP8403.CHANNEL0 if channel == 1 else DFRobot_GP8403.CHANNEL1
-        dac.set_DAC_out_voltage(value, channel_num)
-        return jsonify({'message': f'Voltage set to {value}V for Channel {channel_num} on address {hex(addr)} with id {dac_id}'})
-    else:
-        return jsonify({'error': 'Invalid DAC ID'})
+                    for (const offlineDac of offlineDacs) {
+                        const settingsBox = document.createElement('div');
+                        settingsBox.innerHTML = `
+                            <h2>${offlineDac.id}</h2>
+                            <label for="chan-offline-${offlineDac.id}">Channel:</label>
+                            <input type="number" id="chan-offline-${offlineDac.id}" name="chan" value="0" min="0" max="1">
+                            <label for="name-offline-${offlineDac.id}">Name:</label>
+                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name}">
+                            <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
+                        `;
+                        document.getElementById('offlineSettings').appendChild(settingsBox);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-@app.route('/set_voltage<int:dac_id>', methods=['POST'])
-def set_voltage1(dac_id):
-    voltage = float(request.form['voltage1'])
-    return set_voltage_action(dac_id, 1, voltage)
+        function saveAllConfig() {
+            const allSettings = [];
+            
+            // Get all online DAC settings
+            const onlineSettings = document.querySelectorAll('[id^=chan-]');
+            onlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[1];
+                const chan = setting.value;
+                const name = document.getElementById(`name-${id}`).value;
+                allSettings.push({ id, chan, name });
+            });
+            
+            // Get all offline DAC settings
+            const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
+            offlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[2];
+                const chan = setting.value;
+                const name = document.getElementById(`name-offline-${id}`).value;
+                allSettings.push({ id, chan, name });
+            });
+            
+            // Send all settings to update the JSON configuration
+            fetch('/config', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(allSettings)
+            })
+                .then(response => response.json())
+                .then(updatedConfig => {
+                    console.log('Updated config:', updatedConfig);
+                    // Optional: Handle confirmation or further actions upon successful update
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-@app.route('/set_voltage2<int:dac_id>', methods=['POST'])
-def set_voltage2(dac_id):
-    voltage = float(request.form['voltage2'])
-    return set_voltage_action(dac_id, 2, voltage)
+        document.addEventListener('DOMContentLoaded', fetchConfig);
 
-@app.route('/close1<int:dac_id>', methods=['POST'])
-def close1(dac_id):
-    return set_voltage_action(dac_id, 1, 2000)
-
-@app.route('/close2<int:dac_id>', methods=['POST'])
-def close2(dac_id):
-    return set_voltage_action(dac_id, 2, 2000)
-
-@app.route('/open1<int:dac_id>', methods=['POST'])
-def open1(dac_id):
-    return set_voltage_action(dac_id, 1, 10000)
-
-@app.route('/open2<int:dac_id>', methods=['POST'])
-def open2(dac_id):
-    return set_voltage_action(dac_id, 2, 10000)
-
-
-# Function to load JSON data from a file
-def load_config():
-    with open('config.json', 'r') as file:
-        return json.load(file)
-
-# Route to get the entire configuration
-@app.route('/config', methods=['GET'])
-def get_dac_config():
-    existing_configs = load_config()
-    return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
-
-
-# Function to save JSON data to a file
-def save_config(data):
-    with open('config.json', 'w') as file:
-        json.dump(data, file, indent=2)
-
-# Route to serve HTML form for updating configuration
-@app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
-def update_config_form(section, index):
-    return render_template('update_config.html', section=section, index=index)
-
-# Route to update a specific configuration item
-@app.route('/config/<string:section>/<int:index>', methods=['PUT'])
-def update_config(section, index):
-    data = load_config()
-    new_value = request.json  # New value from the request
-    data[section][index] = new_value  # Update the specified item
-    save_config(data)  # Save updated data to the file
-    return jsonify(data[section][index])
-
-@app.route('/config', methods=['PUT'])
-def update_all_config():
-    data = request.json  # New values from the request
-    save_config(data)  # Save updated data to the file
-    return jsonify({"message": "All configurations updated successfully"})
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+        const coll = document.querySelector('.collapsible');
+        coll.addEventListener('click', function () {
+            this.classList.toggle('active');
+            const content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        });
+    </script>
+</body>
+</html>
