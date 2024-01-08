@@ -38,13 +38,6 @@ except Exception as e:
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
-
-# # Route to get the entire configuration
-# @app.route('/config', methods=['GET'])
-# def get_dac_config():
-#     existing_configs = load_config()
-#     return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
-
 @app.route('/settings')
 def settings():
     return render_template('config/index.html')
@@ -91,6 +84,13 @@ def open2(dac_id):
 def load_config():
     with open('config.json', 'r') as file:
         return json.load(file)
+
+# Route to get the entire configuration
+@app.route('/config', methods=['GET'])
+def get_dac_config():
+    existing_configs = load_config()
+    return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
+
 
 # Function to save JSON data to a file
 def save_config(data):
