@@ -111,6 +111,12 @@ def update_config(section, index):
     save_config(data)  # Save updated data to the file
     return jsonify(data[section][index])
 
+@app.route('/config', methods=['PUT'])
+def update_all_config():
+    data = request.json  # New values from the request
+    save_config(data)  # Save updated data to the file
+    return jsonify({"message": "All configurations updated successfully"})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

@@ -42,6 +42,8 @@
         </div>
     </div>
 
+    <button onclick="saveAllConfig()">Save All</button>
+
     <script>
         function fetchConfig() {
             fetch('/config')
@@ -63,7 +65,6 @@
                             <label for="name-${hexAddress}">Name:</label>
                             <input type="text" id="name-${hexAddress}" name="name">
                             <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
-                            <button onclick="saveConfig('${hexAddress}')">Save</button>
                         `;
                         document.getElementById('dacSettings').appendChild(settingsBox);
 
@@ -84,7 +85,6 @@
                             <label for="name-offline-${offlineDac.id}">Name:</label>
                             <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name}">
                             <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
-                            <button onclick="saveConfig('offline-${offlineDac.id}')">Save</button>
                         `;
                         document.getElementById('offlineSettings').appendChild(settingsBox);
                     }
@@ -92,17 +92,34 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        function saveConfig(address) {
-            const [type, id] = address.split('-');
-            const chan = document.getElementById(`chan-${type}-${id}`).value;
-            const name = document.getElementById(`name-${type}-${id}`).value;
-
-            fetch(`/config/dac/${id}`, {
+        function saveAllConfig() {
+            const allSettings = [];
+            
+            // Get all online DAC settings
+            const onlineSettings = document.querySelectorAll('[id^=chan-]');
+            onlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[1];
+                const chan = setting.value;
+                const name = document.getElementById(`name-${id}`).value;
+                allSettings.push({ id, chan, name });
+            });
+            
+            // Get all offline DAC settings
+            const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
+            offlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[2];
+                const chan = setting.value;
+                const name = document.getElementById(`name-offline-${id}`).value;
+                allSettings.push({ id, chan, name });
+            });
+            
+            // Send all settings to update the JSON configuration
+            fetch('/config', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ chan, id, name })
+                body: JSON.stringify(allSettings)
             })
                 .then(response => response.json())
                 .then(updatedConfig => {
