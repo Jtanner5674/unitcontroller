@@ -123,8 +123,8 @@
             })
                 .then(response => response.json())
                 .then(updatedConfig => {
-                    // Display confirmation or handle updated config data
                     console.log('Updated config:', updatedConfig);
+                    // Optional: Handle confirmation or further actions upon successful update
                 })
                 .catch(error => console.error('Error:', error));
         }
@@ -141,6 +141,9 @@
                 content.style.maxHeight = content.scrollHeight + 'px';
             }
         });
+
+        const saveAllBtn = document.getElementById('saveAllBtn');
+        saveAllBtn.addEventListener('click', saveAllConfig);
     </script>
 </body>
 </html>
