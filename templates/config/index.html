@@ -116,6 +116,7 @@
                 allSettings.push({ id, chan, name });
             });
             
+            
             // Send all settings to update the JSON configuration
             fetch('/config', {
                 method: 'PUT',
@@ -149,7 +150,11 @@
                 content.style.maxHeight = content.scrollHeight + 'px';
             }
         });
+        
+        const saveAllButton = document.querySelector('button');
+        saveAllButton.addEventListener('click', saveAllConfig);
     </script>
+
 
 <button onclick="saveAllConfig()">Save All</button>
 
