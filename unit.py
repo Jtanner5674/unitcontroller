@@ -113,10 +113,12 @@ def update_config(section, index):
 
 @app.route('/config', methods=['PUT'])
 def update_all_config():
-    data = request.json  # New values from the request
-    save_config(data)  # Save updated data to the file
-    return jsonify({"message": "All configurations updated successfully"})
-
+    try:
+        data = request.json  # New values from the request
+        save_config(data['settings'])  # Save updated data to the file
+        return jsonify({"message": "All configurations updated successfully"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for internal server error
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)

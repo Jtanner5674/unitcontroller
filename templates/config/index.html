@@ -42,7 +42,6 @@
         </div>
     </div>
 
-    <button onclick="saveAllConfig()">Save All</button>
 
     <script>
         function fetchConfig() {
@@ -92,15 +91,19 @@
                 .catch(error => console.error('Error:', error));
         }
 
+    
         function saveAllConfig() {
             const allSettings = {};
-            
+            console.log('running');  
             // Get all online DAC settings
             const onlineSettings = document.querySelectorAll('[id^=chan-]');
             onlineSettings.forEach(setting => {
                 const id = setting.id.split('-')[1];
                 const chan = setting.value;
-                const name = document.getElementById(`name-${id}`).value;
+                const name = document.getElementById(`name-${hexAddress}`).value;
+                console.log('ID:', id);
+                console.log('Chan:', chan);
+                console.log('Name:', name);
                 allSettings.push({ id, chan, name });
             });
             
@@ -113,24 +116,30 @@
                 allSettings.push({ id, chan, name });
             });
             
+            
             // Send all settings to update the JSON configuration
             fetch('/config', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(allSettings)
+                body: JSON.stringify({ settings: allSettings })  // Wrap settings in an object
             })
-                .then(response => response.json())
-                .then(updatedConfig => {
-                    console.log('Updated config:', updatedConfig);
-                    // Optional: Handle confirmation or further actions upon successful update
-                })
-                .catch(error => console.error('Error:', error));
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(updatedConfig => {
+                console.log('Updated config:', updatedConfig);
+                // Optional: Handle confirmation or further actions upon successful update
+            })
+            .catch(error => console.error('Error:', error));
         }
-
+    
         document.addEventListener('DOMContentLoaded', fetchConfig);
-
+    
         const coll = document.querySelector('.collapsible');
         coll.addEventListener('click', function () {
             this.classList.toggle('active');
@@ -141,6 +150,13 @@
                 content.style.maxHeight = content.scrollHeight + 'px';
             }
         });
+        
+        const saveAllButton = document.querySelector('button');
+        saveAllButton.addEventListener('click', saveAllConfig);
     </script>
+
+
+<button onclick="saveAllConfig()">Save All</button>
+
 </body>
 </html>
