@@ -13,25 +13,50 @@ dac_addresses = {}
 try:
     i2c = busio.I2C(board.SCL, board.SDA)
 
-    print("Scanning I2C bus for DACs...")
-    index = 0
-    for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
-        addr = 0x50 + o 
-        try:
-            dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-            dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-            dac_objects[index] = dac
-            dac_addresses[index] = addr
-            print(f"DAC found at address {hex(addr)} with ID {index}.")
-            index += 1
-        except Exception as e:
-            print(f"No DAC found at address {hex(addr)}")
-            continue
-except Exception as e:
-    print("Error while scanning for DACs:", e)
+def load_config():
+  with open('config_empty.json', 'r') as file:
+    return json.load(file)
 
+def save_config():
+  T_CFG=CFG
+  for key, value in T_CFG["dac"].items():
+    value.pop('dac', None) # this will not crash if the element has no key 'dac'
+  with open('config_out.json', 'w') as file:
+    json.dump(T_CFG, file, indent=2)
+
+CFG=load_config()
+for i in CFG["dac"]:
+    i["found"]=False
+print(CFG)
+
+print("Scanning I2C bus for DACs...")
+for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
+    addr = 0x50 + o
+    try:
+      dac = DFRobot_GP8403.DFRobot_GP8403(addr) # I assume one of these fail when no DAC is present at the addr
+      dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V) # <- this one?
+      dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
+      dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
+      for i in CFG["dac"]:
+        if i["id"]==addr:
+          # existing
+          i["found"]=True
+          i["obj"]=dac
+          break
+          continue
+      # new
+      CFG["dac"].append({"name":"","id":addr,"found":True,"dac":dac}) # remove found & dac before save
+    except Exception as e:
+        print(f"No DAC found at address {hex(addr)}")
+        continue
+print(CFG)
+for i in CFG["dac"]:
+    if i["found"] == False and i["name"]!=""
+      print(f"Failed to find dac {i["name"]} at {i["id"]}")
+      # Indicate in UI that a named DAC is missing
+    else
+      # remove missing unnamed
+      CFG["dac"].remove(i)
 # Flask Routes
 
 @app.route('/')
@@ -43,41 +68,29 @@ def settings():
     return render_template('config/index.html')
 
 
-def set_voltage_action(dac_id, channel, value):
-    addr = dac_addresses.get(dac_id)
-    dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-    if dac:
-        channel_num = DFRobot_GP8403.CHANNEL0 if channel == 1 else DFRobot_GP8403.CHANNEL1
-        dac.set_DAC_out_voltage(value, channel_num)
-        return jsonify({'message': f'Voltage set to {value}V for Channel {channel_num} on address {hex(addr)} with id {dac_id}'})
-    else:
-        return jsonify({'error': 'Invalid DAC ID'})
+def set_voltage_action(addr, value):
+  try:
+    dac [d for d in CFG["DAC"] if d["id"] == addr] # find dac in json, i think....
+    dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0) # set both channels
+    dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL1) # set both channels
+    return jsonify({'message': f'{dac["name"]} set to {value}V'})
+
+  except Exception as e:
+    return jsonify({'error': 'Invalid DAC ADDR'})
+
 
 @app.route('/set_voltage<int:dac_id>', methods=['POST'])
-def set_voltage1(dac_id):
-    voltage = float(request.form['voltage1'])
-    return set_voltage_action(dac_id, 1, voltage)
+def set_voltage(dac_id):
+    voltage = float(request.form['voltage'])
+    return set_voltage_action(addr, voltage) # change to addr, in your dropdown list you can specify: name="NAME" value="ADDR"
 
-@app.route('/set_voltage2<int:dac_id>', methods=['POST'])
-def set_voltage2(dac_id):
-    voltage = float(request.form['voltage2'])
-    return set_voltage_action(dac_id, 2, voltage)
-
-@app.route('/close1<int:dac_id>', methods=['POST'])
+@app.route('/close<int:dac_id>', methods=['POST'])
 def close1(dac_id):
-    return set_voltage_action(dac_id, 1, 2000)
+    return set_voltage_action(addr, 2000)
 
-@app.route('/close2<int:dac_id>', methods=['POST'])
-def close2(dac_id):
-    return set_voltage_action(dac_id, 2, 2000)
-
-@app.route('/open1<int:dac_id>', methods=['POST'])
+@app.route('/open<int:dac_id>', methods=['POST'])
 def open1(dac_id):
-    return set_voltage_action(dac_id, 1, 10000)
-
-@app.route('/open2<int:dac_id>', methods=['POST'])
-def open2(dac_id):
-    return set_voltage_action(dac_id, 2, 10000)
+    return set_voltage_action(addr, 10000)
 
 
 # Function to load JSON data from a file
