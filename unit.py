@@ -14,7 +14,7 @@ def load_config():
     return json.load(file)
 
 def save_config():
-  T_CFG=CFG
+  T_CFG=CFG.copy()
   for key, value in T_CFG["dac"].items():
     value.pop('dac', None) # this will not crash if the element has no key 'dac'
   with open('config_out.json', 'w') as file:
@@ -29,19 +29,19 @@ print("Scanning I2C bus for DACs...")
 for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
     addr = 0x50 + o
     try:
-      dac = DFRobot_GP8403.DFRobot_GP8403(addr) # I assume one of these fail when no DAC is present at the addr
-      dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V) # <- this one?
-      dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-      dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-      for i in CFG["dac"]:
-        if i["id"]==addr:
-          # existing
-          i["found"]=True
-          i["obj"]=dac
-          break
-          continue
-      # new
-      CFG["dac"].append({"name":"","id":addr,"found":True,"dac":dac}) # remove found & dac before save
+        dac = DFRobot_GP8403.DFRobot_GP8403(addr)
+        dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
+        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
+        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
+        for i, item in enumerate(CFG["dac"]):
+            if item["id"] == addr:
+                # existing
+                item["found"] = True
+                item["obj"] = dac
+                break
+        else:
+            # new
+            CFG["dac"].append({"name": "", "id": addr, "found": True, "dac": dac})
     except Exception as e:
         print(f"No DAC found at address {hex(addr)}")
         continue
@@ -50,7 +50,7 @@ for i in CFG["dac"]:
     if i["found"] == False and i["name"]!="":
       print(f"Failed to find dac {i["name"]} at {i["id"]}")
       # Indicate in UI that a named DAC is missing
-    else
+    else:
       # remove missing unnamed
       CFG["dac"].remove(i)
 # Flask Routes
@@ -65,35 +65,34 @@ def settings():
 
 
 def set_voltage_action(addr, value):
-  try:
-    dac [d for d in CFG["DAC"] if d["id"] == addr] # find dac in json, i think....
-    dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0) # set both channels
-    dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL1) # set both channels
-    return jsonify({'message': f'{dac["name"]} set to {value}V'})
+    try:
+        addr_int = int(addr, 16)     # Convert hex string to integer for comparison
+        dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
+        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
+        return jsonify({'message': f'{dac["name"]} set to {value}V'})
+    except StopIteration:
+        return jsonify({'error': 'Invalid DAC ADDR'})
 
-  except Exception as e:
-    return jsonify({'error': 'Invalid DAC ADDR'})
 
-
-@app.route('/set_voltage<int:dac_id>', methods=['POST'])
-def set_voltage(dac_id):
+@app.route('/set_voltage<int:addr>', methods=['POST'])
+def set_voltage(addr):
     voltage = float(request.form['voltage'])
-    return set_voltage_action(addr, voltage) # change to addr, in your dropdown list you can specify: name="NAME" value="ADDR"
+    return set_voltage_action(addr, voltage)
+ # change to addr, in your dropdown list you can specify: name="NAME" value="ADDR"
 
-@app.route('/close<int:dac_id>', methods=['POST'])
-def close1(dac_id):
+@app.route('/close<int:addr>', methods=['POST'])
+def close1(addr):
     return set_voltage_action(addr, 2000)
 
-@app.route('/open<int:dac_id>', methods=['POST'])
-def open1(dac_id):
+@app.route('/open<int:addr>', methods=['POST'])
+def open1(addr):
     return set_voltage_action(addr, 10000)
-
 
 # Route to get the entire configuration
 @app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
-    return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
+    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_configs})
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
