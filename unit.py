@@ -23,7 +23,7 @@ def save_config():
 
 CFG=load_config()
 
-for item in CFG["dac"]:
+for value in CFG["dac"]:
     item["found"] = False
 
 print(CFG)
