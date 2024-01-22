@@ -10,7 +10,7 @@ dac_objects = {}
 dac_addresses = {}
 
 def load_config():
-    with open('config_empty.json', 'r') as file:
+    with open('config.json', 'r') as file:
         return json.load(file)
 
 def save_config():
