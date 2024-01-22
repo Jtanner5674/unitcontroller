@@ -93,22 +93,11 @@ def open1(dac_id):
     return set_voltage_action(addr, 10000)
 
 
-# Function to load JSON data from a file
-def load_config():
-    with open('config.json', 'r') as file:
-        return json.load(file)
-
 # Route to get the entire configuration
 @app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
     return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs})
-
-
-# Function to save JSON data to a file
-def save_config(data):
-    with open('config.json', 'w') as file:
-        json.dump(data, file, indent=2)
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
