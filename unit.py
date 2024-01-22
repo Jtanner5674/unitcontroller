@@ -10,14 +10,14 @@ dac_objects = {}
 dac_addresses = {}
 
 def load_config():
-  with open('config_empty.json', 'r') as file:
+  with open('config.json', 'r') as file:
     return json.load(file)
 
 def save_config():
   T_CFG=CFG.copy()
   for key, value in T_CFG["dac"].items():
     value.pop('dac', None) # this will not crash if the element has no key 'dac'
-  with open('config_out.json', 'w') as file:
+  with open('config.json', 'w') as file:
     json.dump(T_CFG, file, indent=2)
 
 CFG=load_config()
