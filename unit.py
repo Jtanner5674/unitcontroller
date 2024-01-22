@@ -48,7 +48,7 @@ for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
 print(CFG)
 for i in CFG["dac"]:
     if i["found"] == False and i["name"]!="":
-      print(f"Failed to find dac {i["name"]} at {i["id"]}")
+        print(f"Failed to find dac {i['name']} at {i['id']}")
       # Indicate in UI that a named DAC is missing
     else:
       # remove missing unnamed
