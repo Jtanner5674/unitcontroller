@@ -128,7 +128,7 @@ def update_config(section, index):
     return jsonify(data[section][index])
 
 @app.route('/config', methods=['PUT'])
-def update_all_config():
+def update_all_config(settings):
     try:
         data = request.json  # New values from the request
         print("Received data:", data)  # Add this line for debugging
