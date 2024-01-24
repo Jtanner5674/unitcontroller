@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify
 import DFRobot_GP8403
 import json
 
+dac_objects = {}
+
 app = Flask(__name__)
 
 CFG = None  # Initialize CFG as None
