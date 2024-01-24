@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify
 import DFRobot_GP8403
 import json
 import traceback
+import busio
+import board
 
 dac_objects = {}
 
