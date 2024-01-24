@@ -32,6 +32,9 @@ def initialize_dacs():
         if isinstance(item, dict):
             item["found"] = False
 
+try:
+    i2c = busio.I2C(board.SCL, board.SDA)
+
     print("Scanning I2C bus for DACs...")
     for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
         addr = 0x50 + o
@@ -49,10 +52,12 @@ def initialize_dacs():
             else:
                 # new
                 dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
-            print(f"DAC found at address {hex(addr)} with ID {index}.")
+            print(f"DAC found at address {hex(addr)}.")
         except Exception as e:
             print(f"No DAC found at address {hex(addr)}")
             continue
+except Exception as e:
+    print("Error while scanning for DACs:", e)
 
     # Additional cleanup logic if needed
     for i in dac_list:
@@ -152,10 +157,6 @@ def update_all_config():
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
-
-
-
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
