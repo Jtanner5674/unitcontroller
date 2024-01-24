@@ -1,13 +1,10 @@
 from flask import Flask, render_template, request, jsonify
-import busio
-import board
 import DFRobot_GP8403
 import json
 
 app = Flask(__name__)
 
-dac_objects = {}
-dac_addresses = {}
+CFG = None  # Initialize CFG as None
 
 def load_config():
     with open('config.json', 'r') as file:
@@ -20,42 +17,49 @@ def save_config():
     with open('config.json', 'w') as file:
         json.dump(T_CFG, file, indent=2)
 
-CFG = load_config()
+def initialize_dacs():
+    global CFG  # Use the global CFG variable
+    CFG = load_config()
 
-# Assuming CFG["dac"] is a list of dictionaries
-for item in CFG["dac"]:
-    if isinstance(item, dict):
-        item["found"] = False
+    # Assuming CFG["dac"] is a list of dictionaries
+    for item in CFG["dac"]:
+        if isinstance(item, dict):
+            item["found"] = False
 
+    print("Scanning I2C bus for DACs...")
+    for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
+        addr = 0x50 + o
+        try:
+            dac = DFRobot_GP8403.DFRobot_GP8403(addr)
+            dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
+            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
+            dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
+            for i, item in enumerate(CFG["dac"]):
+                if item["id"] == addr:
+                    # existing
+                    item["found"] = True
+                    item["obj"] = dac
+                    break
+            else:
+                # new
+                CFG["dac"].append({"name": "", "id": addr, "found": True, "dac": dac})
+        except Exception as e:
+            print(f"No DAC found at address {hex(addr)}")
+            continue
+    print(CFG)
 
-print("Scanning I2C bus for DACs...")
-for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
-    addr = 0x50 + o
-    try:
-        dac = DFRobot_GP8403.DFRobot_GP8403(addr)
-        dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-        dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-        for i, item in enumerate(CFG["dac"]):
-            if item["id"] == addr:
-                # existing
-                item["found"] = True
-                item["obj"] = dac
-                break
+    # Additional cleanup logic if needed
+    for i in CFG["dac"]:
+        if i["found"] is False and i["name"] != "":
+            print(f"Failed to find DAC {i['name']} at {i['id']}")
+            # Indicate in UI that a named DAC is missing
         else:
-            # new
-            CFG["dac"].append({"name": "", "id": addr, "found": True, "dac": dac})
-    except Exception as e:
-        print(f"No DAC found at address {hex(addr)}")
-        continue
-print(CFG)
-for i in CFG["dac"]:
-    if i["found"] == False and i["name"]!="":
-        print(f"Failed to find dac {i['name']} at {i['id']}")
-      # Indicate in UI that a named DAC is missing
-    else:
-      # remove missing unnamed
-      CFG["dac"].remove(i)
+            # remove missing unnamed
+            CFG["dac"].remove(i)
+
+# Initialize DACs when the script starts
+initialize_dacs()
+
 # Flask Routes
 
 @app.route('/')
