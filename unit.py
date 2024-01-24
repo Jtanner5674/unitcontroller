@@ -13,11 +13,8 @@ def load_config():
         return json.load(file)
 
 def save_config():
-    T_CFG = CFG.copy()
-    for value in T_CFG["dac"]:
-        value.pop('dac', None)  # this will not crash if the element has no key 'dac'
     with open('config.json', 'w') as file:
-        json.dump(T_CFG, file, indent=2)
+        json.dump({"dac": CFG["dac"], "relay": CFG.get("relay", [])}, file, indent=2)
 
 def initialize_dacs():
     global CFG  # Use the global CFG variable
