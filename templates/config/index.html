@@ -142,18 +142,20 @@
         document.addEventListener('DOMContentLoaded', fetchConfig);
     
         const coll = document.querySelector('.collapsible');
-        coll.addEventListener('click', function () {
-            this.classList.toggle('active');
-            const content = this.nextElementSibling;
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-            } else {
-                content.style.maxHeight = content.scrollHeight + 'px';
-            }
-        });
+    coll.addEventListener('click', function () {
+        this.classList.toggle('active');
+        const content = this.nextElementSibling;
+        if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+        } else {
+            content.style.maxHeight = content.scrollHeight + 'px';
+        }
+    });
 
-        const saveAllButton = document.querySelector('button');
-        saveAllButton.addEventListener('click', saveAllConfig);
+    const saveAllButton = document.createElement('button'); // Create Save All button dynamically
+    saveAllButton.textContent = 'Save All';
+    saveAllButton.addEventListener('click', saveAllConfig);
+    document.body.appendChild(saveAllButton); // Append Save All button to the body
     </script>
 
 
