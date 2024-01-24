@@ -52,9 +52,8 @@
                     const existingConfigs = data.existing_configs.dac;
                     const offlineDacs = existingConfigs.filter(config => !Object.values(dacAddresses).includes(config.chan));
 
-                    for (const address in dacAddresses) {
-                        const decimalAddress = dacAddresses[address];
-                        const hexAddress = "0x" + decimalAddress.toString(16);
+                    for (const dac of dacAddresses) {
+                        const hexAddress = dac.id;
 
                         const settingsBox = document.createElement('div');
                         settingsBox.innerHTML = `
