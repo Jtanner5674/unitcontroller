@@ -56,8 +56,7 @@ try:
         except Exception as e:
             print(f"No DAC found at address {hex(addr)}")
             continue
-except Exception as e:
-    print("Error while scanning for DACs:", e)
+
 
     # Additional cleanup logic if needed
     for i in dac_list:
@@ -72,9 +71,10 @@ except Exception as e:
     CFG["dac"] = dac_list
 
     print(CFG)
-
     return CFG  # Return the modified CFG
-
+    
+except Exception as e:
+    print("Error while scanning for DACs:", e)
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
 
