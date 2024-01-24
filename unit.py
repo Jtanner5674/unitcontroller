@@ -132,12 +132,14 @@ def update_config(section, index):
 def update_all_config():
     try:
         data = request.json  # New values from the request
-        print("Received data:", data)  # Add this line for debugging
-        save_config(data['settings'])  # Save updated data to the file
-        return jsonify({"message": "All configurations updated successfully"})
+        filtered_settings = [setting for setting in data['settings'] if setting['id'] != 'offline']
+        print("Received data:", filtered_settings)  # Add this line for debugging
+        save_config(filtered_settings)  # Save updated data to the file
+        return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
-        return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for internal server error
+        return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
+
 
 
 
