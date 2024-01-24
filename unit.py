@@ -134,11 +134,25 @@ def update_all_config():
         data = request.json  # New values from the request
         filtered_settings = [setting for setting in data['settings'] if setting['id'] != 'offline']
         print("Received data:", filtered_settings)  # Add this line for debugging
-        save_config(filtered_settings)  # Save updated data to the file
+        
+        # Update the in-memory representation (CFG["dac"])
+        for setting in filtered_settings:
+            for dac in CFG["dac"]:
+                if dac["id"] == setting["id"]:
+                    dac["chan"] = setting["chan"]
+                    dac["name"] = setting["name"]
+
+        # Update the top part of the JSON file
+        CFG["dac_addresses"] = CFG["dac"]
+
+        # Save updated data to the file
+        save_config(filtered_settings)
+        
         return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
+
 
 
 
