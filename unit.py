@@ -17,7 +17,6 @@ def save_config():
     with open('config.json', 'w') as file:
         json.dump(T_CFG, file, indent=2)
 
-
 def initialize_dacs():
     global CFG  # Use the global CFG variable
     CFG = load_config()
@@ -63,8 +62,10 @@ def initialize_dacs():
 
     print(CFG)
 
+    return CFG  # Return the modified CFG
+
 # Initialize DACs when the script starts
-initialize_dacs()
+CFG = initialize_dacs()
 
 # Flask Routes
 
