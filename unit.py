@@ -13,9 +13,10 @@ def load_config():
     with open('config.json', 'r') as file:
         return json.load(file)
 
-def save_config():
+def save_config(settings):
     with open('config.json', 'w') as file:
-        json.dump({"dac": CFG["dac"], "relay": CFG.get("relay", [])}, file, indent=2)
+        json.dump({"dac": settings}, file, indent=2)
+
 
 def initialize_dacs():
     global CFG  # Use the global CFG variable
@@ -128,7 +129,7 @@ def update_config(section, index):
     return jsonify(data[section][index])
 
 @app.route('/config', methods=['PUT'])
-def update_all_config(settings):
+def update_all_config():
     try:
         data = request.json  # New values from the request
         print("Received data:", data)  # Add this line for debugging
@@ -137,6 +138,7 @@ def update_all_config(settings):
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for internal server error
+
 
 
 if __name__ == '__main__':
