@@ -114,6 +114,7 @@
             console.log('Chan:', chan);
             console.log('Name:', name);
             allSettings.push({ id, chan, name });
+            console.log("logging online")
         });
 
         // Get all offline DAC settings
@@ -124,6 +125,7 @@
             const nameElement = document.getElementById(`name-offline-${id}`);
             const name = nameElement ? nameElement.value : '';
             allSettings.push({ id, chan, name });
+            console.log("logging offline")
         });
 
         // Send all settings to update the JSON configuration

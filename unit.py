@@ -130,10 +130,12 @@ def update_config(section, index):
 def update_all_config():
     try:
         data = request.json  # New values from the request
+        print("Received data:", data)  # Add this line for debugging
         save_config(data['settings'])  # Save updated data to the file
         return jsonify({"message": "All configurations updated successfully"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for internal server error
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
