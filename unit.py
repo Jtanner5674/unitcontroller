@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import DFRobot_GP8403
 import json
+import traceback
 
 dac_objects = {}
 
@@ -134,6 +135,7 @@ def update_all_config():
         save_config(data['settings'])  # Save updated data to the file
         return jsonify({"message": "All configurations updated successfully"})
     except Exception as e:
+        traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for internal server error
 
 
