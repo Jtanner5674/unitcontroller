@@ -22,10 +22,11 @@ def save_config():
 
 CFG = load_config()
 
-# Assuming CFG is a list of dictionaries
-for item in CFG:
+# Assuming CFG["dac"] is a list of dictionaries
+for item in CFG["dac"]:
     if isinstance(item, dict):
         item["found"] = False
+
 
 print("Scanning I2C bus for DACs...")
 for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
