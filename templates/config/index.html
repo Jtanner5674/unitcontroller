@@ -55,6 +55,12 @@
                     for (const dac of dacAddresses) {
                         const hexAddress = dac.id;
 
+                        // Check if the DAC is offline and skip it
+                        if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
+                            continue;
+                        }
+
+                        // Create settings box for online DACs
                         const settingsBox = document.createElement('div');
                         settingsBox.innerHTML = `
                             <h2>${hexAddress}</h2>
@@ -75,6 +81,7 @@
                     }
 
                     for (const offlineDac of offlineDacs) {
+                        // Create settings box for offline DACs
                         const settingsBox = document.createElement('div');
                         settingsBox.innerHTML = `
                             <h2>${offlineDac.id}</h2>
@@ -89,6 +96,7 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
+
 
     
         function saveAllConfig() {
