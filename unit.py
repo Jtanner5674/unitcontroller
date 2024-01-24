@@ -21,7 +21,11 @@ def initialize_dacs():
     global CFG  # Use the global CFG variable
     CFG = load_config()
 
-    dac_list = CFG["dac"]
+    if isinstance(CFG, list):
+        # If CFG is a list, assume it's the "dac" section of the configuration
+        CFG = {"dac": CFG}
+
+    dac_list = CFG.get("dac", [])
 
     for item in dac_list:
         if isinstance(item, dict):
