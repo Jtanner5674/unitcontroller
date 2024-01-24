@@ -20,12 +20,11 @@ def save_config():
     with open('config.json', 'w') as file:
         json.dump(T_CFG, file, indent=2)
 
+CFG = load_config()
 
-CFG=load_config()
-
-for value in CFG["dac"]:
+# Assuming CFG["dac"] is a list of dictionaries
+for item in CFG.get("dac", []):
     item["found"] = False
-
 print(CFG)
 
 print("Scanning I2C bus for DACs...")
