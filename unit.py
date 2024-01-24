@@ -17,12 +17,14 @@ def save_config():
     with open('config.json', 'w') as file:
         json.dump(T_CFG, file, indent=2)
 
+
 def initialize_dacs():
     global CFG  # Use the global CFG variable
     CFG = load_config()
 
-    # Assuming CFG["dac"] is a list of dictionaries
-    for item in CFG["dac"]:
+    dac_list = CFG.get("dac", [])
+
+    for item in dac_list:
         if isinstance(item, dict):
             item["found"] = False
 
@@ -34,28 +36,32 @@ def initialize_dacs():
             dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
             dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
             dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-            for i, item in enumerate(CFG["dac"]):
+            for i, item in enumerate(dac_list):
                 if item["id"] == addr:
                     # existing
                     item["found"] = True
-                    item["obj"] = dac
+                    item["dac"] = dac
                     break
             else:
                 # new
-                CFG["dac"].append({"name": "", "id": addr, "found": True, "dac": dac})
+                dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
         except Exception as e:
             print(f"No DAC found at address {hex(addr)}")
             continue
-    print(CFG)
 
     # Additional cleanup logic if needed
-    for i in CFG["dac"]:
+    for i in dac_list:
         if i["found"] is False and i["name"] != "":
             print(f"Failed to find DAC {i['name']} at {i['id']}")
             # Indicate in UI that a named DAC is missing
         else:
             # remove missing unnamed
-            CFG["dac"].remove(i)
+            dac_list.remove(i)
+
+    # Update CFG["dac"]
+    CFG["dac"] = dac_list
+
+    print(CFG)
 
 # Initialize DACs when the script starts
 initialize_dacs()
