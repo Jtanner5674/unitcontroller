@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>DAC Configuration</title>
@@ -17,8 +16,7 @@
             font-size: 15px;
         }
 
-        .active,
-        .collapsible:hover {
+        .active, .collapsible:hover {
             background-color: #ccc;
         }
 
@@ -30,10 +28,9 @@
         }
     </style>
 </head>
-
 <body>
     <h1>DAC Configuration</h1>
-
+    
     <div id="dacSettings">
         <!-- Active DACs settings boxes will be dynamically generated here -->
     </div>
@@ -52,8 +49,8 @@
                 .then(data => {
                     const dacAddresses = data.dac_addresses;
                     const existingConfigs = data.existing_configs && data.existing_configs.dac;
-                    const offlineDacs = existingConfigs ? existingConfigs.filter(config => Array.isArray(dacAddresses) && !dacAddresses.some(dac => dac.id === config.chan)) : [];
-    
+                    const offlineDacs = existingConfigs ? existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id)) : [];
+
                     // Check if dacAddresses is an array before using it
                     if (Array.isArray(dacAddresses)) {
                         dacAddresses.forEach(dac => {
@@ -61,66 +58,105 @@
                             if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
                                 return;
                             }
-    
+
                             // Create settings box for online DACs
-                            const settingsBox = createSettingsBox(hexAddress);
+                            const settingsBox = document.createElement('div');
+                            settingsBox.innerHTML = `
+                                <h2>${hexAddress}</h2>
+                                <label for="chan-${hexAddress}">Channel:</label>
+                                <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1">
+                                <label for="name-${hexAddress}">Name:</label>
+                                <input type="text" id="name-${hexAddress}" name="name">
+                                <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
+                            `;
                             document.getElementById('dacSettings').appendChild(settingsBox);
-    
+
                             // Find existing config based on the address
                             const existingConfig = existingConfigs.find(config => config.id === hexAddress);
                             if (existingConfig) {
-                                updateSettingsBoxValues(hexAddress, existingConfig);
+                                document.getElementById(`chan-${hexAddress}`).value = existingConfig.chan;
+                                document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
                             }
                         });
                     }
-    
+
                     // Create settings boxes for offline DACs
                     offlineDacs.forEach(offlineDac => {
-                        const hexAddress = offlineDac.id;
-                        const settingsBox = createSettingsBox(hexAddress, true);
+                        const settingsBox = document.createElement('div');
+                        settingsBox.innerHTML = `
+                            <h2>${offlineDac.id}</h2>
+                            <label for="chan-offline-${offlineDac.id}">Channel:</label>
+                            <input type="number" id="chan-offline-${offlineDac.id}" name="chan" value="0" min="0" max="1">
+                            <label for="name-offline-${offlineDac.id}">Name:</label>
+                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name}">
+                            <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
+                        `;
                         document.getElementById('offlineSettings').appendChild(settingsBox);
-                        updateSettingsBoxValues(hexAddress, offlineDac);
                     });
                 })
                 .catch(error => console.error('Error:', error));
         }
-    
-        function createSettingsBox(hexAddress, isOffline = false) {
-            const settingsBox = document.createElement('div');
-            settingsBox.innerHTML = `
-                <h2>${hexAddress}</h2>
-                <label for="chan-${hexAddress}">Channel:</label>
-                <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1">
-                <label for="name-${hexAddress}">Name:</label>
-                <input type="text" id="name-${hexAddress}" name="name">
-                <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
-            `;
-    
-            if (isOffline) {
-                settingsBox.classList.add('offline');
-            }
-    
-            return settingsBox;
-        }
-    
-        function updateSettingsBoxValues(hexAddress, config) {
-            document.getElementById(`chan-${hexAddress}`).value = config.chan;
-            document.getElementById(`name-${hexAddress}`).value = config.name || '';
-        }
-    
+
         function saveAllConfig() {
-            // Your saveAllConfig logic here
-            console.log('Save All button clicked!');
+            const allSettings = [];
+
+            // Get all online DAC settings
+            const onlineSettings = document.querySelectorAll('[id^=chan-]');
+            onlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[1];
+                const chan = setting.value;
+                const nameElement = document.getElementById(`name-${id}`);
+                const name = nameElement ? nameElement.value : '';
+                allSettings.push({ id, chan, name });
+            });
+
+            // Get all offline DAC settings
+            const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
+            offlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[2];
+                const chan = setting.value;
+                const nameElement = document.getElementById(`name-offline-${id}`);
+                const name = nameElement ? nameElement.value : '';
+                allSettings.push({ id, chan, name });
+            });
+
+            // Send all settings to update the JSON configuration
+            fetch('/config', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ settings: allSettings }) // Wrap settings in an object
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(updatedConfig => {
+                    console.log('Updated config:', updatedConfig);
+                })
+                .catch(error => console.error('Error:', error));
         }
-    
+
         document.addEventListener('DOMContentLoaded', fetchConfig);
-    
-        const saveAllButton = document.createElement('button');
+
+        const coll = document.querySelector('.collapsible');
+        coll.addEventListener('click', function () {
+            this.classList.toggle('active');
+            const content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        });
+
+        const saveAllButton = document.createElement('button'); // Create Save All button dynamically
         saveAllButton.textContent = 'Save All';
         saveAllButton.addEventListener('click', saveAllConfig);
-        document.body.appendChild(saveAllButton);
+        document.body.appendChild(saveAllButton); // Append Save All button to the body
     </script>
-    
 </body>
-
 </html>
