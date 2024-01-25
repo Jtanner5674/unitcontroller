@@ -4,11 +4,13 @@ import json
 import traceback
 import busio
 import board
+from flask_cors import CORS
 
 dac_objects = {}
 dac_addresses = {}
 
 app = Flask(__name__)
+CORS(app) 
 
 CFG = None  # Initialize CFG as None
 
