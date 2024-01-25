@@ -54,12 +54,12 @@
 
                     // Check if dacAddresses is an array before using it
                     if (Array.isArray(dacAddresses)) {
-                        for (const dac of dacAddresses) {
+                        dacAddresses.forEach(dac => {
                             const hexAddress = dac.id;
 
                             // Check if the DAC is offline and skip it
                             if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
-                                continue;
+                                return;
                             }
 
                             // Create settings box for online DACs
@@ -80,11 +80,11 @@
                                 document.getElementById(`chan-${hexAddress}`).value = existingConfig.chan;
                                 document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
                             }
-                        }
+                        });
                     }
 
-                    for (const offlineDac of offlineDacs) {
-                        // Create settings box for offline DACs
+                    // Create settings boxes for offline DACs
+                    offlineDacs.forEach(offlineDac => {
                         const settingsBox = document.createElement('div');
                         settingsBox.innerHTML = `
                             <h2>${offlineDac.id}</h2>
@@ -95,10 +95,11 @@
                             <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
                         `;
                         document.getElementById('offlineSettings').appendChild(settingsBox);
-                    }
+                    });
                 })
                 .catch(error => console.error('Error:', error));
         }
+
 
 
 
