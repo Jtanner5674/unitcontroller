@@ -39,7 +39,7 @@
 </head>
 <body>
     <h1>DAC Configuration</h1>
-    
+
     <div id="dacSettings">
         <!-- Active DACs settings boxes will be dynamically generated here -->
     </div>
@@ -56,9 +56,9 @@
             fetch('/config')
                 .then(response => response.json())
                 .then(data => {
-                    const dacAddresses = data.dac_addresses;
-                    const existingConfigs = data.existing_configs && data.existing_configs.dac;
-                    const offlineDacs = existingConfigs ? existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id)) : [];
+                    const dacAddresses = data.dac_addresses.dac;
+                    const existingConfigs = data.existing_configs.existing_configs.dac;
+                    const offlineDacs = existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id));
 
                     // Check if dacAddresses is an array before using it
                     if (Array.isArray(dacAddresses)) {
@@ -105,6 +105,7 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
+
 
         function saveAllConfig() {
             const allSettings = [];
