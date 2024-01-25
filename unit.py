@@ -46,12 +46,12 @@ def initialize_dacs():
                 for i, item in enumerate(dac_list):
                     if item["id"] == addr:
                         item["found"] = True
-                        item["dac"] = dac
                         break
                 else:
                     dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
                 print(f"DAC found at address {hex(addr)}.")
                 dac_addresses[index] = addr
+                CFG["dac_addresses"]["dac"].append({hex(addr)})
                 index += 1
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
