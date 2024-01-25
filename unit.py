@@ -34,7 +34,7 @@ def initialize_dacs():
         i2c = busio.I2C(board.SCL, board.SDA)
 
         print("Scanning I2C bus for DACs...")
-        for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
+        for o in range(8, 16):
             addr = 0x50 + o
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
@@ -43,12 +43,10 @@ def initialize_dacs():
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
                 for i, item in enumerate(dac_list):
                     if item["id"] == addr:
-                        # existing
                         item["found"] = True
                         item["dac"] = dac
                         break
                 else:
-                    # new
                     dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
                 print(f"DAC found at address {hex(addr)}.")
             except Exception as e:
@@ -59,19 +57,18 @@ def initialize_dacs():
         for i in dac_list:
             if i["found"] is False and i["name"] != "":
                 print(f"Failed to find DAC {i['name']} at {i['id']}")
-                # Indicate in UI that a named DAC is missing
             else:
-                # remove missing unnamed
                 dac_list.remove(i)
 
-        # Update CFG["dac"]
-        CFG["dac"] = dac_list
+        # Update CFG to be a dictionary
+        CFG = {"dac": dac_list}
 
         print(CFG)
-        return CFG  # Return the modified CFG
+        return CFG
 
     except Exception as e:
         print("Error while scanning for DACs:", e)
+
 
 
 # Initialize DACs when the script starts
@@ -115,7 +112,7 @@ def open1(addr):
 @app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
-    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_configs["dac"]})
+    return jsonify({'dac_addresses': CFG, 'existing_configs': existing_configs})
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
