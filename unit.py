@@ -38,6 +38,8 @@ def initialize_dacs():
         i2c = busio.I2C(board.SCL, board.SDA)
 
         print("Scanning I2C bus for DACs...")
+        found_dacs = []
+
         for o in range(8, 16):  # Equivalent to the range 8..F in hexadecimal
             addr = 0x50 + o
             try:
@@ -45,38 +47,23 @@ def initialize_dacs():
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-                for i, item in enumerate(dac_list):
-                    if item["id"] == addr:
-                        # existing
-                        item["found"] = True
-                        item["dac"] = dac
-                        break
-                else:
-                    # new
-                    dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
+                found_dacs.append({"name": "", "id": addr, "found": True, "dac": dac})
                 print(f"DAC found at address {hex(addr)}.")
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
                 continue
 
-        # Additional cleanup logic if needed
-        for i in dac_list:
-            if i["found"] is False and i["name"] != "":
-                print(f"Failed to find DAC {i['name']} at {i['id']}")
-                # Indicate in UI that a named DAC is missing
-            else:
-                # remove missing unnamed
-                dac_list.remove(i)
-
         # Update CFG["dac"]
-        CFG["dac"] = dac_list
+        CFG["dac"] = found_dacs
 
         print(CFG)
         return CFG  # Return the modified CFG
 
     except Exception as e:
         print("Error while scanning for DACs:", e)
-        return CFG 
+        # If an exception occurs, return the original CFG with an empty "dac" list
+        CFG["dac"] = []
+        return CFG
 
 # Flask Routes
 
