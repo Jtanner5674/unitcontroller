@@ -4,10 +4,17 @@ import json
 import traceback
 import busio
 import board
+from json import JSONEncoder
 
 dac_objects = {}
 
 app = Flask(__name__)
+
+class CustomEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, DFRobot_GP8403):
+            return obj.__dict__  # Serialize class attributes
+        return super().default(obj)
 
 CFG = None  # Initialize CFG as None
 
@@ -111,9 +118,11 @@ def open1(addr):
 
 @app.route('/config', methods=['GET'])
 def get_dac_config():
-    existing_dac_configs = CFG.get("dac", [])
-    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_dac_configs})
+    dac_addresses_serializable = CFG["dac_addresses"]
 
+    existing_dac_configs = CFG["existing_configs"].get("dac", [])
+
+    return jsonify({'dac_addresses': dac_addresses_serializable, 'existing_configs': existing_dac_configs}, cls=CustomEncoder)
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
