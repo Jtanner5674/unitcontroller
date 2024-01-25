@@ -70,20 +70,6 @@ def initialize_dacs():
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
 
-# Manually serialize CFG, excluding DFRobot_GP8403 objects
-serialized_cfg = {
-    "dac": [
-        {"name": item["name"], "id": item["id"], "found": item["found"]}
-        for item in CFG["dac"]
-    ]
-}
-
-# Convert sets to lists
-for item in serialized_cfg["dac"]:
-    item["found"] = list(item["found"])
-
-return jsonify({'dac_addresses': serialized_cfg, 'existing_configs': existing_configs})
-
 
 
 # Flask Routes
@@ -134,6 +120,7 @@ def get_dac_config():
     }
 
     return jsonify({'dac_addresses': serialized_cfg, 'existing_configs': existing_configs})
+
 
 
 # Route to serve HTML form for updating configuration
