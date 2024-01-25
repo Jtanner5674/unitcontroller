@@ -34,6 +34,7 @@ def initialize_dacs():
         i2c = busio.I2C(board.SCL, board.SDA)
 
         print("Scanning I2C bus for DACs...")
+        index = 0
         for o in range(8, 16):
             addr = 0x50 + o
             try:
@@ -49,7 +50,8 @@ def initialize_dacs():
                 else:
                     dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
                 print(f"DAC found at address {hex(addr)}.")
-                CFG["dac_addresses"]["dac"].append({hex(addr)})
+                dac_addresses[index] = addr
+                index += 1
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
                 continue
