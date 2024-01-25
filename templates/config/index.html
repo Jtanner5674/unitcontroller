@@ -53,23 +53,27 @@
                     const dacAddresses = data.dac_addresses;
                     const existingConfigs = data.existing_configs && data.existing_configs.dac;
                     const offlineDacs = existingConfigs ? existingConfigs.filter(config => Array.isArray(dacAddresses) && !dacAddresses.some(dac => dac.id === config.chan)) : [];
-
-                    // Create settings boxes for online DACs
-                    dacAddresses.forEach(dac => {
-                        const hexAddress = dac.id;
-                        if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
-                            return;
-                        }
-
-                        const settingsBox = createSettingsBox(hexAddress);
-                        document.getElementById('dacSettings').appendChild(settingsBox);
-
-                        const existingConfig = existingConfigs.find(config => config.id === hexAddress);
-                        if (existingConfig) {
-                            updateSettingsBoxValues(hexAddress, existingConfig);
-                        }
-                    });
-
+    
+                    // Check if dacAddresses is an array before using it
+                    if (Array.isArray(dacAddresses)) {
+                        dacAddresses.forEach(dac => {
+                            const hexAddress = dac.id;
+                            if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
+                                return;
+                            }
+    
+                            // Create settings box for online DACs
+                            const settingsBox = createSettingsBox(hexAddress);
+                            document.getElementById('dacSettings').appendChild(settingsBox);
+    
+                            // Find existing config based on the address
+                            const existingConfig = existingConfigs.find(config => config.id === hexAddress);
+                            if (existingConfig) {
+                                updateSettingsBoxValues(hexAddress, existingConfig);
+                            }
+                        });
+                    }
+    
                     // Create settings boxes for offline DACs
                     offlineDacs.forEach(offlineDac => {
                         const hexAddress = offlineDac.id;
@@ -80,7 +84,7 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
-
+    
         function createSettingsBox(hexAddress, isOffline = false) {
             const settingsBox = document.createElement('div');
             settingsBox.innerHTML = `
@@ -91,26 +95,32 @@
                 <input type="text" id="name-${hexAddress}" name="name">
                 <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
             `;
-
+    
             if (isOffline) {
                 settingsBox.classList.add('offline');
             }
-
+    
             return settingsBox;
         }
-
+    
         function updateSettingsBoxValues(hexAddress, config) {
             document.getElementById(`chan-${hexAddress}`).value = config.chan;
             document.getElementById(`name-${hexAddress}`).value = config.name || '';
         }
-
+    
+        function saveAllConfig() {
+            // Your saveAllConfig logic here
+            console.log('Save All button clicked!');
+        }
+    
         document.addEventListener('DOMContentLoaded', fetchConfig);
-
+    
         const saveAllButton = document.createElement('button');
         saveAllButton.textContent = 'Save All';
         saveAllButton.addEventListener('click', saveAllConfig);
         document.body.appendChild(saveAllButton);
     </script>
+    
 </body>
 
 </html>
