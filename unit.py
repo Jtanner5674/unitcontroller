@@ -6,6 +6,7 @@ import busio
 import board
 
 dac_objects = {}
+dac_addresses = {}
 
 app = Flask(__name__)
 
