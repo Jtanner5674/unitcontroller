@@ -122,7 +122,9 @@ def get_dac_config():
 
     existing_dac_configs = CFG["existing_configs"].get("dac", [])
 
-    return jsonify({'dac_addresses': dac_addresses_serializable, 'existing_configs': existing_dac_configs}, cls=CustomEncoder)
+    # Use default parameter for custom serialization
+    return jsonify({'dac_addresses': dac_addresses_serializable, 'existing_configs': existing_dac_configs}, default=lambda x: x.__dict__)
+
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
