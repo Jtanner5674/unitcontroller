@@ -1,41 +1,25 @@
 {
-  "dac_addresses": [
+  "dac": [
     {
-      "chan": "0",
-      "found": false,
-      "id": "0x10",
-      "name": "named_dac"
-    },
-    {
+      "id": "0x5c",
       "chan": "1",
-      "found": false,
-      "id": "0x20",
-      "name": "second_ac"
+      "name": "ch1"
     },
     {
+      "id": "0x10",
       "chan": "0",
-      "found": false,
+      "name": "ch0"
+    },
+    {
+      "id": "0x20",
+      "chan": "0",
+      "name": "channel 0"
+    },
+    {
       "id": "0x60",
-      "name": "third dac"
+      "chan": "1",
+      "name": "channel 1"
     }
-  ],
-  "existing_configs": {
-    "dac": [
-      {
-        "chan": "0",
-        "id": "0x10",
-        "name": "named dac"
-      },
-      {
-        "chan": "1",
-        "id": "0x20",
-        "name": "second dac"
-      },
-      {
-        "chan": "0",
-        "id": "0x60",
-        "name": "third da"
-      }
-    ]
-  }
+  ]
 }
+
