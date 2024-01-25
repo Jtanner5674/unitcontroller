@@ -50,7 +50,7 @@
                 .then(data => {
                     const dacAddresses = data.dac_addresses;
                     const existingConfigs = data.existing_configs && data.existing_configs.dac;
-                    const offlineDacs = existingConfigs ? existingConfigs.filter(config => !Object.values(dacAddresses).includes(config.chan)) : [];
+                    const offlineDacs = existingConfigs ? existingConfigs.filter(config => Array.isArray(dacAddresses) && !dacAddresses.some(dac => dac.id === config.chan)) : [];
 
 
                     for (const dac of dacAddresses) {
