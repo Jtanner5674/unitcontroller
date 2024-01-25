@@ -6,24 +6,39 @@
     <script>
         // Function to handle form submissions asynchronously
         function submitForm(event, url) {
-        console.log('Form submitted:', url, event);
-        event.preventDefault(); // Prevent default form submission behavior
-        let formData = new FormData(event.target);
-        console.log(formData); // Move this statement here
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            // Handle the response from the Flask server if needed
-            console.log('Form submitted successfully!');
-        })
-        .catch(error => {
-            // Handle any errors that occurred during the fetch
-            console.error('Error submitting form:', error);
-        });
-    }
+            console.log('Form submitted:', url, event);
+            event.preventDefault(); // Prevent default form submission behavior
+            let formData = new FormData(event.target);
+            console.log(formData); // Move this statement here
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Handle the response from the Flask server if needed
+                console.log('Form submitted successfully!');
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the fetch
+                console.error('Error submitting form:', error);
+            });
+        }
 
+        function sendPostRequest(url) {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) // Add any payload if required
+            })
+            .then(response => {
+                // Handle the response as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
     </script>
 </head>
 <body>
@@ -44,31 +59,11 @@
             <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_id }}</button>
         </form>
         
-        <!-- open and closing the channels -->
-        <a href="#" onclick="sendPostRequest('/close1{{ dac_id }}')">Close Channel 1 on DAC {{ dac_id }}</a>
-        <a href="#" onclick="sendPostRequest('/close2{{ dac_id }}')">Close Channel 2 on DAC {{ dac_id }}</a>
-        <a href="#" onclick="sendPostRequest('/open1{{ dac_id }}')">Open Channel 1 on DAC {{ dac_id }}</a>
-        <a href="#" onclick="sendPostRequest('/open2{{ dac_id }}')">Open Channel 2 on DAC {{ dac_id }}</a>
-        
-        
-        <script>
-            function sendPostRequest(url) {
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({}) // Add any payload if required
-                })
-                .then(response => {
-                    // Handle the response as needed
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-        </script>
-
+        <!-- Open and close the channels -->
+        <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close Channel 1 on DAC {{ dac_id }}</button>
+        <button onclick="sendPostRequest('/close2{{ dac_id }}')">Close Channel 2 on DAC {{ dac_id }}</button>
+        <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open Channel 1 on DAC {{ dac_id }}</button>
+        <button onclick="sendPostRequest('/open2{{ dac_id }}')">Open Channel 2 on DAC {{ dac_id }}</button>
     {% endfor %}
 </body>
 </html>
