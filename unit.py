@@ -59,8 +59,14 @@ def initialize_dacs():
                 print(f"No DAC found at address {hex(addr)}")
                 continue
 
-        dac_list = [i for i in dac_list if i["found"] or i["name"] == ""]
-
+        # Additional cleanup logic if needed
+        for i in dac_list:
+            if i["found"] is False and i["name"] != "":
+                print(f"Failed to find DAC {i['name']} at {i['id']}")
+                # Indicate in UI that a named DAC is missing
+            else:
+                # remove missing unnamed
+                dac_list.remove(i)
 
         # Update CFG["dac"]
         CFG["dac"] = dac_list
@@ -112,9 +118,7 @@ def open1(addr):
 @app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
-    existing_dac_configs = existing_configs.get("dac", [])  # Use get() to handle the case where 'dac' key is not present
-    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_dac_configs})
-
+    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_configs["dac"]})
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
@@ -136,21 +140,20 @@ def update_all_config():
         data = request.json  # New values from the request
         filtered_settings = [setting for setting in data['settings'] if setting['id'] != 'offline']
         print("Received data:", filtered_settings)  # Add this line for debugging
-
-        existing_configs = load_config()
-
+        
+        # Update the in-memory representation (CFG["dac"])
         for setting in filtered_settings:
             for dac in CFG["dac"]:
                 if dac["id"] == setting["id"]:
                     dac["chan"] = setting["chan"]
                     dac["name"] = setting["name"]
 
-        # Preserve the existing non-"dac" configurations
-        existing_configs["dac"] = CFG["dac"]
+        # Update the top part of the JSON file
+        CFG["dac_addresses"] = CFG["dac"]
 
-        # Save the entire existing_configs dictionary back to the file
-        save_config(existing_configs)
-
+        # Save updated data to the file
+        save_config(filtered_settings)
+        
         return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
