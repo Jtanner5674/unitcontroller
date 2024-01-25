@@ -107,6 +107,7 @@ def close1(addr):
 def open1(addr):
     return set_voltage_action(addr, 10000)
 
+@app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
 
@@ -119,6 +120,7 @@ def get_dac_config():
     }
 
     return jsonify({'dac_addresses': serialized_cfg, 'existing_configs': existing_configs})
+
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
