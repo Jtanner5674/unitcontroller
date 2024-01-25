@@ -77,18 +77,6 @@ def initialize_dacs():
 CFG = initialize_dacs()
 
 
-
-        print(CFG)
-        return CFG
-
-    except Exception as e:
-        print("Error while scanning for DACs:", e)
-
-
-
-# Initialize DACs when the script starts
-CFG = initialize_dacs()
-
 # Flask Routes
 
 @app.route('/')
