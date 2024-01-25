@@ -26,7 +26,7 @@ def save_config(settings):
 
 
 def initialize_dacs():
-    global CFG  # Use the global CFG variable
+    global CFG
     CFG = load_config()
     global dac_objects
     dac_objects = {}
@@ -50,8 +50,11 @@ def initialize_dacs():
                 found_dac = next((item for item in dac_list if item["id"] == addr), None)
                 if found_dac:
                     found_dac["found"] = True
+                    dac_objects[found_dac["id"]] = found_dac  # Update dac_objects
                 else:
-                    dac_list.append({"name": "", "id": hex(addr), "found": True})
+                    new_dac = {"name": "", "id": hex(addr), "found": True}
+                    dac_list.append(new_dac)
+                    dac_objects[new_dac["id"]] = new_dac  # Update dac_objects
 
                 print(f"DAC found at address {hex(addr)}.")
             except Exception as e:
