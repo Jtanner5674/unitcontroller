@@ -49,7 +49,7 @@ def initialize_dacs():
                 else:
                     dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
                 print(f"DAC found at address {hex(addr)}.")
-                dac_addresses.append("dac": {hex(addr)})
+                CFG["dac_addresses"]["dac"].append({hex(addr)})
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
                 continue
