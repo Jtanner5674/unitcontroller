@@ -59,14 +59,8 @@ def initialize_dacs():
                 print(f"No DAC found at address {hex(addr)}")
                 continue
 
-        # Additional cleanup logic if needed
-        for i in dac_list:
-            if i["found"] is False and i["name"] != "":
-                print(f"Failed to find DAC {i['name']} at {i['id']}")
-                # Indicate in UI that a named DAC is missing
-            else:
-                # remove missing unnamed
-                dac_list.remove(i)
+        dac_list = [i for i in dac_list if i["found"] or i["name"] == ""]
+
 
         # Update CFG["dac"]
         CFG["dac"] = dac_list
@@ -117,8 +111,7 @@ def open1(addr):
 
 @app.route('/config', methods=['GET'])
 def get_dac_config():
-    existing_configs = load_config()
-    existing_dac_configs = existing_configs.get("dac", [])  # Use get() to handle the case where 'dac' key is not present
+    existing_dac_configs = CFG.get("dac", [])
     return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_dac_configs})
 
 
@@ -158,7 +151,7 @@ def update_all_config():
         # Save the entire existing_configs dictionary back to the file
         save_config(existing_configs)
 
-        return jsonify({"message": "Configurations updated successfully"})
+        return jsonify({"message": "Configurations updated successfully", 'dac_addresses': CFG["dac"]})
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
