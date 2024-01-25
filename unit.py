@@ -4,17 +4,10 @@ import json
 import traceback
 import busio
 import board
-from json import JSONEncoder
 
 dac_objects = {}
 
 app = Flask(__name__)
-
-class CustomEncoder(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, DFRobot_GP8403):
-            return obj.__dict__  # Serialize class attributes
-        return super().default(obj)
 
 CFG = None  # Initialize CFG as None
 
@@ -118,12 +111,9 @@ def open1(addr):
 
 @app.route('/config', methods=['GET'])
 def get_dac_config():
-    dac_addresses_serializable = CFG["dac_addresses"]
-
-    existing_dac_configs = CFG["existing_configs"].get("dac", [])
-
-    # Use default parameter for custom serialization
-    return jsonify({'dac_addresses': dac_addresses_serializable, 'existing_configs': existing_dac_configs}, default=lambda x: x.__dict__)
+    existing_configs = load_config()
+    existing_dac_configs = existing_configs.get("dac", [])  # Use get() to handle the case where 'dac' key is not present
+    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_dac_configs})
 
 
 # Route to serve HTML form for updating configuration
@@ -162,7 +152,7 @@ def update_all_config():
         # Save the entire existing_configs dictionary back to the file
         save_config(existing_configs)
 
-        return jsonify({"message": "Configurations updated successfully", 'dac_addresses': CFG["dac"]})
+        return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
