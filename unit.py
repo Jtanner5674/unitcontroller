@@ -107,10 +107,18 @@ def close1(addr):
 def open1(addr):
     return set_voltage_action(addr, 10000)
 
-@app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
-    return jsonify({'dac_addresses': CFG, 'existing_configs': existing_configs})
+
+    # Manually serialize CFG, excluding DFRobot_GP8403 objects
+    serialized_cfg = {
+        "dac": [
+            {"name": item["name"], "id": item["id"], "found": item["found"]}
+            for item in CFG["dac"]
+        ]
+    }
+
+    return jsonify({'dac_addresses': serialized_cfg, 'existing_configs': existing_configs})
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
