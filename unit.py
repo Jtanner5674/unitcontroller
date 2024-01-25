@@ -24,10 +24,6 @@ def initialize_dacs():
     global CFG  # Use the global CFG variable
     CFG = load_config()
 
-    if isinstance(CFG, list):
-        # If CFG is a list, assume it's the "dac" section of the configuration
-        CFG = {"dac": CFG}
-
     dac_list = CFG.get("dac", [])
 
     for item in dac_list:
@@ -76,6 +72,7 @@ def initialize_dacs():
 
     except Exception as e:
         print("Error while scanning for DACs:", e)
+
 
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
