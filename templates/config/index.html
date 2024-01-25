@@ -53,14 +53,12 @@
                     const offlineDacs = existingConfigs ? existingConfigs.filter(config => Array.isArray(dacAddresses) && !dacAddresses.some(dac => dac.id === config.chan)) : [];
 
                     // Check if dacAddresses is an array before using it
-                    if (Array.isArray(dacAddresses)) {
-                        dacAddresses.forEach(dac => {
-                            const hexAddress = dac.id;
 
-                            // Check if the DAC is offline and skip it
-                            if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
-                                return;
-                            }
+                    dacAddresses.forEach(dac => {
+                        const hexAddress = dac.id;
+                        if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
+                            return;
+
 
                             // Create settings box for online DACs
                             const settingsBox = document.createElement('div');
