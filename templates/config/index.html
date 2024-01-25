@@ -56,8 +56,8 @@
             fetch('/config')
                 .then(response => response.json())
                 .then(data => {
-                    const dacAddresses = data.dac_addresses.dac;
-                    const existingConfigs = data.existing_configs.existing_configs.dac;
+                    const dacAddresses = data.dac_addresses?.dac || [];
+                    const existingConfigs = data.existing_configs?.existing_configs?.dac || [];
                     const offlineDacs = existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id));
 
                     // Check if dacAddresses is an array before using it
@@ -105,6 +105,7 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
+
 
 
         function saveAllConfig() {
