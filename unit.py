@@ -48,7 +48,7 @@ def initialize_dacs():
                 if found_dac:
                     found_dac["found"] = True
                 else:
-                    dac_list.append({"name": "", "id": addr, "found": True})
+                    dac_list.append({"name": "", "id": {hex(addr)}, "found": True})
                     
                 print(f"DAC found at address {hex(addr)}.")
             except Exception as e:
