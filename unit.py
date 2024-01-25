@@ -139,7 +139,6 @@ def update_all_config():
 
         existing_configs = load_config()
 
-        # Update the in-memory representation (CFG["dac"])
         for setting in filtered_settings:
             for dac in CFG["dac"]:
                 if dac["id"] == setting["id"]:
