@@ -48,7 +48,7 @@ def initialize_dacs():
                 if found_dac:
                     found_dac["found"] = True
                 else:
-                    dac_list.append({"name": "", "id": {hex(addr)}, "found": True})
+                    dac_list.append({"name": "", "id": addr, "found": True})
                     
                 print(f"DAC found at address {hex(addr)}.")
             except Exception as e:
@@ -69,6 +69,21 @@ def initialize_dacs():
 
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
+
+# Manually serialize CFG, excluding DFRobot_GP8403 objects
+serialized_cfg = {
+    "dac": [
+        {"name": item["name"], "id": item["id"], "found": item["found"]}
+        for item in CFG["dac"]
+    ]
+}
+
+# Convert sets to lists
+for item in serialized_cfg["dac"]:
+    item["found"] = list(item["found"])
+
+return jsonify({'dac_addresses': serialized_cfg, 'existing_configs': existing_configs})
+
 
 
 # Flask Routes
