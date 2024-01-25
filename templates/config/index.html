@@ -52,13 +52,13 @@
                     const existingConfigs = data.existing_configs && data.existing_configs.dac;
                     const offlineDacs = existingConfigs ? existingConfigs.filter(config => Array.isArray(dacAddresses) && !dacAddresses.some(dac => dac.id === config.chan)) : [];
 
-                    // Check if dacAddresses is an array before using it
-
-                    dacAddresses.forEach(dac => {
-                        const hexAddress = dac.id;
-                        if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
-                            return;
-
+                    // Check if dacAddresses is an array before using itt
+                    if (Array.isArray(dacAddresses)) {
+                        dacAddresses.forEach(dac => {
+                            const hexAddress = dac.id;
+                            if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
+                                return;
+                            }
 
                             // Create settings box for online DACs
                             const settingsBox = document.createElement('div');
@@ -80,6 +80,7 @@
                             }
                         });
                     }
+                }
 
                     // Create settings boxes for offline DACs
                     offlineDacs.forEach(offlineDac => {
