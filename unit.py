@@ -36,7 +36,7 @@ def initialize_dacs():
 
         print("Scanning I2C bus for DACs...")
         index = 0
-        for o in range(8, 16):
+        for o in range(16):  # Update the loop range to cover addresses from 0x50 to 0x5f
             addr = 0x50 + o
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
@@ -51,7 +51,7 @@ def initialize_dacs():
                     dac_list.append({"name": "", "id": addr, "found": True, "dac": dac})
                 print(f"DAC found at address {hex(addr)}.")
                 dac_addresses[index] = addr
-                CFG["dac_addresses"]["dac"].append({hex(addr)})
+                CFG["dac_addresses"]["dac"].append(hex(addr))  # Append the DAC address as a hex string
                 index += 1
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
@@ -66,6 +66,17 @@ def initialize_dacs():
 
         # Update CFG to be a dictionary
         CFG = {"dac": dac_list}
+
+        print(CFG)
+        return CFG
+
+    except Exception as e:
+        print("Error while scanning for DACs:", e)
+
+# Initialize DACs when the script starts
+CFG = initialize_dacs()
+
+
 
         print(CFG)
         return CFG
