@@ -10,13 +10,15 @@ dac_objects = {}
 dac_addresses = {}
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
 CFG = None  # Initialize CFG as None
+
 
 def load_config():
     with open('config.json', 'r') as file:
         return json.load(file)
+
 
 def save_config(settings):
     with open('config.json', 'w') as file:
@@ -43,13 +45,13 @@ def initialize_dacs():
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
-                
+
                 found_dac = next((item for item in dac_list if item["id"] == addr), None)
                 if found_dac:
                     found_dac["found"] = True
                 else:
                     dac_list.append({"name": "", "id": hex(addr), "found": True})
-                    
+
                 print(f"DAC found at address {hex(addr)}.")
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
@@ -67,9 +69,9 @@ def initialize_dacs():
     except Exception as e:
         print("Error while scanning for DACs:", e)
 
+
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
-
 
 
 # Flask Routes
@@ -78,6 +80,7 @@ CFG = initialize_dacs()
 def index():
     return render_template('index.html', dac_objects=dac_objects)
 
+
 @app.route('/settings')
 def settings():
     return render_template('config/index.html')
@@ -85,7 +88,7 @@ def settings():
 
 def set_voltage_action(addr, value):
     try:
-        addr_int = int(addr, 16)     # Convert hex string to integer for comparison
+        addr_int = int(addr, 16)  # Convert hex string to integer for comparison
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
         dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
         return jsonify({'message': f'{dac["name"]} set to {value}V'})
@@ -97,15 +100,17 @@ def set_voltage_action(addr, value):
 def set_voltage(addr):
     voltage = float(request.form['voltage'])
     return set_voltage_action(addr, voltage)
- # change to addr, in your dropdown list you can specify: name="NAME" value="ADDR"
+
 
 @app.route('/close<int:addr>', methods=['POST'])
 def close1(addr):
     return set_voltage_action(addr, 2000)
 
+
 @app.route('/open<int:addr>', methods=['POST'])
 def open1(addr):
     return set_voltage_action(addr, 10000)
+
 
 @app.route('/config', methods=['GET'])
 def get_dac_config():
@@ -122,11 +127,11 @@ def get_dac_config():
     return jsonify({'dac_addresses': serialized_cfg, 'existing_configs': existing_configs})
 
 
-
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
 def update_config_form(section, index):
     return render_template('update_config.html', section=section, index=index)
+
 
 # Route to update a specific configuration item
 @app.route('/config/<string:section>/<int:index>', methods=['PUT'])
@@ -137,13 +142,14 @@ def update_config(section, index):
     save_config(data)  # Save updated data to the file
     return jsonify(data[section][index])
 
+
 @app.route('/config', methods=['PUT'])
 def update_all_config():
     try:
         data = request.json  # New values from the request
         filtered_settings = [setting for setting in data['settings'] if setting['id'] != 'offline']
         print("Received data:", filtered_settings)  # Add this line for debugging
-        
+
         # Update the in-memory representation (CFG["dac"])
         for setting in filtered_settings:
             for dac in CFG["dac"]:
@@ -156,11 +162,12 @@ def update_all_config():
 
         # Save updated data to the file
         save_config(filtered_settings)
-        
+
         return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
