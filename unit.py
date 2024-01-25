@@ -118,7 +118,9 @@ def open1(addr):
 @app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
-    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_configs["dac"]})
+    existing_dac_configs = existing_configs.get("dac", [])  # Use get() to handle the case where 'dac' key is not present
+    return jsonify({'dac_addresses': CFG["dac"], 'existing_configs': existing_dac_configs})
+
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
