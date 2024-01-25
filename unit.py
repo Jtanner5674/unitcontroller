@@ -108,8 +108,10 @@ def get_dac_config():
     
     # Check if 'dac' key exists in CFG
     dac_addresses = CFG.get("dac", [])
+    existing_dac_configs = existing_configs.get("dac", [])
     
-    return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_configs["dac"]})
+    return jsonify({'dac_addresses': dac_addresses, 'existing_configs': existing_dac_configs})
+
 
 # Route to serve HTML form for updating configuration
 @app.route('/update_config/<string:section>/<int:index>', methods=['GET'])
