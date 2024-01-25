@@ -28,7 +28,8 @@ def save_config(settings):
 def initialize_dacs():
     global CFG  # Use the global CFG variable
     CFG = load_config()
-
+    global dac_objects
+    dac_objects = {}
     dac_list = CFG.get("dac", [])
 
     for item in dac_list:
