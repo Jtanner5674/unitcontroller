@@ -41,16 +41,11 @@
             cursor: pointer;
             margin-right: 10px;
         }
-        /* Dark mode styles */
-        .dark-mode {
-            background-color: #121212;
-            color: #fff;
-        }
 
         /* Style for the settings and dark mode buttons */
         #settings-button,
         #dark-mode-button {
-            position: fixed;
+            position: relative;
             top: 20px;
             right: 20px;
             cursor: pointer;
@@ -59,12 +54,6 @@
             color: #fff;
             border-radius: 50%;
         }
-
-        #settings-button img {
-            width: 20px;
-            height: 20px;
-        }
-
     </style>
     <script>
         // Function to handle form submissions asynchronously
@@ -144,12 +133,12 @@
     {% endfor %}
     <!-- Settings button in the top right -->
     <div id="settings-button" onclick="goToSettings()">
-        <img src="settings-gear-icon.png" alt="Settings Gear Icon">
+        ⚙️
     </div>
 
     <!-- Dark mode button -->
     <div id="dark-mode-button" onclick="toggleDarkMode()">
-        Dark Mode
+        💡
     </div>
 </body>
 </html>
