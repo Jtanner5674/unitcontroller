@@ -83,23 +83,20 @@
 <body>
     <h1>DAC Control Interface</h1>
 
-    {% for dac in dac_addresses.dac %}
-    {% if dac.found %}
-        {% set dac_config = existing_configs.dac | selectattr('id', 'equalto', dac.id) | list | first %}
+    {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
         <div class="dac-box">
-            <h2>{{ dac_config.name or "Unnamed DAC" }}</h2>
+            <h2>{{ dac_name or "Unnamed DAC" }}</h2>
             <!-- Form to set voltage for Channel 1 -->
-            <form onsubmit="submitForm(event, '/set_voltage{{ dac.id }}')" method="post">
-                <label for="voltage_{{ dac.id }}">Enter voltage (0-100%):</label>
-                <input type="range" id="voltage_{{ dac.id }}" name="voltage" min="0" max="100" step=".1">
-                <button type="submit">Set Voltage for DAC {{ dac.id }}</button>
+            <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
+                <label for="voltage_{{ dac_id }}">Enter voltage (0-100%):</label>
+                <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step=".1">
+                <button type="submit">Set Voltage for DAC {{ dac_id }}</button>
             </form>
             
             <!-- Open and close the channels -->
-            <button onclick="sendPostRequest('/close1{{ dac.id }}')">Close DAC {{ dac.id }}</button>
-            <button onclick="sendPostRequest('/open1{{ dac.id }}')">Open DAC {{ dac.id }}</button>
+            <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close DAC {{ dac_id }}</button>
+            <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open DAC {{ dac_id }}</button>
         </div>
-    {% endif %}
-{% endfor %}
+    {% endfor %}
 </body>
 </html>
