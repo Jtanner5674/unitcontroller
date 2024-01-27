@@ -40,22 +40,24 @@ def initialize_dacs():
         i2c = busio.I2C(board.SCL, board.SDA)
 
         print("Scanning I2C bus for DACs...")
-        for addr in range(0x58, 0x60):
+        for addr in range(0x08, 0x78):  # Adjust the range based on your DAC address range
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
 
-                found_dac = next((item for item in dac_list if item["id"] == addr), None)
+                found_dac = next((item for item in dac_list if item["id"] == hex(addr)), None)
                 if found_dac:
                     found_dac["found"] = True
                     found_dac["obj"] = dac
                     dac_objects[found_dac["id"]] = found_dac
                 else:
-                    new_dac = {"name": "", "id": hex(addr), "chan": 0,"found": True, "obj": dac} 
+                    new_dac = {"name": "", "id": hex(addr), "chan": 0, "found": True, "obj": dac}
                     # Load existing config into the found DAC section
-                    existing_config = next((config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]), None)
+                    existing_config = next(
+                        (config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]),
+                        None)
                     if existing_config:
                         new_dac.update(existing_config)
                     dac_list.append(new_dac)
@@ -65,7 +67,6 @@ def initialize_dacs():
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
                 continue
-
 
         # Additional cleanup logic if needed
         dac_list = [item for item in dac_list if item["found"]]
@@ -82,6 +83,7 @@ def initialize_dacs():
 
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
+
 
 
 # Flask Routes
