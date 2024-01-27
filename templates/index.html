@@ -16,19 +16,19 @@
             color: #ffffff;
         }
 
-        h1.dark-mode {
-            color: #165d4c;
-        }
-
+        
         h1 {
             color: #333;
+        }
+
+        h1.dark-mode {
+            color: #0d7760;
         }
 
         .dac-box {
             border: 2px solid #007bff;
             padding: 10px;
             margin-bottom: 20px;
-            background-color: #6e6e6e;
         }
 
         form {
@@ -119,7 +119,8 @@
         function toggleDarkMode() {
             const h1 = document.h1;
             h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
-
+            const body = document.body;
+            body.classList.toggle('dark-mode'); 
             // You can also save the user's preference for dark mode in local storage
             const isDarkModeEnabled = body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDarkModeEnabled);
