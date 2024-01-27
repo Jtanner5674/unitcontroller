@@ -32,10 +32,6 @@ def initialize_dacs():
     dac_objects = {}
     dac_list = CFG.get("dac", [])
 
-    for item in dac_list:
-        if isinstance(item, dict):
-            item["found"] = False
-
     try:
         i2c = busio.I2C(board.SCL, board.SDA)
 
@@ -48,7 +44,7 @@ def initialize_dacs():
                 dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
 
                 found_dac = next((item for item in dac_list if item["id"] == hex(addr)), None)
-                if found_dac:
+                if found_dac and not found_dac["found"]:
                     found_dac["found"] = True
                     found_dac["obj"] = dac
                     dac_objects[found_dac["id"]] = found_dac
@@ -80,6 +76,7 @@ def initialize_dacs():
 
     except Exception as e:
         print("Error while scanning for DACs:", e)
+
 
 
 # Initialize DACs when the script starts

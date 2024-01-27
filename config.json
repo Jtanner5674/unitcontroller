@@ -1,24 +1,44 @@
 {
   "dac": [
     {
+      "id": "0x58",
+      "chan": "0",
+      "name": ""
+    },
+    {
+      "id": "0x59",
+      "chan": "0",
+      "name": "c"
+    },
+    {
+      "id": "0x5a",
+      "chan": "0",
+      "name": ""
+    },
+    {
+      "id": "0x5b",
+      "chan": "",
+      "name": ""
+    },
+    {
       "id": "0x5c",
-      "chan": "1",
-      "name": "ch1"
-    },
-    {
-      "id": "0x10",
       "chan": "0",
-      "name": "ch0"
+      "name": ""
     },
     {
-      "id": "0x20",
+      "id": "0x5d",
       "chan": "0",
-      "name": "channel 0"
+      "name": ""
     },
     {
-      "id": "0x60",
-      "chan": "1",
-      "name": "channel 1"
+      "id": "0x5e",
+      "chan": "0",
+      "name": ""
+    },
+    {
+      "id": "0x5f",
+      "chan": "0",
+      "name": ""
     }
   ]
 }
