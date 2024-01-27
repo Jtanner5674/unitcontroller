@@ -115,12 +115,12 @@ def set_voltage(addr):
     return set_voltage_action(addr, voltage)
 
 
-@app.route('/close<addr>', methods=['POST'])
+@app.route('/close1<addr>', methods=['POST'])
 def close1(addr):
     return set_voltage_action(addr, 2000)
 
 
-@app.route('/open<addr>', methods=['POST'])
+@app.route('/open1<addr>', methods=['POST'])
 def open1(addr):
     return set_voltage_action(addr, 10000)
 
