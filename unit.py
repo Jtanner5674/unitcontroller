@@ -100,19 +100,19 @@ def set_voltage_action(addr, value):
         return jsonify({'error': 'Invalid DAC ADDR'})
 
 
-@app.route('/set_voltage<int:addr>', methods=['POST'])
+@app.route('/set_voltage<addr>', methods=['POST'])
 def set_voltage(addr):
     voltage = float(request.form['voltage'])
     return set_voltage_action(addr, voltage)
 
 
-@app.route('/close<int:addr>', methods=['POST'])
-def close1(addr):
+@app.route('/close<addr>', methods=['POST'])
+def close(addr):
     return set_voltage_action(addr, 2000)
 
 
 @app.route('/open<int:addr>', methods=['POST'])
-def open1(addr):
+def open(addr):
     return set_voltage_action(addr, 10000)
 
 
