@@ -16,8 +16,16 @@ CFG = None  # Initialize CFG as None
 
 
 def load_config():
-    with open('config.json', 'r') as file:
-        return json.load(file)
+    try:
+        with open('config.json', 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print("Config file not found.")
+        return {}
+    except Exception as e:
+        print(f"Error loading config: {e}")
+        return {}
+
 
 
 def save_config(settings):
