@@ -53,7 +53,8 @@ def initialize_dacs():
                     found_dac["obj"] = dac
                     dac_objects[found_dac["id"]] = found_dac
                 else:
-                    new_dac = {"name": "", "id": hex(addr),"chan": 0, "found": True, "obj": dac} 
+                    new_dac = {"name": "", "id": hex(addr), "chan": 0,"found": True, "obj": dac} 
+                    # Load existing config into the found DAC section
                     existing_config = next((config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]), None)
                     if existing_config:
                         new_dac.update(existing_config)
@@ -64,6 +65,7 @@ def initialize_dacs():
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
                 continue
+
 
         # Additional cleanup logic if needed
         dac_list = [item for item in dac_list if item["found"]]
@@ -76,6 +78,7 @@ def initialize_dacs():
 
     except Exception as e:
         print("Error while scanning for DACs:", e)
+
 
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
