@@ -50,11 +50,10 @@ def initialize_dacs():
                 found_dac = next((item for item in dac_list if item["id"] == addr), None)
                 if found_dac:
                     found_dac["found"] = True
-                    found_dac["obj"] = dac  # Add the "obj" key to the dictionary
+                    found_dac["obj"] = dac
                     dac_objects[found_dac["id"]] = found_dac
                 else:
-                    new_dac = {"name": "", "id": hex(addr), "found": True, "obj": dac}  # Include the "obj" key
-                    # Load existing config into the found DAC section
+                    new_dac = {"name": "", "id": hex(addr),"chan": 0, "found": True, "obj": dac} 
                     existing_config = next((config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]), None)
                     if existing_config:
                         new_dac.update(existing_config)
