@@ -52,6 +52,7 @@ def initialize_dacs():
                     found_dac["found"] = True
                     found_dac["obj"] = dac
                     dac_objects[found_dac["id"]] = found_dac
+                    dac_objects[found_dac["chan"]] = found_dac
                 else:
                     new_dac = {"name": "", "id": hex(addr), "chan": 0, "found": True, "obj": dac}
                     # Load existing config into the found DAC section
