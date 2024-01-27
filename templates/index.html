@@ -41,6 +41,30 @@
             cursor: pointer;
             margin-right: 10px;
         }
+        /* Dark mode styles */
+        .dark-mode {
+            background-color: #121212;
+            color: #fff;
+        }
+
+        /* Style for the settings and dark mode buttons */
+        #settings-button,
+        #dark-mode-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 50%;
+        }
+
+        #settings-button img {
+            width: 20px;
+            height: 20px;
+        }
+
     </style>
     <script>
         // Function to handle form submissions asynchronously
@@ -78,6 +102,26 @@
                 console.error('Error:', error);
             });
         }
+        // Function to navigate to the settings page
+        function goToSettings() {
+            window.location.href = '/settings';
+        }
+
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+
+            // You can also save the user's preference for dark mode in local storage
+            const isDarkModeEnabled = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled);
+        }
+
+        // Check if dark mode preference is saved in local storage and apply it
+        const savedDarkMode = localStorage.getItem('darkMode');
+        if (savedDarkMode === 'true') {
+            toggleDarkMode(); // Enable dark mode if the preference is true
+        }
     </script>
 </head>
 <body>
@@ -90,13 +134,22 @@
             <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
                 <label for="voltage_{{ dac_id }}">Enter voltage (0-100%):</label>
                 <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step=".1">
-                <button type="submit">Set Voltage for DAC {{ dac_id }}</button>
+                <button type="submit">Set Voltage}</button>
             </form>
             
             <!-- Open and close the channels -->
-            <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close DAC {{ dac_id }}</button>
-            <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open DAC {{ dac_id }}</button>
+            <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close</button>
+            <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open</button>
         </div>
     {% endfor %}
+    <!-- Settings button in the top right -->
+    <div id="settings-button" onclick="goToSettings()">
+        <img src="settings-gear-icon.png" alt="Settings Gear Icon">
+    </div>
+
+    <!-- Dark mode button -->
+    <div id="dark-mode-button" onclick="toggleDarkMode()">
+        Dark Mode
+    </div>
 </body>
 </html>
