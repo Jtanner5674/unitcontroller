@@ -55,7 +55,7 @@
             padding: 10px;
             border-radius: 50%;
             z-index: 2;
-            scale: 2;
+            transform: scale(2);
         }
 
         #settings-button {
@@ -118,26 +118,6 @@
             // You can also save the user's preference for dark mode in local storage
             const isDarkModeEnabled = body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDarkModeEnabled);
-        }
-
-        // Check if dark mode preference is saved in local storage and apply it
-        const savedDarkMode = localStorage.getItem('darkMode');
-        if (savedDarkMode === 'true') {
-            toggleDarkMode(); // Enable dark mode if the preference is true
-        }
-        function toggleDarkMode() {
-            const body = document.body;
-            body.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
-
-            // You can also save the user's preference for dark mode in local storage
-            const isDarkModeEnabled = body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkModeEnabled);
-        }
-
-        // Check if dark mode preference is saved in local storage and apply it
-        const savedDarkMode = localStorage.getItem('darkMode');
-        if (savedDarkMode === 'true') {
-            toggleDarkMode(); // Enable dark mode if the preference is true
         }
     </script>
 </head>
