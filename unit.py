@@ -87,10 +87,10 @@ CFG = initialize_dacs()
 
 
 # Flask Routes
-
+print(dac_addresses)
 @app.route('/')
 def index():
-    return render_template('index.html', dac_objects=dac_objects)
+    return render_template('index.html', dac_objects=dac_objects, dac_addresses=dac_addresses)
 
 
 @app.route('/settings')

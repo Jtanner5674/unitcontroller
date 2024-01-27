@@ -83,9 +83,9 @@
 <body>
     <h1>DAC Control Interface</h1>
 
-    {% for dac in dac_objects.dac_addresses.dac %}
+    {% for dac in dac_addresses.dac %}
     {% if dac.found %}
-        {% set dac_config = dac_objects.existing_configs.dac | selectattr('id', 'equalto', dac.id) | list | first %}
+        {% set dac_config = existing_configs.dac | selectattr('id', 'equalto', dac.id) | list | first %}
         <div class="dac-box">
             <h2>{{ dac_config.name or "Unnamed DAC" }}</h2>
             <!-- Form to set voltage for Channel 1 -->
@@ -101,6 +101,5 @@
         </div>
     {% endif %}
 {% endfor %}
-
 </body>
 </html>
