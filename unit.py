@@ -40,7 +40,7 @@ def initialize_dacs():
         i2c = busio.I2C(board.SCL, board.SDA)
 
         print("Scanning I2C bus for DACs...")
-        for addr in range(0x58, 0x60):  # Adjust the range based on your DAC address range
+        for addr in range(0x58, 0x60):  
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
@@ -55,7 +55,6 @@ def initialize_dacs():
                     dac_objects[found_dac["chan"]] = found_dac
                 else:
                     new_dac = {"name": "", "id": hex(addr), "chan": 0, "found": True, "obj": dac}
-                    # Load existing config into the found DAC section
                     existing_config = next(
                         (config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]),
                         None)
