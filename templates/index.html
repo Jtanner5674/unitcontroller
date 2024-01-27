@@ -44,7 +44,7 @@
 <body>
     <h1>DAC Control Interface</h1>
 
-    {% for dac_id, dac in dac_objects.items() %}
+    {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
         <!-- Form to set voltage for Channel 1 -->
         <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
             <label for="voltage_{{ dac_id }}">Enter voltage (0-100%):</label>
@@ -53,8 +53,8 @@
         </form>
         
         <!-- Open and close the channels -->
-        <button onclick="sendPostRequest('/close{{ dac_id }}')">Close DAC {{ dac_id }}</button>
-        <button onclick="sendPostRequest('/open{{ dac_id }}')">Open DAC {{ dac_id }}</button>
+        <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close DAC {{ dac_id }}</button>
+        <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open DAC {{ dac_id }}</button>
     {% endfor %}
 </body>
 </html>
