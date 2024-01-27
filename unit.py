@@ -40,7 +40,7 @@ def initialize_dacs():
         i2c = busio.I2C(board.SCL, board.SDA)
 
         print("Scanning I2C bus for DACs...")
-        for addr in range(0x58, 0x60):  # Scan addresses from 0x58 to 0x5F
+        for addr in range(0x58, 0x60):
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
@@ -50,16 +50,18 @@ def initialize_dacs():
                 found_dac = next((item for item in dac_list if item["id"] == addr), None)
                 if found_dac:
                     found_dac["found"] = True
-                    dac_objects[found_dac["id"]] = found_dac  # Update dac_objects
+                    found_dac["obj"] = dac  # Add the "obj" key to the dictionary
+                    dac_objects[found_dac["id"]] = found_dac
                 else:
-                    new_dac = {"name": "", "id": hex(addr), "found": True}
+                    new_dac = {"name": "", "id": hex(addr), "found": True, "obj": dac}  # Include the "obj" key
                     dac_list.append(new_dac)
-                    dac_objects[new_dac["id"]] = new_dac  # Update dac_objects
+                    dac_objects[new_dac["id"]] = new_dac
 
                 print(f"DAC found at address {hex(addr)}.")
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
                 continue
+
 
         # Additional cleanup logic if needed
         dac_list = [item for item in dac_list if item["found"]]
@@ -111,7 +113,7 @@ def close(addr):
     return set_voltage_action(addr, 2000)
 
 
-@app.route('/open<int:addr>', methods=['POST'])
+@app.route('/open<addr>', methods=['POST'])
 def open(addr):
     return set_voltage_action(addr, 10000)
 
