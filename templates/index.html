@@ -8,6 +8,12 @@
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
             margin: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
         }
 
         h1 {
@@ -105,6 +111,20 @@
         }
 
         // Function to toggle dark mode
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+
+            // You can also save the user's preference for dark mode in local storage
+            const isDarkModeEnabled = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled);
+        }
+
+        // Check if dark mode preference is saved in local storage and apply it
+        const savedDarkMode = localStorage.getItem('darkMode');
+        if (savedDarkMode === 'true') {
+            toggleDarkMode(); // Enable dark mode if the preference is true
+        }
         function toggleDarkMode() {
             const body = document.body;
             body.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
