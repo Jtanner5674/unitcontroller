@@ -40,7 +40,7 @@ def initialize_dacs():
         i2c = busio.I2C(board.SCL, board.SDA)
 
         print("Scanning I2C bus for DACs...")
-        for addr in range(0x08, 0x78):  # Adjust the range based on your DAC address range
+        for addr in range(0x58, 0x60):  # Adjust the range based on your DAC address range
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
