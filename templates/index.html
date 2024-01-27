@@ -42,17 +42,26 @@
             margin-right: 10px;
         }
 
-        /* Style for the settings and dark mode buttons */
         #settings-button,
         #dark-mode-button {
             position: fixed;
-            top: 20px;
-            right: 20px;
             cursor: pointer;
             padding: 10px;
-            background-color: transparent;
             border-radius: 50%;
+            z-index: 2;
+            size: 20px;
         }
+
+        #settings-button {
+            top: 20px;
+            right: 60px;
+        }
+
+        #dark-mode-button {
+            top: 20px;
+            right: 20px;
+        }
+
     </style>
     <script>
         // Function to handle form submissions asynchronously
