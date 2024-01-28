@@ -35,22 +35,6 @@
         button#saveAllButton {
             margin-top: 20px;
         }
-
-        /* Dark mode styles */
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
-
-        /* Light bulb and moon styles */
-        #dark-mode-button {
-            font-size: 2em;
-            cursor: pointer;
-        }
-
-        #dark-mode-button.moon {
-            color: #f4f4f4; /* moon color */
-        }
     </style>
 </head>
 <body>
@@ -66,37 +50,6 @@
             <!-- Offline DACs will be dynamically generated here -->
         </div>
     </div>
-
-    <!-- Dark mode button -->
-    <div id="dark-mode-button" onclick="toggleDarkMode()">
-        💡
-    </div>
-
-    <button id="saveAllButton" onclick="saveAllConfig()">Save All</button>
-
-    <script>
-        function toggleDarkMode() {
-            const body = document.body;
-            const darkModeButton = document.getElementById('dark-mode-button');
-
-            body.classList.toggle('dark-mode');
-            darkModeButton.classList.toggle('moon', body.classList.contains('dark-mode'));
-
-            // Save the user's preference for dark mode in local storage
-            const isDarkModeEnabled = body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkModeEnabled);
-        }
-
-        // Check if dark mode is enabled and apply it
-        document.addEventListener('DOMContentLoaded', function () {
-            const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
-            if (isDarkModeEnabled) {
-                toggleDarkMode();
-            }
-
-            // Fetch configuration data when the page loads
-            fetchConfig();
-        });
 
     <script>
       function fetchConfig() {
