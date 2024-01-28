@@ -67,6 +67,73 @@
             border-radius: 50%;
             z-index: 2;
             transform: scale(2);
+        }<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DAC Control</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h1.dark-mode {
+            color: #0d7760;
+        }
+
+        .dac-box {
+            border: 2px solid #007bff;
+            padding: 10px;
+            margin-bottom: 20px;
+            max-width: 200px;
+        }
+
+        form {
+            margin-bottom: 10px;
+            display:inline-block;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            display:inline;
+            margin: 0 auto;
+        }
+
+        #settings-button,
+        #dark-mode-button {
+            position: fixed;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            z-index: 2;
+            transform: scale(2);
         }
 
         #settings-button {
@@ -79,6 +146,10 @@
             right: 20px;
         }
 
+        /* Light bulb and moon styles */
+        #dark-mode-button.moon {
+            color: #f4f4f4; /* moon color */
+        }
     </style>
     <script>
         // Function to handle form submissions asynchronously
@@ -116,6 +187,7 @@
                 console.error('Error:', error);
             });
         }
+
         // Function to navigate to the settings page
         function goToSettings() {
             window.location.href = '/settings';
@@ -131,11 +203,19 @@
             const isDarkModeEnabled = body.classList.contains('dark-mode');
             localStorage.setItem('darkMode', isDarkModeEnabled);
         }
+
+        // Check if dark mode is enabled and apply it
+        document.addEventListener('DOMContentLoaded', function () {
+            const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+            if (isDarkModeEnabled) {
+                toggleDarkMode();
+            }
+        });
     </script>
 </head>
 <body>
     <h1>DAC Control Interface</h1>
-
+    
     {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
         <div class="dac-box">
             <h2>{{ dac_name or "Unnamed DAC" }}</h2>
