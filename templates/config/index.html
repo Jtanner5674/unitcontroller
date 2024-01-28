@@ -54,11 +54,6 @@
     </style>
 </head>
 <body>
-    <!-- Home button -->
-    <button id="home-button" onclick="goToHome()">
-        🏠 Home
-    </button>
-
     <h1>DAC Configuration</h1>
 
     <div id="dacSettings">
@@ -73,14 +68,38 @@
     </div>
 
     <!-- Dark mode button -->
-    <div id="dark-mode-button" onclick="toggleDarkModeSettings()">
+    <div id="dark-mode-button" onclick="toggleDarkMode()">
         💡
     </div>
 
     <button id="saveAllButton" onclick="saveAllConfig()">Save All</button>
 
     <script>
-        function fetchConfig() {
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeButton = document.getElementById('dark-mode-button');
+
+            body.classList.toggle('dark-mode');
+            darkModeButton.classList.toggle('moon', body.classList.contains('dark-mode'));
+
+            // Save the user's preference for dark mode in local storage
+            const isDarkModeEnabled = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled);
+        }
+
+        // Check if dark mode is enabled and apply it
+        document.addEventListener('DOMContentLoaded', function () {
+            const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+            if (isDarkModeEnabled) {
+                toggleDarkMode();
+            }
+
+            // Fetch configuration data when the page loads
+            fetchConfig();
+        });
+
+    <script>
+      function fetchConfig() {
             fetch('/config')
                 .then(response => response.json())
                 .then(data => {
@@ -134,6 +153,8 @@
                 .catch(error => console.error('Error:', error));
         }
 
+
+
         function saveAllConfig() {
             const allSettings = [];
 
@@ -177,25 +198,24 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        // Function to navigate to the home page
-        function goToHome() {
-            window.location.href = '/';
-        }
+        document.addEventListener('DOMContentLoaded', fetchConfig);
 
-        // Function to toggle dark mode
-        function toggleDarkModeSettings() {
-            const body = document.body;
-            const darkModeButton = document.getElementById('dark-mode-button');
+        const coll = document.querySelector('.collapsible');
+        coll.addEventListener('click', function () {
+            this.classList.toggle('active');
+            const content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        });
 
-            body.classList.toggle('dark-mode');
-            darkModeButton.classList.toggle('moon', body.classList.contains('dark-mode'));
-
-            // You can also save the user's preference for dark mode in local storage
-            const isDarkModeEnabled = body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkModeEnabled);
-        }
-
-        // Check if dark mode is enabled and apply it
-        document.addEventListener('DOMContentLoaded', function () {
-            const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
-            if (isDark
+        const saveAllButton = document.createElement('button');
+        saveAllButton.id = 'saveAllButton';
+        saveAllButton.textContent = 'Save All';
+        saveAllButton.addEventListener('click', saveAllConfig);
+        document.body.appendChild(saveAllButton);
+    </script>
+</body>
+</html>
