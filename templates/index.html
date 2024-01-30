@@ -149,15 +149,18 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Set initial dark mode based on user's preference in local storage
-        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
-        const body = document.body;
-        body.classList.toggle('dark-mode', isDarkModeEnabled);
-        const h1 = document.querySelector('h1');
+    // Set initial dark mode based on user's preference in local storage
+    const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+    const body = document.body;
+    body.classList.toggle('dark-mode', isDarkModeEnabled);
+    
+    const h1 = document.querySelector('h1');
+    h1.classList.toggle('dark-mode', isDarkModeEnabled);
 
-        const toggleButton = document.getElementById('dark-mode-button');
-        toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
-    });
+    const toggleButton = document.getElementById('dark-mode-button');
+    toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+});
+
 
     </script>
 </head>
