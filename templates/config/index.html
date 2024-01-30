@@ -90,7 +90,7 @@
         <!-- Active DACs settings boxes will be dynamically generated here -->
     </div>
 
-    <button class="collapsible dark-mode">Offline DACs</button>
+    <button class="collapsible\">Offline DACs</button>
     <div class="content">
         <div id="offlineSettings">
             <!-- Offline DACs will be dynamically generated here -->
@@ -222,6 +222,8 @@
         h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
         const body = document.body;
         body.classList.toggle('dark-mode');
+        const collapse = document.querySelector('button.collapsable');;
+        collapse.classList.toggle('dark-mode');
 
         // Toggle the symbols based on the mode
         const lightModeSymbol = '💡';
