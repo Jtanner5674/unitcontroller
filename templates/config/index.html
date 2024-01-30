@@ -223,8 +223,6 @@
         h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
         const body = document.body;
         body.classList.toggle('dark-mode');
-        
-        // Correcting the class name from 'collapsable' to 'collapsible'
         const collapse = document.querySelector('button.collapsible');
         collapse.classList.toggle('dark-mode');
 
@@ -247,6 +245,10 @@
         const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
         const body = document.body;
         body.classList.toggle('dark-mode', isDarkModeEnabled);
+        const h1 = document.querySelector('h1');
+        h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
+        const collapse = document.querySelector('button.collapsible');
+        collapse.classList.toggle('dark-mode', isDarkModeEnabled);
 
         const toggleButton = document.getElementById('dark-mode-button');
         toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
