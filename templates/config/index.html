@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DAC Configuration</title>
+    <title>Controller Settings</title>
     <style>
         .collapsible {
             background-color: #eee;
@@ -35,6 +35,47 @@
         button#saveAllButton {
             margin-top: 20px;
         }
+
+        #settings-button,
+        #dark-mode-button {
+            position: fixed;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            z-index: 2;
+            transform: scale(2);
+        }
+
+        #settings-button {
+            top: 20px;
+            right: 104px;
+        }
+
+        #dark-mode-button {
+            top: 20px;
+            right: 20px;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h1.dark-mode {
+            color: #0d7760;
+        }
+
     </style>
 </head>
 <body>
@@ -169,6 +210,30 @@
         saveAllButton.textContent = 'Save All';
         saveAllButton.addEventListener('click', saveAllConfig);
         document.body.appendChild(saveAllButton);
+
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            const h1 = document.querySelector('h1');
+            h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+            const body = document.body;
+            body.classList.toggle('dark-mode'); 
+            // You can also save the user's preference for dark mode in local storage
+            const isDarkModeEnabled = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled);
+        }
+
+        function goToHome() {
+            window.location.href = '/';
+        }
     </script>
+    <!-- Settings button in the top right -->
+    <div id="settings-button" onclick="goToHome()">
+        🏠
+    </div>
+
+    <!-- Dark mode button -->
+    <div id="dark-mode-button" onclick="toggleDarkMode()">
+        💡
+    </div>
 </body>
 </html>
