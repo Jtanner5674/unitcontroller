@@ -213,14 +213,23 @@
 
         // Function to toggle dark mode
         function toggleDarkMode() {
-            const h1 = document.querySelector('h1');
-            h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
-            const body = document.body;
-            body.classList.toggle('dark-mode'); 
-            // You can also save the user's preference for dark mode in local storage
-            const isDarkModeEnabled = body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkModeEnabled);
-        }
+        const h1 = document.querySelector('h1');
+        h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+        const body = document.body;
+        body.classList.toggle('dark-mode'); 
+
+        // Toggle the symbols based on the mode
+        const lightModeSymbol = '💡';
+        const darkModeSymbol = '🌙';
+        const toggleButton = document.getElementById('dark-mode-button');
+        const currentSymbol = toggleButton.textContent;
+
+        toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
+
+        // You can also save the user's preference for dark mode in local storage
+        const isDarkModeEnabled = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkModeEnabled);
+    }
 
         function goToHome() {
             window.location.href = '/';
@@ -233,7 +242,7 @@
 
     <!-- Dark mode button -->
     <div id="dark-mode-button" onclick="toggleDarkMode()">
-        💡
+        🌙
     </div>
 </body>
 </html>
