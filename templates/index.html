@@ -32,10 +32,16 @@
             color: #0d7760;
         }
 
+        #boxes-container {
+            display: flex;
+            flex-wrap: wrap;  /* This ensures boxes wrap to the next row when there's not enough space */
+            justify-content: flex-start;  /* This positions the boxes to the left */
+        }
+
         .dac-box {
             border: 2px solid #007bff;
             padding: 10px;
-            margin-bottom: 20px;
+            margin: 10px;
             max-width: 200px;
         }
 
@@ -86,6 +92,7 @@
             right: 20px;
         }
 
+        
     </style>
     <script>
         // Function to handle form submissions asynchronously
@@ -167,10 +174,11 @@
 <body>
     <h1>DAC Control Interface</h1>
 
-    {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
-        <div class="dac-box">
-            <!-- Display DAC Name or "Unnamed DAC" -->
-            <h2>{{ dac.name or "Unnamed DAC" }}</h2>
+    <div id="boxes-container">
+        {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
+            <div class="dac-box">
+                <!-- Display DAC Name or "Unnamed DAC" -->
+                <h2>{{ dac.name or "Unnamed DAC" }}</h2>
             
             <!-- Form to set voltage for Channel 1 -->
             <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
