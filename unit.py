@@ -90,7 +90,9 @@ CFG = initialize_dacs()
 print(dac_addresses)
 @app.route('/')
 def index():
-    return render_template('index.html', dac_objects=dac_objects, dac_addresses=dac_addresses)
+    existing_configs = load_config()
+    return render_template('index.html', dac_objects=dac_objects, dac_addresses=dac_addresses, existing_configs=existing_configs)
+
 
 
 @app.route('/settings')
