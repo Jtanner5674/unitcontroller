@@ -87,18 +87,25 @@
             right: 20px;
         }
 
-        .container {
+        #dacSettings .container,
+        #offlineSettings .container {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;  /* Prevent wrapping to the next line */
             border: 2px solid #007bff;
-            padding: 10px;
             margin: 10px;
             max-width: 200px;
-            height: 200px;
             overflow: auto;
-            flex-direction: column;
-            align-items: flex-start;
-      }
+        }
+
+        #dacSettings .container h2,
+        #offlineSettings .container h2,
+        #dacSettings .container label,
+        #offlineSettings .container label,
+        #dacSettings .container input,
+        #offlineSettings .container input {
+            margin: 5px;
+        }
+
 
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
