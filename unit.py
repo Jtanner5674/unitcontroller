@@ -105,12 +105,11 @@ def set_voltage_action(addr, value):
         addr_int = int(addr, 16)  # Convert hex string to integer for comparison
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
         dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
+        print('message:', f'{dac["name"]} set to {value}V')
         return jsonify({'message': f'{dac["name"]} set to {value}V'})
-        print('message: ' f'{dac["name"]} set to {value}V')
     except StopIteration:
-        return jsonify({'error': 'Invalid DAC ADDR'})
         print('error: Invalid DAC ADDR')
-
+        return jsonify({'error': 'Invalid DAC ADDR'})
 
 @app.route('/set_voltage<addr>', methods=['POST'])
 def set_voltage(addr):
