@@ -113,6 +113,7 @@ def set_voltage_action(addr, value):
 @app.route('/set_voltage<addr>', methods=['POST'])
 def set_voltage(addr):
     voltage = float(request.form['voltage'])
+    voltage = int((voltage / 100.0) * (10000 - 2000) + 2000)
     print(voltage)
     return set_voltage_action(addr, voltage)
 
