@@ -87,20 +87,31 @@
             right: 20px;
         }
 
+        /* Added container styles */
+        .container {
+            margin-bottom: 20px;
+        }
+
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
 <body>
     <h1>DAC Configuration</h1>
 
-    <div id="dacSettings">
-        <!-- Active DACs settings boxes will be dynamically generated here -->
+    <!-- Container for Active DAC Settings -->
+    <div class="container" id="activeDacContainer">
+        <div id="dacSettings">
+            <!-- Active DACs settings boxes will be dynamically generated here -->
+        </div>
     </div>
 
     <button class="collapsible">Offline DACs</button>
     <div class="content">
-        <div id="offlineSettings">
-            <!-- Offline DACs will be dynamically generated here -->
+        <!-- Container for Offline DAC Settings -->
+        <div class="container" id="offlineDacContainer">
+            <div id="offlineSettings">
+                <!-- Offline DACs will be dynamically generated here -->
+            </div>
         </div>
     </div>
 
