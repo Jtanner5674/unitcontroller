@@ -147,6 +147,9 @@
                     const dacSettingsContainer = document.getElementById('dacSettings');
                     const offlineSettingsContainer = document.getElementById('offlineSettings');
     
+                    dacSettingsContainer.innerHTML = ''; // Clear existing content
+                    offlineSettingsContainer.innerHTML = ''; // Clear existing content
+    
                     dacAddresses.forEach(dac => {
                         const hexAddress = dac.id;
                         if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
@@ -211,24 +214,26 @@
                 .catch(error => console.error('Error:', error));
         }
     
-        document.addEventListener('DOMContentLoaded', fetchConfig);
+        document.addEventListener('DOMContentLoaded', function () {
+            fetchConfig();
     
-        const coll = document.querySelector('.collapsible');
-        coll.addEventListener('click', function () {
-            this.classList.toggle('active');
-            const content = this.nextElementSibling;
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-            } else {
-                content.style.maxHeight = content.scrollHeight + 'px';
-            }
+            const coll = document.querySelector('.collapsible');
+            coll.addEventListener('click', function () {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
+    
+            const saveAllButton = document.createElement('button');
+            saveAllButton.id = 'saveAllButton';
+            saveAllButton.textContent = 'Save All';
+            saveAllButton.addEventListener('click', saveAllConfig);
+            document.body.appendChild(saveAllButton);
         });
-    
-        const saveAllButton = document.createElement('button');
-        saveAllButton.id = 'saveAllButton';
-        saveAllButton.textContent = 'Save All';
-        saveAllButton.addEventListener('click', saveAllConfig);
-        document.body.appendChild(saveAllButton);
     
         function toggleDarkMode() {
             const h1 = document.querySelector('h1');
@@ -266,6 +271,7 @@
             window.location.href = '/';
         }
     </script>
+    
     
     <!-- Settings button in the top right -->
     <div id="settings-button" onclick="goToHome()">
