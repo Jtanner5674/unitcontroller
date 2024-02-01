@@ -101,20 +101,16 @@
     <h1>DAC Configuration</h1>
 
     <!-- Container for Active DAC Settings -->
-    <div class="container" id="activeDacContainer">
         <div id="dacSettings">
             <!-- Active DACs settings boxes will be dynamically generated here -->
         </div>
-    </div>
 
     <button class="collapsible">Offline DACs</button>
     <div class="content">
         <!-- Container for Offline DAC Settings -->
-        <div class="container" id="offlineDacContainer">
             <div id="offlineSettings">
                 <!-- Offline DACs will be dynamically generated here -->
             </div>
-        </div>
     </div>
 
     <script>
@@ -137,12 +133,14 @@
                             // Create settings box for online DACs
                             const settingsBox = document.createElement('div');
                             settingsBox.innerHTML = `
+                            <div class="container" id="activeDacContainer">
                                 <h2>${hexAddress}</h2>
                                 <label for="chan-${hexAddress}">Channel:</label>
                                 <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1">
                                 <label for="name-${hexAddress}">Name:</label>
                                 <input type="text" id="name-${hexAddress}" name="name">
                                 <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
+                            </div>
                             `;
                             document.getElementById('dacSettings').appendChild(settingsBox);
 
@@ -159,12 +157,14 @@
                     offlineDacs.forEach(offlineDac => {
                         const settingsBox = document.createElement('div');
                         settingsBox.innerHTML = `
+                        <div class="container" id="offlineDacContainer">
                             <h2>${offlineDac.id}</h2>
                             <label for="chan-offline-${offlineDac.id}">Channel:</label>
                             <input type="number" id="chan-offline-${offlineDac.id}" name="chan" value="${offlineDac.chan || '0'}" min="0" max="1">
                             <label for="name-offline-${offlineDac.id}">Name:</label>
                             <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name || ''}">
                             <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
+                        </div>    
                         `;
                         document.getElementById('offlineSettings').appendChild(settingsBox);
                     });
