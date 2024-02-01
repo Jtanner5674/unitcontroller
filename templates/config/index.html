@@ -35,6 +35,8 @@
             outline: none;
             font-size: 15px;
             transition: background-color 0.3s;
+            display: flex;
+            justify-content: space-between;
         }
 
         .collapsible.dark-mode {
@@ -42,8 +44,13 @@
             color: cornsilk;
         }
 
-        .active, .collapsible:hover {
+        .active,
+        .collapsible:hover {
             background-color: #ccc;
+        }
+
+        .content {
+            display: none; /* Hide content by default */
         }
 
         .container {
@@ -56,6 +63,7 @@
             overflow: auto;
             flex: 1; /* Distribute available space equally among all containers */
         }
+
 
 
         label {
@@ -92,15 +100,7 @@
             right: 20px;
         }
 
-        .container {
-            display: inline-block;
-            border: 2px solid #007bff;
-            padding: 10px;
-            margin: 10px;
-            max-width: 200px;
-            height: 200px;
-            overflow: auto;
-      }
+        
 
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
