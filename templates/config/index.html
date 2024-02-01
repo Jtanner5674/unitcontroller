@@ -155,7 +155,6 @@
                             }
 
                             // Create settings box for online DACs
-                        offlineDacs.forEach(offlineDac => {    
                             const settingsBox = document.createElement('div');
                             settingsBox.innerHTML = `
                             <div class="container" id="activeDacContainer">
@@ -168,7 +167,7 @@
                             </div>
                             `;
                             document.getElementById('dacSettings').appendChild(settingsBox);
-                        });
+
                             // Find existing config based on the address
                             const existingConfig = existingConfigs.find(config => config.id === hexAddress);
                             if (existingConfig) {
