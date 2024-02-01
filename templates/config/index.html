@@ -35,8 +35,6 @@
             outline: none;
             font-size: 15px;
             transition: background-color 0.3s;
-            display: flex;
-            justify-content: space-between; /* Align button and icon to the right */
         }
 
         .collapsible.dark-mode {
@@ -44,14 +42,6 @@
             color: cornsilk;
         }
 
-        .active,
-        .collapsible:hover {
-            background-color: #ccc;
-        }
-
-        .content {
-            display: none; /* Hide content by default */
-            overflow: hidden;
 
 
         .container {
@@ -64,7 +54,6 @@
             overflow: auto;
             flex: 1; /* Distribute available space equally among all containers */
         }
-
 
 
         label {
@@ -101,7 +90,15 @@
             right: 20px;
         }
 
-        
+        .container {
+            display: inline-block;
+            border: 2px solid #007bff;
+            padding: 10px;
+            margin: 10px;
+            max-width: 200px;
+            height: 200px;
+            overflow: auto;
+      }
 
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
@@ -109,14 +106,18 @@
 <body>
     <h1>DAC Configuration</h1>
 
-    <button class="collapsible">Active DACs</button>
-    <div class="content" id="dacSettings">
-        <!-- Active DACs settings boxes will be dynamically generated here -->
+    <button class="collapsible">Offline DACs</button>
+        <div id="dacSettings">
+            <!-- Active DACs settings boxes will be dynamically generated here -->
+        </div>
     </div>
 
     <button class="collapsible">Offline DACs</button>
-    <div class="content" id="offlineSettings">
-        <!-- Offline DACs will be dynamically generated here -->
+    <div class="content">
+        <!-- Container for Offline DAC Settings -->
+            <div id="offlineSettings">
+                <!-- Offline DACs will be dynamically generated here -->
+            </div>
     </div>
 
     <script>
@@ -144,9 +145,6 @@
     
                     const dacSettingsContainer = document.getElementById('dacSettings');
                     const offlineSettingsContainer = document.getElementById('offlineSettings');
-    
-                    dacSettingsContainer.innerHTML = ''; // Clear existing content
-                    offlineSettingsContainer.innerHTML = ''; // Clear existing content
     
                     dacAddresses.forEach(dac => {
                         const hexAddress = dac.id;
@@ -212,26 +210,24 @@
                 .catch(error => console.error('Error:', error));
         }
     
-        document.addEventListener('DOMContentLoaded', function () {
-            fetchConfig();
+        document.addEventListener('DOMContentLoaded', fetchConfig);
     
-            const coll = document.querySelector('.collapsible');
-            coll.addEventListener('click', function () {
-                this.classList.toggle('active');
-                const content = this.nextElementSibling;
-                if (content.style.maxHeight) {
-                    content.style.maxHeight = null;
-                } else {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                }
-            });
-    
-            const saveAllButton = document.createElement('button');
-            saveAllButton.id = 'saveAllButton';
-            saveAllButton.textContent = 'Save All';
-            saveAllButton.addEventListener('click', saveAllConfig);
-            document.body.appendChild(saveAllButton);
+        const coll = document.querySelector('.collapsible');
+        coll.addEventListener('click', function () {
+            this.classList.toggle('active');
+            const content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
         });
+    
+        const saveAllButton = document.createElement('button');
+        saveAllButton.id = 'saveAllButton';
+        saveAllButton.textContent = 'Save All';
+        saveAllButton.addEventListener('click', saveAllConfig);
+        document.body.appendChild(saveAllButton);
     
         function toggleDarkMode() {
             const h1 = document.querySelector('h1');
@@ -269,7 +265,6 @@
             window.location.href = '/';
         }
     </script>
-    
     
     <!-- Settings button in the top right -->
     <div id="settings-button" onclick="goToHome()">
