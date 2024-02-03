@@ -149,7 +149,7 @@ class DFRobot_GP8403():
       self.voltage = 5000
     elif mode == OUTPUT_RANGE_10V :
       self.voltage = 10000
-    self.i2c.write_word_data(self._addr,self.outPutSetRange,mode)
+    self.i2c.write_word_data(self._addr,self.outPutSetRange,int(mode))
 
   def set_DAC_out_voltage(self,data,channel):
     '''!
