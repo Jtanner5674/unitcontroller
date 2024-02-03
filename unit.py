@@ -102,9 +102,12 @@ def settings():
 
 def set_voltage_action(addr, value):
     try:
+        
         addr_int = int(addr, 16)  # Convert hex string to integer for comparison
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
-        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
+        dacobj = DFRobot_GP8403.DFRobot_GP8403(addr)
+        dacobj.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
+        dacobj.set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
         volts = float(value / 1000)
         print(f'{dac["name"]} set to {volts}V on channel {dac["chan"]}')
         return jsonify({'message': f'{dac["name"]} set to {volts}V'})
