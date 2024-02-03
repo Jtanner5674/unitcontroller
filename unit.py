@@ -105,7 +105,7 @@ def set_voltage_action(addr, value):
         
         addr_int = int(addr, 16)  # Convert hex string to integer for comparison
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
-        dacobj = DFRobot_GP8403.DFRobot_GP8403(addr)
+        dacobj = DFRobot_GP8403.DFRobot_GP8403(hex(addr_int))
         dacobj.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
         dacobj.set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
         volts = float(value / 1000)
