@@ -106,7 +106,7 @@ def set_voltage_action(addr, value):
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
         dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
         volts = float(value / 1000)
-        print(f'{dac["name"]} set to {volts}V on channel {chan}')
+        print(f'{dac["name"]} set to {volts}V on channel {dac["chan"]}')
         return jsonify({'message': f'{dac["name"]} set to {volts}V'})
     except StopIteration:
         print('error: Invalid DAC ADDR')
