@@ -2,73 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DAC Control</title>
+    <title>PSU Valve Controller</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #484848;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h1.dark-mode {
+            color: #0d7760;
+        }
+
+        #boxes-container {
+            display: flex;
+            flex-wrap: wrap;  /* This ensures boxes wrap to the next row when there's not enough space */
+            justify-content: flex-start;  /* This positions the boxes to the left */
+        }
+
+        .dac-box {
+            border: 2px solid #007bff;
+            padding: 10px;
+            margin: 10px;
+            max-width: 200px;
+        }
+
+        form {
+            margin-bottom: 10px;
+            display:inline-block;
+            margin-top: 10px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        button {
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+        display:inline;
+        margin: 0 auto;
+        }
+
+
+        #settings-button,
+        #dark-mode-button {
+            position: fixed;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            z-index: 2;
+            transform: scale(2);
+        }
+
+        #settings-button {
+            top: 20px;
+            right: 104px;
+        }
+
+        #dark-mode-button {
+            top: 20px;
+            right: 20px;
+        }
+
+        
+    </style>
     <script>
         // Function to handle form submissions asynchronously
         function submitForm(event, url) {
-        console.log('Form submitted:', url, event);
-        event.preventDefault(); // Prevent default form submission behavior
-        let formData = new FormData(event.target);
-        console.log(formData); // Move this statement here
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            // Handle the response from the Flask server if needed
-            console.log('Form submitted successfully!');
-        })
-        .catch(error => {
-            // Handle any errors that occurred during the fetch
-            console.error('Error submitting form:', error);
-        });
+            console.log('Form submitted:', url, event);
+            event.preventDefault(); // Prevent default form submission behavior
+            let formData = new FormData(event.target);
+            console.log(formData); // Move this statement here
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Handle the response from the Flask server if needed
+                console.log('Form submitted successfully!');
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the fetch
+                console.error('Error submitting form:', error);
+            });
+        }
+
+        function sendPostRequest(url) {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({}) // Add any payload if required
+            })
+            .then(response => {
+                // Handle the response as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        // Function to navigate to the settings page
+        function goToSettings() {
+            window.location.href = '/settings';
+        }
+
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+        const h1 = document.querySelector('h1');
+        h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+        const body = document.body;
+        body.classList.toggle('dark-mode'); 
+
+        // Toggle the symbols based on the mode
+        const lightModeSymbol = '💡';
+        const darkModeSymbol = '🌙';
+        const toggleButton = document.getElementById('dark-mode-button');
+        const currentSymbol = toggleButton.textContent;
+
+        toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
+
+        // You can also save the user's preference for dark mode in local storage
+        const isDarkModeEnabled = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkModeEnabled);
     }
 
+    document.addEventListener('DOMContentLoaded', function () {
+    // Set initial dark mode based on user's preference in local storage
+    const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+    const body = document.body;
+    body.classList.toggle('dark-mode', isDarkModeEnabled);
+    
+    const h1 = document.querySelector('h1');
+    h1.classList.toggle('dark-mode', isDarkModeEnabled);
+
+    const toggleButton = document.getElementById('dark-mode-button');
+    toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+});
+
+
     </script>
+    <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
 <body>
     <h1>DAC Control Interface</h1>
 
-    {% for dac_id, dac in dac_objects.items() %}
-        <!-- Form to set voltage for Channel 1 -->
-        <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
-            <label for="voltage1_{{ dac_id }}">Enter voltage for Channel 1 (0-100%):</label>
-            <input type="range" id="voltage1_{{ dac_id }}" name="voltage1" min="0" max="100" step=".1">
-            <button type="submit">Set Voltage for Channel 1 on DAC {{ dac_id }}</button>
-        </form>
-
-        <!-- Form to set voltage for Channel 2 -->
-        <form onsubmit="submitForm(event, '/set_voltage2{{ dac_id }}')" method="post">
-            <label for="voltage2_{{ dac_id }}">Enter voltage for Channel 2 (0-100%):</label>
-            <input type="range" id="voltage2_{{ dac_id }}" name="voltage2" min="0" max="100" step=".1">
-            <button type="submit">Set Voltage for Channel 2 on DAC {{ dac_id }}</button>
-        </form>
-        
-        <!-- open and closing the channels -->
-        <a href="#" onclick="sendPostRequest('/close1{{ dac_id }}')">Close Channel 1 on DAC {{ dac_id }}</a>
-        <a href="#" onclick="sendPostRequest('/close2{{ dac_id }}')">Close Channel 2 on DAC {{ dac_id }}</a>
-        <a href="#" onclick="sendPostRequest('/open1{{ dac_id }}')">Open Channel 1 on DAC {{ dac_id }}</a>
-        <a href="#" onclick="sendPostRequest('/open2{{ dac_id }}')">Open Channel 2 on DAC {{ dac_id }}</a>
-        
-        
-        <script>
-            function sendPostRequest(url) {
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({}) // Add any payload if required
-                })
-                .then(response => {
-                    // Handle the response as needed
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-        </script>
-
+    <div id="boxes-container">
+        {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
+            <div class="dac-box">
+                <!-- Display DAC Name or "Unnamed DAC" -->
+                <h2>{{ dac.name or "Unnamed DAC" }}</h2>
+            
+            <!-- Form to set voltage for Channel 1 -->
+            <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
+                <label for="voltage_{{ dac_id }}">Voltage (0-100%):</label>
+                <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step=".1">
+                <button type="submit">Set</button>
+                <span>Address: {{ dac_id }}</span>
+                
+            </form>
+            
+            <!-- Open and close the channels -->
+            <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close</button>
+            <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open</button>
+        </div>
     {% endfor %}
+
+    
+    <!-- Settings button in the top right -->
+    <div id="settings-button" onclick="goToSettings()">
+        ⚙️
+    </div>
+
+    <!-- Dark mode button -->
+    <div id="dark-mode-button" onclick="toggleDarkMode()">
+        🌙
+    </div>
 </body>
 </html>

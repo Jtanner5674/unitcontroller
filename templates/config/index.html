@@ -2,8 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DAC Configuration</title>
+    <title>Controller Settings</title>
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        h1.dark-mode {
+            color: #0d7760;
+        }
+
         .collapsible {
             background-color: #eee;
             color: #444;
@@ -14,6 +34,12 @@
             text-align: left;
             outline: none;
             font-size: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .collapsible.dark-mode {
+            background-color: #2c405e;
+            color: cornsilk;
         }
 
         .active, .collapsible:hover {
@@ -26,122 +52,197 @@
             overflow: hidden;
             transition: max-height 0.2s ease-out;
         }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        button#saveAllButton {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        #settings-button,
+        #dark-mode-button {
+            position: absolute;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            z-index: 2;
+            transform: scale(2);
+        }
+
+        #settings-button {
+            top: 20px;
+            right: 104px;
+        }
+
+        #dark-mode-button {
+            top: 20px;
+            right: 20px;
+        }
+
+        #dacSettings,
+        #offlineSettings {
+            display: flex;
+            flex-wrap: wrap;
+            overflow: auto;
+            justify-content: flex-start; /* Adjust as needed */
+        }
+
+        .container {
+            border: 2px solid #007bff;
+            margin: 10px;
+            padding: 10px;
+            max-width: 200px;
+            overflow: auto;
+            flex: 0 0 auto; /* Maintain the initial width of each box */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #dacSettings .container h2,
+        #offlineSettings .container h2,
+        #dacSettings .container label,
+        #offlineSettings .container label,
+        #dacSettings .container input,
+        #offlineSettings .container input {
+            margin: 5px;
+        }
+
+
+
     </style>
+    <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
 <body>
     <h1>DAC Configuration</h1>
-    
-    <div id="dacSettings">
-        <!-- Active DACs settings boxes will be dynamically generated here -->
-    </div>
+
+    <!-- Container for Active DAC Settings -->
+        <div id="dacSettings">
+            <!-- Active DACs settings boxes will be dynamically generated here -->
+        </div>
 
     <button class="collapsible">Offline DACs</button>
     <div class="content">
-        <div id="offlineSettings">
-            <!-- Offline DACs will be dynamically generated here -->
-        </div>
+        <!-- Container for Offline DAC Settings -->
+            <div id="offlineSettings">
+                <!-- Offline DACs will be dynamically generated here -->
+            </div>
     </div>
 
-
     <script>
-        function fetchConfig() {
+      function fetchConfig() {
             fetch('/config')
                 .then(response => response.json())
                 .then(data => {
-                    const dacAddresses = data.dac_addresses;
-                    const existingConfigs = data.existing_configs.dac;
-                    const offlineDacs = existingConfigs.filter(config => !Object.values(dacAddresses).includes(config.chan));
+                    const dacAddresses = data.dac_addresses?.dac || [];
+                    const existingConfigs = data.existing_configs?.dac || [];
+                    const offlineDacs = existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id));
 
-                    for (const address in dacAddresses) {
-                        const decimalAddress = dacAddresses[address];
-                        const hexAddress = "0x" + decimalAddress.toString(16);
+                    // Check if dacAddresses is an array before using it
+                    if (Array.isArray(dacAddresses)) {
+                        dacAddresses.forEach(dac => {
+                            const hexAddress = dac.id;
+                            if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
+                                return;
+                            }
 
-                        const settingsBox = document.createElement('div');
-                        settingsBox.innerHTML = `
-                            <h2>${hexAddress}</h2>
-                            <label for="chan-${hexAddress}">Channel:</label>
-                            <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1" enabled=False>
-                            <label for="name-${hexAddress}">Name:</label>
-                            <input type="text" id="name-${hexAddress}" name="name">
-                            <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
-                        `;
-                        document.getElementById('dacSettings').appendChild(settingsBox);
+                            // Create settings box for online DACs
+                            const settingsBox = document.createElement('div');
+                            settingsBox.innerHTML = `
+                            <div class="container" id="activeDacContainer">
+                                <h2>${hexAddress}</h2>
+                                <label for="chan-${hexAddress}">Channel:</label>
+                                <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1" enabled=False>
+                                <label for="name-${hexAddress}">Name:</label>
+                                <input type="text" id="name-${hexAddress}" name="name">
+                                <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
+                            </div>
+                            `;
+                            document.getElementById('dacSettings').appendChild(settingsBox);
 
-                        // Find existing config based on the address
-                        const existingConfig = existingConfigs.find(config => config.id === hexAddress);
-                        if (existingConfig) {
-                            document.getElementById(`chan-${hexAddress}`).value = existingConfig.chan;
-                            document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
-                        }
+                            // Find existing config based on the address
+                            const existingConfig = existingConfigs.find(config => config.id === hexAddress);
+                            if (existingConfig) {
+                                document.getElementById(`chan-${hexAddress}`).value = existingConfig.chan;
+                                document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
+                            }
+                        });
                     }
 
-                    for (const offlineDac of offlineDacs) {
+                    // Create settings boxes for offline DACs
+                    offlineDacs.forEach(offlineDac => {
                         const settingsBox = document.createElement('div');
                         settingsBox.innerHTML = `
+                        <div class="container" id="offlineDacContainer">
                             <h2>${offlineDac.id}</h2>
                             <label for="chan-offline-${offlineDac.id}">Channel:</label>
-                            <input type="number" id="chan-offline-${offlineDac.id}" name="chan" value="0" min="0" max="1">
+                            <input type="number" id="chan-offline-${offlineDac.id}" name="chan" value="${offlineDac.chan || '0'}" min="0" max="1">
                             <label for="name-offline-${offlineDac.id}">Name:</label>
-                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name}">
+                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name || ''}">
                             <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
+                        </div>    
                         `;
                         document.getElementById('offlineSettings').appendChild(settingsBox);
-                    }
+                    });
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-    
+
+
         function saveAllConfig() {
-        const allSettings = [];
-        console.log('running');
+            const allSettings = [];
 
-        // Get all online DAC settings
-        const onlineSettings = document.querySelectorAll('[id^=chan-]');
-        onlineSettings.forEach(setting => {
-            const id = setting.id.split('-')[1];
-            const chan = setting.value;
-            const nameElement = document.getElementById(`name-${id}`);
-            const name = nameElement ? nameElement.value : ''; // Fix here
-            console.log('ID:', id);
-            console.log('Chan:', chan);
-            console.log('Name:', name);
-            allSettings.push({ id, chan, name });
-        });
+            // Get all online DAC settings
+            const onlineSettings = document.querySelectorAll('[id^=chan-]');
+            onlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[1];
+                const chan = setting.value;
+                const nameElement = document.getElementById(`name-${id}`);
+                const name = nameElement ? nameElement.value : '';
+                allSettings.push({ id, chan, name });
+            });
 
-        // Get all offline DAC settings
-        const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
-        offlineSettings.forEach(setting => {
-            const id = setting.id.split('-')[2];
-            const chan = setting.value;
-            const nameElement = document.getElementById(`name-offline-${id}`);
-            const name = nameElement ? nameElement.value : '';
-            allSettings.push({ id, chan, name });
-        });
+            // Get all offline DAC settings
+            const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
+            offlineSettings.forEach(setting => {
+                const id = setting.id.split('-')[2];
+                const chan = setting.value;
+                const nameElement = document.getElementById(`name-offline-${id}`);
+                const name = nameElement ? nameElement.value : '';
+                allSettings.push({ id, chan, name });
+            });
 
-        // Send all settings to update the JSON configuration
-        fetch('/config', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ settings: allSettings }) // Wrap settings in an object
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
+            // Send all settings to update the JSON configuration
+            fetch('/config', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ settings: allSettings }) // Wrap settings in an object
             })
-            .then(updatedConfig => {
-                console.log('Updated config:', updatedConfig);
-            })
-            .catch(error => console.error('Error:', error));
-    }
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(updatedConfig => {
+                    console.log('Updated config:', updatedConfig);
+                })
+                .catch(error => console.error('Error:', error));
+        }
 
-    
         document.addEventListener('DOMContentLoaded', fetchConfig);
-    
+
         const coll = document.querySelector('.collapsible');
         coll.addEventListener('click', function () {
             this.classList.toggle('active');
@@ -153,12 +254,61 @@
             }
         });
 
-        const saveAllButton = document.querySelector('button');
+        const saveAllButton = document.createElement('button');
+        saveAllButton.id = 'saveAllButton';
+        saveAllButton.textContent = 'Save All';
         saveAllButton.addEventListener('click', saveAllConfig);
+        document.body.appendChild(saveAllButton);
+
+
+    function toggleDarkMode() {
+        const h1 = document.querySelector('h1');
+        h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+        const body = document.body;
+        body.classList.toggle('dark-mode');
+        const collapse = document.querySelector('button.collapsible');
+        collapse.classList.toggle('dark-mode');
+
+        // Toggle the symbols based on the mode
+        const lightModeSymbol = '💡';
+        const darkModeSymbol = '🌙';
+        const toggleButton = document.getElementById('dark-mode-button');
+        const currentSymbol = toggleButton.textContent.trim();
+
+        toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
+
+        // You can also save the user's preference for dark mode in local storage
+        const isDarkModeEnabled = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkModeEnabled);
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set initial dark mode based on user's preference in local storage
+        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+        const body = document.body;
+        body.classList.toggle('dark-mode', isDarkModeEnabled);
+        const h1 = document.querySelector('h1');
+        h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
+        const collapse = document.querySelector('button.collapsible');
+        collapse.classList.toggle('dark-mode', isDarkModeEnabled);
+
+        const toggleButton = document.getElementById('dark-mode-button');
+        toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+    });
+
+        function goToHome() {
+            window.location.href = '/';
+        }
     </script>
+    <!-- Settings button in the top right -->
+    <div id="settings-button" onclick="goToHome()">
+        🏠
+    </div>
 
-
-<button>Save All</button>
-
+    <!-- Dark mode button -->
+    <div id="dark-mode-button" onclick="toggleDarkMode()">
+        🌙
+    </div>
 </body>
 </html>
