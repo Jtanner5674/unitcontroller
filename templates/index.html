@@ -124,20 +124,16 @@
         }
 
         /* Mobile */
-        @media (max-width: 600px) {
+        @media only screen and (max-width: 600px) {
             body {
                 margin: 10px; /* Adjust margin for smaller screens */
             }
 
-            #boxes-container {
-                position: relative;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                flex-direction: column;
-                scale: 4;
-                left: calc(100% - -617px);
-                top: 1307px;
+            .dac-box {
+                width: calc(100% - 20px); /* Set box width to nearly full width with some margin */
+                margin-bottom: 20px; /* Add some spacing between boxes */
+                font-size: 18px; /* Increase font size for better readability */
+                padding: 20px; /* Add padding for better spacing inside boxes */
             }
 
             h2 {
