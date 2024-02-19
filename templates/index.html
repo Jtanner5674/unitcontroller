@@ -27,6 +27,10 @@
         h1 {
             color: #333;
         }
+        
+        h2 {
+            margin: 10px;
+        }
 
         h1.dark-mode {
             color: #0d7760;
@@ -74,19 +78,23 @@
 
         button.set {
             position: relative;
-            top: -60px;
+            top: -61px;
+            right: -64px;
+            width: 50px;
         }
         
         button.open {
             position: relative;
-            top: -150px;
-            right: 30px;
+            top: -107px;
+            right: 45px;
+            width: 50px;
         }
         
         button.close {
             position: relative;
-            top: -40px;
-            left: 28.5px;
+            top: -14px;
+            left: 9.5px;
+            width: 50px;
         }
 
         #settings-button,
@@ -203,7 +211,6 @@
                 <label for="voltage_{{ dac_id }}">Voltage (0-100%):</label>
                 <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step=".1">
                 <button class="set" type="submit">Set</button>
-                <span></span>
                 
             
             
