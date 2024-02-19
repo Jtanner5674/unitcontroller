@@ -189,11 +189,12 @@
                 <button type="submit">Set</button>
                 <span>Address: {{ dac_id }}</span>
                 
-            </form>
+            
             
             <!-- Open and close the channels -->
             <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close</button>
             <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open</button>
+        </form>
         </div>
     {% endfor %}
 
