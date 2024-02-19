@@ -79,8 +79,8 @@
         
         button.open {
             position: relative;
-            top: -80px;
-            left: 28.5px;
+            top: -150px;
+            right: 30px;
         }
         
         button.close {
@@ -202,9 +202,7 @@
             <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
                 <label for="voltage_{{ dac_id }}">Voltage (0-100%):</label>
                 <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step=".1">
-                <button class="set" type="submit">Set</button>
-                <span>Address: {{ dac_id }}</span>
-                
+                <button class="set" type="submit">Set</button>           
             
             
             <!-- Open and close the channels -->
