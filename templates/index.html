@@ -310,8 +310,8 @@ function updateSliderValue(slider) {
             
             
             <!-- Open and close the channels -->
-            <button class="close" onclick="sendPostRequest('/close1{{ dac_id }}'); adjustSlider('{{ dac_id }}', 0)">Close</button>
-            <button class="open"  onclick="sendPostRequest('/open1{{ dac_id }}'); adjustSlider('{{ dac_id }}', 100)">Open</button>
+            <button class="close" onclick="adjustSlider('{{ dac_id }}', 0)">Close</button>
+            <button class="open" onclick="adjustSlider('{{ dac_id }}', 100)">Open</button>
         </form>
         </div>
     {% endfor %}
