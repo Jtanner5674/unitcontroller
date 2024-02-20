@@ -289,30 +289,6 @@ function updateSliderValue(slider) {
     document.getElementById('angle_value_' + dacId).textContent = slider.value;
 }
 
-function adjustSlider(dacId, value) {
-    // Set slider value to the specified value
-    document.getElementById('voltage_' + dacId).value = value;
-    // Update displayed value next to the angle label
-    document.getElementById('angle_value_' + dacId).textContent = value;
-
-    // Perform post request based on button clicked
-    const url = value === 0 ? '/close1' + dacId : '/open1' + dacId;
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({})
-    })
-    .then(response => {
-        // Handle the response as needed
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-
     </script>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
@@ -334,8 +310,8 @@ function adjustSlider(dacId, value) {
             
             
             <!-- Open and close the channels -->
-            <button class="close" onclick="adjustSlider('{{ dac_id }}', 0)">Close</button>
-            <button class="open" onclick="adjustSlider('{{ dac_id }}', 100)">Open</button>
+            <button class="close" onclick="sendPostRequest('/close1{{ dac_id }}')">Close</button>
+            <button class="open" onclick="sendPostRequest('/open1{{ dac_id }}')">Open</button>
         </form>
         </div>
     {% endfor %}
