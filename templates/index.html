@@ -282,6 +282,28 @@ function sendPostRequest(url, dacId, value) {
     });
 }
 
+function adjustSlider(dacId, value) {
+    // Set slider value to the specified value
+    document.getElementById('voltage_' + dacId).value = value;
+    // Update displayed value next to the angle label
+    document.getElementById('angle_value_' + dacId).textContent = value;
+
+    // Perform post request based on button clicked
+    const url = value === 0 ? '/close1' + dacId : '/open1' + dacId;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => {
+        // Handle the response as needed
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
 function updateSliderValue(slider) {
     // Update displayed value next to the angle label when slider is moved
