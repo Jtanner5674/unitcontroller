@@ -44,17 +44,16 @@ def initialize_dacs():
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-                dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-                dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
+                dac.set_DAC_out_voltage(0, DFRobot_GP8403.CHANNEL0)
+                dac.set_DAC_out_voltage(0, DFRobot_GP8403.CHANNEL1)
 
                 found_dac = next((item for item in dac_list if item["id"] == hex(addr)), None)
                 if found_dac:
                     found_dac["found"] = True
                     found_dac["obj"] = dac
                     dac_objects[found_dac["id"]] = found_dac
-                    dac_objects[found_dac["chan"]] = found_dac
                 else:
-                    new_dac = {"name": "", "id": hex(addr), "chan": 0, "found": True, "obj": dac}
+                    new_dac = {"name": "", "id": hex(addr), "found": True, "obj": dac}
                     existing_config = next(
                         (config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]),
                         None)
@@ -105,9 +104,10 @@ def set_voltage_action(addr, value):
         
         addr_int = int(addr, 16)  # Convert hex string to integer for comparison
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
-        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0 if dac["chan"] == 0 else DFRobot_GP8403.CHANNEL1)
+        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0)
+        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL1)
         volts = float(value / 1000)
-        print(f'{dac["name"]} set to {volts}V on channel {dac["chan"]}')
+        print(f'{dac["name"]} set to {volts}V')
         return jsonify({'message': f'{dac["name"]} set to {volts}V'})
     except StopIteration:
         print('error: Invalid DAC ADDR')
@@ -116,13 +116,13 @@ def set_voltage_action(addr, value):
 @app.route('/set_voltage<addr>', methods=['POST'])
 def set_voltage(addr):
     voltage = float(request.form['voltage'])
-    voltage = int((voltage / 100.0) * (10000 - 2000) + 2000)
+    voltage = int((voltage / 100.0) * 10000)
     return set_voltage_action(addr, voltage)
 
 
 @app.route('/close1<addr>', methods=['POST'])
 def close1(addr):
-    return set_voltage_action(addr, 2000)
+    return set_voltage_action(addr, 0)
 
 
 @app.route('/open1<addr>', methods=['POST'])
@@ -137,7 +137,7 @@ def get_dac_config():
     # Manually serialize CFG, excluding DFRobot_GP8403 objects
     serialized_cfg = {
         "dac": [
-            {"name": item["name"], "id": item["id"], "chan": item["chan"], "found": item["found"]}
+            {"name": item["name"], "id": item["id"],"found": item["found"]}
             for item in CFG["dac"]
         ]
     }
@@ -172,8 +172,7 @@ def update_all_config():
         for setting in filtered_settings:
             for dac in CFG["dac"]:
                 if dac["id"] == setting["id"]:
-                    dac["chan"] = setting["chan"]
-                    dac["name"] = setting["name"]
+                dac["name"] = setting["name"]
 
         # Update the top part of the JSON file
         CFG["dac_addresses"] = CFG["dac"]
