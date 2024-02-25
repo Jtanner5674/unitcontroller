@@ -42,8 +42,7 @@
             color: cornsilk;
         }
 
-        .active,
-        .collapsible:hover {
+        .active, .collapsible:hover {
             background-color: #ccc;
         }
 
@@ -68,34 +67,31 @@
             cursor: pointer;
         }
 
-        #settings-button,
-        #dark-mode-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+        #settings {
+            display: flex;
+            position: relative;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
             z-index: 2;
+            transform: scale(2);
+            gap: 10px;
         }
 
-        #settings-button {
-            background-color: #2196F3;
-            color: #fff;
-            border-radius: 50%;
-            padding: 10px;
+        @media only screen and (min-width: 601px) {
+            #settings {
+                top: 49px;
+                left: 55%;
+            }
         }
 
-        #dark-mode-button {
-            background-color: #333;
-            color: #fff;
-            border-radius: 50%;
-            padding: 10px;
-        }
 
         #dacSettings,
         #offlineSettings {
             display: flex;
             flex-wrap: wrap;
             overflow: auto;
-            justify-content: flex-start;
+            justify-content: flex-start; /* Adjust as needed */
         }
 
         .container {
@@ -104,7 +100,7 @@
             padding: 10px;
             max-width: 200px;
             overflow: auto;
-            flex: 0 0 auto;
+            flex: 0 0 auto; /* Maintain the initial width of each box */
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -119,44 +115,35 @@
             margin: 5px;
         }
 
-        /* Mobile */
+        /* Mobile Styles */
         @media only screen and (max-width: 600px) {
             body {
                 margin: 10px;
             }
 
+            h1 {
+                font-size: 24px;
+            }
+
             .collapsible {
-                font-size: 14px;
+                padding: 12px;
             }
 
-            button#saveAllButton {
-                font-size: 14px;
+            .content {
+                padding: 0 12px;
             }
 
-            #settings-button,
-            #dark-mode-button {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                z-index: 2;
-                transform: scale(1.5);
+            .container {
+                max-width: 100%;
             }
 
-            #settings-button {
-                background-color: #2196F3;
-                color: #fff;
-            }
-
-            #dark-mode-button {
-                background-color: #333;
-                color: #fff;
-            }
-
-            #dacSettings .container,
-            #offlineSettings .container {
-                max-width: calc(50% - 20px);
+            #settings {
+                top: 10px;
+                right: 10px;
+                transform: scale(1);
             }
         }
+
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
@@ -333,14 +320,16 @@
             window.location.href = '/';
         }
     </script>
-    <!-- Settings button in the top right -->
-    <div id="settings-button" onclick="goToHome()">
-        🏠
-    </div>
-
-    <!-- Dark mode button -->
-    <div id="dark-mode-button" onclick="toggleDarkMode()">
-        🌙
-    </div>
+        <div id="settings">
+            <!-- Settings button in the top right -->
+            <div id="settings-button" onclick="goToSettings()">
+                ⚙️
+            </div>
+    
+            <!-- Dark mode button -->
+            <div id="dark-mode-button" onclick="toggleDarkMode()">
+                🌙
+            </div>
+        </div> 
 </body>
 </html>
