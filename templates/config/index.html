@@ -67,25 +67,24 @@
             cursor: pointer;
         }
 
-        #settings-button,
-        #dark-mode-button {
-            position: absolute;
+        #settings {
+            display: flex;
+            position: relative;
             cursor: pointer;
             padding: 10px;
             border-radius: 50%;
             z-index: 2;
             transform: scale(2);
+            gap: 10px;
         }
 
-        #settings-button {
-            top: 20px;
-            right: 104px;
+        @media only screen and (min-width: 601px) {
+            #settings {
+                top: 49px;
+                left: 55%;
+            }
         }
 
-        #dark-mode-button {
-            top: 20px;
-            right: 20px;
-        }
 
         #dacSettings,
         #offlineSettings {
@@ -117,6 +116,13 @@
         }
 
 
+        /* Mobile */
+        @media only screen and (max-width: 600px) {
+            #settings {
+                top: -510px;
+                left: 2%;
+            }
+        }
 
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
