@@ -106,22 +106,25 @@
 
         #settings-button,
         #dark-mode-button {
+
+        }
+
+        #settings-button {
+            right: 104px;
+        }
+
+        #dark-mode-button {
+            right: 20px;
+        }
+
+        #settings {
+            justify-content: center;
             position: fixed;
             cursor: pointer;
             padding: 10px;
             border-radius: 50%;
             z-index: 2;
             transform: scale(2);
-        }
-
-        #settings-button {
-            top: 20px;
-            right: 104px;
-        }
-
-        #dark-mode-button {
-            top: 20px;
-            right: 20px;
         }
 
         /* Mobile */
@@ -180,7 +183,7 @@
             /* Adjust settings and dark mode buttons for smaller screens */
             #settings-button {
                 top: 10px;
-                right: 10px;
+                left: 55%;
             }
 
             #dark-mode-button {
@@ -340,15 +343,16 @@ function updateSliderValue(slider) {
         </div>
     {% endfor %}
 
-    
-    <!-- Settings button in the top right -->
-    <div id="settings-button" onclick="goToSettings()">
-        ⚙️
-    </div>
+    <div id="settings">
+        <!-- Settings button in the top right -->
+        <div id="settings-button" onclick="goToSettings()">
+            ⚙️
+        </div>
 
-    <!-- Dark mode button -->
-    <div id="dark-mode-button" onclick="toggleDarkMode()">
-        🌙
-    </div>
+        <!-- Dark mode button -->
+        <div id="dark-mode-button" onclick="toggleDarkMode()">
+            🌙
+        </div>
+    </div>  
 </body>
 </html>
