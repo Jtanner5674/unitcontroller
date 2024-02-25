@@ -159,8 +159,6 @@
                             settingsBox.innerHTML = `
                             <div class="container" id="activeDacContainer">
                                 <h2>${hexAddress}</h2>
-                                <label for="chan-${hexAddress}">Channel:</label>
-                                <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1" enabled=False>
                                 <label for="name-${hexAddress}">Name:</label>
                                 <input type="text" id="name-${hexAddress}" name="name">
                                 <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
@@ -171,7 +169,6 @@
                             // Find existing config based on the address
                             const existingConfig = existingConfigs.find(config => config.id === hexAddress);
                             if (existingConfig) {
-                                document.getElementById(`chan-${hexAddress}`).value = existingConfig.chan;
                                 document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
                             }
                         });
@@ -183,8 +180,6 @@
                         settingsBox.innerHTML = `
                         <div class="container" id="offlineDacContainer">
                             <h2>${offlineDac.id}</h2>
-                            <label for="chan-offline-${offlineDac.id}">Channel:</label>
-                            <input type="number" id="chan-offline-${offlineDac.id}" name="chan" value="${offlineDac.chan || '0'}" min="0" max="1">
                             <label for="name-offline-${offlineDac.id}">Name:</label>
                             <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name || ''}">
                             <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
@@ -202,23 +197,21 @@
             const allSettings = [];
 
             // Get all online DAC settings
-            const onlineSettings = document.querySelectorAll('[id^=chan-]');
+            const onlineSettings = document.querySelectorAll('[id^=name-]');
             onlineSettings.forEach(setting => {
                 const id = setting.id.split('-')[1];
-                const chan = setting.value;
                 const nameElement = document.getElementById(`name-${id}`);
                 const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, chan, name });
+                allSettings.push({ id, name });
             });
 
             // Get all offline DAC settings
-            const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
+            const offlineSettings = document.querySelectorAll('[id^=name-offline-]');
             offlineSettings.forEach(setting => {
                 const id = setting.id.split('-')[2];
-                const chan = setting.value;
                 const nameElement = document.getElementById(`name-offline-${id}`);
                 const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, chan, name });
+                allSettings.push({ id, name });
             });
 
             // Send all settings to update the JSON configuration

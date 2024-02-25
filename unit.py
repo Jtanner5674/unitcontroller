@@ -16,8 +16,9 @@ CFG = None  # Initialize CFG as None
 
 
 def load_config():
-    with open('config.json', 'r') as file:
-        return json.load(file)
+  with open('config.json', 'r') as file:
+    return json.load(file)
+
 
 
 def save_config(settings):
