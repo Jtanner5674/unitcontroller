@@ -42,7 +42,8 @@
             color: cornsilk;
         }
 
-        .active, .collapsible:hover {
+        .active,
+        .collapsible:hover {
             background-color: #ccc;
         }
 
@@ -67,31 +68,34 @@
             cursor: pointer;
         }
 
-        #settings {
-            display: flex;
-            position: relative;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
+        #settings-button,
+        #dark-mode-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
             z-index: 2;
-            transform: scale(2);
-            gap: 10px;
         }
 
-        @media only screen and (min-width: 601px) {
-            #settings {
-                top: 49px;
-                left: 55%;
-            }
+        #settings-button {
+            background-color: #2196F3;
+            color: #fff;
+            border-radius: 50%;
+            padding: 10px;
         }
 
+        #dark-mode-button {
+            background-color: #333;
+            color: #fff;
+            border-radius: 50%;
+            padding: 10px;
+        }
 
         #dacSettings,
         #offlineSettings {
             display: flex;
             flex-wrap: wrap;
             overflow: auto;
-            justify-content: flex-start; /* Adjust as needed */
+            justify-content: flex-start;
         }
 
         .container {
@@ -100,7 +104,7 @@
             padding: 10px;
             max-width: 200px;
             overflow: auto;
-            flex: 0 0 auto; /* Maintain the initial width of each box */
+            flex: 0 0 auto;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -115,15 +119,44 @@
             margin: 5px;
         }
 
-
         /* Mobile */
         @media only screen and (max-width: 600px) {
-            #settings {
-                top: -510px;
-                left: 2%;
+            body {
+                margin: 10px;
+            }
+
+            .collapsible {
+                font-size: 14px;
+            }
+
+            button#saveAllButton {
+                font-size: 14px;
+            }
+
+            #settings-button,
+            #dark-mode-button {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 2;
+                transform: scale(1.5);
+            }
+
+            #settings-button {
+                background-color: #2196F3;
+                color: #fff;
+            }
+
+            #dark-mode-button {
+                background-color: #333;
+                color: #fff;
+            }
+
+            #dacSettings .container,
+            #offlineSettings .container {
+                max-width: calc(50% - 20px);
             }
         }
-
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
