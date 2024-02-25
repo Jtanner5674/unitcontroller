@@ -115,13 +115,7 @@
             margin: 5px;
         }
 
-        /* Mobile Styles */
-        @media only screen and (max-width: 600px) {
-            #settings {
-                top: 10px;
-                right: 10px;
-            }
-        }
+
 
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
@@ -299,16 +293,14 @@
             window.location.href = '/';
         }
     </script>
-        <div id="settings">
-            <!-- Settings button in the top right -->
-            <div id="settings-button" onclick="goToSettings()">
-                ⚙️
-            </div>
-    
-            <!-- Dark mode button -->
-            <div id="dark-mode-button" onclick="toggleDarkMode()">
-                🌙
-            </div>
-        </div> 
+    <!-- Settings button in the top right -->
+    <div id="settings-button" onclick="goToHome()">
+        🏠
+    </div>
+
+    <!-- Dark mode button -->
+    <div id="dark-mode-button" onclick="toggleDarkMode()">
+        🌙
+    </div>
 </body>
 </html>
