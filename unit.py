@@ -173,7 +173,7 @@ def update_all_config():
         for setting in filtered_settings:
             for dac in CFG["dac"]:
                 if dac["id"] == setting["id"]:
-                dac["name"] = setting["name"]
+                    dac["name"] = setting["name"]
 
         # Update the top part of the JSON file
         CFG["dac_addresses"] = CFG["dac"]
