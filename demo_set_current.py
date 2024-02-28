@@ -74,7 +74,7 @@ if __name__ == "__main__":
     @note calibration4_20mA After calibration, the output function will output the calibrated current value and return the calibrated DAC value
   '''
   #Control the DAC module to output the current of 10mA and return the DAC value corresponding to the current of 10mA
-  dac = module.output(current_mA = 4)
+  dac = module.output(current_mA = 1)
   print("DAC value: 0x%x"%dac)
   
   #Control the DAC module to output the current corresponding to a DAC value of 0x666 and return the current corresponding to the value, unit mA
@@ -84,9 +84,9 @@ if __name__ == "__main__":
   '''
 
   #Uncomment the code here, and the current config above will be saved and will not be lost after power down.
-  #'''
+  '''!
   module.store()
   print("Save current configuration.")
-  #'''
+  '''
   
 
