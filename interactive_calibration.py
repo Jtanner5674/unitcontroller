@@ -14,10 +14,10 @@ if status != 0:
 
 def measure_current_and_get_dac(value):
     while True:
-        input("Press Enter when ready to measure {} current (ensure multimeter is connected)...".format(message))
+        input("Press Enter when ready to measure {} current (ensure multimeter is connected)...".format(value))
         # Measure the current using a multimeter and input the measured value
         dac = module.output(current_mA = value)
-        measured_current = float(input("Enter the measured current (mA) for {} current: ".format(message)))
+        measured_current = float(input("Enter the measured current (mA) for {} current: ".format(value)))
         # Calculate the DAC value
         dac_value = int((measured_current / 25) * 4095)
         print("Calculated DAC value for {} current: {}".format(value, "mA ", dac_value))
