@@ -44,7 +44,7 @@ I2C_PIN_REMAP_ENABLE = 0
 
 if I2C_PIN_REMAP_ENABLE:
   I2C_SCL_PIN = 5  # 5 is the io pin of raspberry pi ,which is BCM coding  
-  I2C_SDA_PIN = 6  # 6 is the io pin of raspberry pi ,which is BCM coding  
+  I2C_SDA_PIN = 3  # 6 is the io pin of raspberry pi ,which is BCM coding  
 
 module = DFRobot_GP8302()
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
   
   #Control the DAC module to output the current corresponding to a DAC value of 0x666 and return the current corresponding to the value, unit mA
   '''
-  current = module.output_mA(dac = 0x111)
+  current = module.output_mA(dac = 0x666)
   print("Output current : %.2f mA"%current)
   '''
 
