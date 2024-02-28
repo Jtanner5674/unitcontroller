@@ -83,7 +83,7 @@ if __name__ == "__main__":
     @note calibration4_20mA After calibration, the output function will output the calibrated current value and return the calibrated DAC value
   '''
   #Control the DAC module to output the current of 10mA and return the DAC value corresponding to the current of 10mA
-  dac = module.output(current_mA = 10)
+  dac = module.output(current_mA = 4)
   print("DAC value: 0x%x"%dac)
   
   
