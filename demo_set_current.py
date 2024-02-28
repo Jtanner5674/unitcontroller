@@ -36,15 +36,15 @@ import time
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from DFRobot_GP8302 import *
-#Disable I2C pin remapping
-#I2C_PIN_REMAP_ENABLE = 0
 #Enable I2C pin remapping
-I2C_PIN_REMAP_ENABLE = 1
+#I2C_PIN_REMAP_ENABLE = 1
+#Disable I2C pin remapping
+I2C_PIN_REMAP_ENABLE = 0
 
 
 if I2C_PIN_REMAP_ENABLE:
   I2C_SCL_PIN = 5  # 5 is the io pin of raspberry pi ,which is BCM coding  
-  I2C_SDA_PIN = 3  # 6 is the io pin of raspberry pi ,which is BCM coding  
+  I2C_SDA_PIN = 6  # 6 is the io pin of raspberry pi ,which is BCM coding  
 
 module = DFRobot_GP8302()
 
