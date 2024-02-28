@@ -20,7 +20,7 @@ def measure_current_and_get_dac(value):
         measured_current = float(input("Enter the measured current (mA) for {} current: ".format(value)))
         # Calculate the DAC value
         dac_value = int((measured_current / 25) * 4095)
-        print("Calculated DAC value for {} current: {}".format(value, "mA ", dac_value))
+        print("Calculated DAC value for {} current: {}".format(value, dac_value))
 
         # Ask if the user wants to proceed or re-measure
         choice = input("Do you want to use this value for calibration? (yes/no): ").lower()
