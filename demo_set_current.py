@@ -79,7 +79,7 @@ if __name__ == "__main__":
   
   #Control the DAC module to output the current corresponding to a DAC value of 0x666 and return the current corresponding to the value, unit mA
   '''
-  current = module.output_mA(dac = 0x666)
+  current = module.output_mA(dac = 0x111)
   print("Output current : %.2f mA"%current)
   '''
 
