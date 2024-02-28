@@ -74,7 +74,7 @@ if __name__ == "__main__":
     @n The method of obtaining the DAC value corresponding to the current of 20mA in actual applications: use output_mA(uint16_t dac) function, pass the DAC parameter fluctuating at about 3277, the actual DAC value is the one input into the instrument when the measured current is 20mA.
     @note Parameter dac_4 and dac_20 should meet the conditions: dac_4 < dac_20, after the calibration is enabled, output function will output the calibrated current value
   '''
-  module.calibration4_20mA(dac_4 = 100, dac_20 = 1000)
+  module.calibration4_20mA(dac_4 = 655, dac_20 = 3277)
   
   '''!
     @brief   Set DAC value to control the device to output the current of 0-25mA.
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     @note calibration4_20mA After calibration, the output function will output the calibrated current value and return the calibrated DAC value
   '''
   #Control the DAC module to output the current of 10mA and return the DAC value corresponding to the current of 10mA
-  dac = module.output(current_mA = 4)
+  dac = module.output(current_mA = 10)
   print("DAC value: 0x%x"%dac)
   
   
