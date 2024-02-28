@@ -39,7 +39,7 @@ from DFRobot_GP8302 import *
 #Enable I2C pin remapping
 #I2C_PIN_REMAP_ENABLE = 1 
 #Disable I2C pin remapping
-I2C_PIN_REMAP_ENABLE = 0
+I2C_PIN_REMAP_ENABLE = 1
 
 
 if I2C_PIN_REMAP_ENABLE:
