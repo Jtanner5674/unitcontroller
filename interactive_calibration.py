@@ -42,5 +42,5 @@ module.calibration4_20mA(dac_4=dac_4, dac_20=dac_20)
 
 print("Calibration completed successfully!")
 
-  dac = module.output(current_mA = 10)
-  print("DAC value: 0x%x"%dac)
+dac = module.output(current_mA = 10)
+print("DAC value: 0x%x"%dac)
