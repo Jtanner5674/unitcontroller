@@ -36,9 +36,9 @@ import time
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from DFRobot_GP8302 import *
-#Enable I2C pin remapping
-#I2C_PIN_REMAP_ENABLE = 1 
 #Disable I2C pin remapping
+#I2C_PIN_REMAP_ENABLE = 0
+#Enable I2C pin remapping
 I2C_PIN_REMAP_ENABLE = 1
 
 
