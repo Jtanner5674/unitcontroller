@@ -140,7 +140,7 @@ def get_dac_config():
     # Manually serialize CFG, excluding DFRobot_GP8403 objects
     serialized_cfg = {
         "dac": [
-            {"name": item["name"], "id": item["id"],"found": item["found"]}
+            {"name": item["name"], "id": item["id"],"found": item["found"], "current_voltage": item["current_voltage"]}
             for item in CFG["dac"]
         ]
     }
