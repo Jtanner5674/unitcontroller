@@ -345,8 +345,8 @@ setInterval(updateCurrentVoltages, 5000);
             
             <!-- Form to set voltage for Channel 1 -->
             <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
-                <label for="voltage_{{ dac_id }}">Posistion: <span id="angle_value_{{ dac_id }}">50</span>%</label>
-                <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step="1" onmousemove="updateSliderValue(this) oninput="updateSliderValue(this)">
+                <label for="voltage_{{ dac_id }}">Posistion: <span id="angle_value_{{ dac_id }}">0</span>%</label>
+                <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step="1" value="0" onmousemove="adjustSlider('{{ dac_id }}', this.value)" oninput="adjustSlider('{{ dac_id }}', this.value)">
                 <button class="set" type="submit">Set</button>
                 
             
