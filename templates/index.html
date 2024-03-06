@@ -311,8 +311,9 @@ function fetchCurrentVoltage(dacId) {
     fetch(`/get_current_voltage/${dacId}`)
     .then(response => response.json())
     .then(data => {
+        // Convert the voltage value to fit within the range of the slider (0-100)
+        const voltage = Math.round((data.voltage / 10000) * 100);
         // Update the slider value and displayed voltage
-        const voltage = data.voltage;
         document.getElementById(`voltage_${dacId}`).value = voltage;
         document.getElementById(`angle_value_${dacId}`).textContent = voltage;
     })
