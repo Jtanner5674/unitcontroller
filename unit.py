@@ -36,6 +36,7 @@ def initialize_dacs():
     for item in dac_list:
         if isinstance(item, dict):
             item["found"] = False
+            item["current_voltage"] = 0 
 
     try:
         i2c = busio.I2C(board.SCL, board.SDA)
@@ -54,7 +55,7 @@ def initialize_dacs():
                     found_dac["obj"] = dac
                     dac_objects[found_dac["id"]] = found_dac
                 else:
-                    new_dac = {"name": "", "id": hex(addr), "found": True, "obj": dac}
+                    new_dac = {"name": "", "id": hex(addr), "found": True, "obj": dac, "current_voltage": 0}
                     existing_config = next(
                         (config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]),
                         None)
@@ -108,6 +109,7 @@ def set_voltage_action(addr, value):
         dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0)
         dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL1)
         volts = float(value / 1000)
+        dac["current_voltage"] = value 
         print(f'{dac["name"]} set to {volts}V')
         return jsonify({'message': f'{dac["name"]} set to {volts}V'})
     except StopIteration:
