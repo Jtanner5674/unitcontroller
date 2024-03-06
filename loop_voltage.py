@@ -13,7 +13,7 @@ try:
 except Exception as e:
     print("Error while initializing DAC:", e)
 
-voltage = 2000 
+voltage = 0 
 x = 1
 while x == 1:  # Correct the while loop syntax
     for _ in range(8):
