@@ -307,7 +307,6 @@ function updateSliderValue(slider) {
     document.getElementById('angle_value_' + dacId).textContent = slider.value;
 }
 
-// Function to fetch current voltage for a DAC from the server
 function fetchCurrentVoltage(dacId) {
     fetch(`/get_current_voltage/${dacId}`)
     .then(response => response.json())
@@ -322,7 +321,6 @@ function fetchCurrentVoltage(dacId) {
     });
 }
 
-// Function to periodically update the UI with current voltage values
 function updateCurrentVoltages() {
     // Loop through each DAC object and fetch its current voltage
     {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
@@ -330,8 +328,7 @@ function updateCurrentVoltages() {
     {% endfor %}
 }
 
-// Call updateCurrentVoltages() every 5 seconds (adjust as needed)
-setInterval(updateCurrentVoltages, 1000); // Update every 5 seconds
+setInterval(updateCurrentVoltages, 5000); // Update every 5 seconds
 
     </script>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
