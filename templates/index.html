@@ -284,8 +284,7 @@ function adjustSlider(dacId, value) {
     // Update displayed value next to the angle label
     document.getElementById('angle_value_' + dacId).textContent = value;
 
-    // Perform post request based on button clicked
-    const url = value === 0 ? '/close1' + dacId : '/open1' + dacId;
+    const url = value === '0' ? '/close1' + dacId : '/open1' + dacId;
     fetch(url, {
         method: 'POST',
         headers: {
@@ -300,6 +299,7 @@ function adjustSlider(dacId, value) {
         console.error('Error:', error);
     });
 }
+
 
 function updateSliderValue(slider) {
     const dacId = slider.id.split('_')[1];
