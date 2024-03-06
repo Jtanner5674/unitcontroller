@@ -163,6 +163,18 @@ def update_config(section, index):
     save_config(data)  # Save updated data to the file
     return jsonify(data[section][index])
 
+@app.route('/get_current_voltage/<string:dac_id>', methods=['GET'])
+def get_current_voltage(dac_id):
+    try:
+        # Find the DAC object with the given ID
+        dac = next((dac for dac in CFG["dac"] if dac["id"] == dac_id), None)
+        if dac:
+            # Return the current voltage of the DAC
+            return jsonify({'voltage': dac.get('current_voltage', 0)})
+        else:
+            return jsonify({'error': 'DAC not found'})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 @app.route('/config', methods=['PUT'])
 def update_all_config():
