@@ -18,9 +18,10 @@ def load_config():
   with open('config.json', 'r') as file:
     return json.load(file)
 
-def save_config(settings):
+def save_config(config):
     with open('config.json', 'w') as file:
-        json.dump({"dac": settings}, file, indent=2)
+        json.dump(config, file, indent=2) 
+
         
 def set_voltage_action(addr, value):
     try:
@@ -222,13 +223,25 @@ def delete_preset(preset_name):
 
 @app.route('/save_preset', methods=['POST'])
 def save_preset():
-    data = request.json  # Preset data from the request
-    config = load_config()  # Load current config
+    data = request.json
+    # Validation check
+    if 'name' not in data or 'values' not in data:
+        return jsonify({'error': 'Missing name or values'}), 400
+
+    name = data['name']
+    values = data['values']
+    # Further validation can be added here (e.g., check if values is a dictionary)
+
+    config = load_config()
     if "presets" not in config:
-        config["presets"] = []
-    config["presets"].append(data)  # Append the new preset
-    save_config(config)  # Save the updated config back to file
+        config["presets"] = {}
+    
+    # Correcting the structure to save presets properly
+    config["presets"][name] = values
+    save_config(config)  # This function might need adjustments
+    
     return jsonify({'message': 'Preset saved successfully'}), 200
+
 
 def apply_preset(name):
     config = load_config()
