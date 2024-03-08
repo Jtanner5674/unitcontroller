@@ -115,7 +115,7 @@ def settings():
     return render_template('config/index.html')
 
 @app.route('/presets')
-def settings():
+def presets():
     return render_template('presets/index.html')
 
 ############################ Config Functions ###################################
