@@ -12,7 +12,31 @@ CFG = None
 dac_objects = {} 
 dac_addresses = {}
 
+############################ Backend Functions ###################################
 
+def load_config():
+  with open('config.json', 'r') as file:
+    return json.load(file)
+
+def save_config(settings):
+    with open('config.json', 'w') as file:
+        json.dump({"dac": settings}, file, indent=2)
+        
+def set_voltage_action(addr, value):
+    try:
+        
+        addr_int = int(addr, 16)  # Convert hex string to integer for comparison
+        dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
+        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0)
+        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL1)
+        volts = float(value / 1000)
+        dac["current_voltage"] = value 
+        print(f'{dac["name"]} set to {volts}V')
+        return jsonify({'message': f'{dac["name"]} set to {volts}V'})
+    except StopIteration:
+        print('error: Invalid DAC ADDR')
+        return jsonify({'error': 'Invalid DAC ADDR'})
+    
 ############################ Initialization ###################################
 def initialize_dacs():
     global CFG
@@ -73,31 +97,6 @@ CFG = initialize_dacs()
 app = Flask(__name__)
 CORS(app)
 
-############################ Backend Functions ###################################
-
-def load_config():
-  with open('config.json', 'r') as file:
-    return json.load(file)
-
-def save_config(settings):
-    with open('config.json', 'w') as file:
-        json.dump({"dac": settings}, file, indent=2)
-        
-def set_voltage_action(addr, value):
-    try:
-        
-        addr_int = int(addr, 16)  # Convert hex string to integer for comparison
-        dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
-        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0)
-        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL1)
-        volts = float(value / 1000)
-        dac["current_voltage"] = value 
-        print(f'{dac["name"]} set to {volts}V')
-        return jsonify({'message': f'{dac["name"]} set to {volts}V'})
-    except StopIteration:
-        print('error: Invalid DAC ADDR')
-        return jsonify({'error': 'Invalid DAC ADDR'})
-    
 ############################ Flask Pages ###################################
 
 @app.route('/')
