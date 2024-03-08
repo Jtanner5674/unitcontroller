@@ -26,12 +26,11 @@ function saveOrUpdatePreset() {
     var values = $('#presetValues').val();
     try {
         var parsedValues = JSON.parse(values);
-        // Update or save a new preset
         $.ajax({
             url: '/save_preset',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({name: name, values: parsedValues}), // Assuming your backend is adjusted to handle this structure
+            data: JSON.stringify({name: name, values: parsedValues}),
             success: function(response) {
                 alert('Preset saved or updated successfully.');
             },
@@ -42,38 +41,6 @@ function saveOrUpdatePreset() {
     } catch (e) {
         alert('Invalid JSON for Preset Values.');
     }
-}
-
-
-
-function savePreset(name, values) {
-    $.ajax({
-        url: '/save_preset',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({name: name, values: values}),
-        success: function(response) {
-            alert('Preset saved successfully.');
-        },
-        error: function(response) {
-            alert('Error saving preset.');
-        }
-    });
-}
-
-function editPreset(name, values) {
-    $.ajax({
-        url: '/edit_preset/' + encodeURIComponent(name),
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(values),
-        success: function(response) {
-            alert('Preset edited successfully.');
-        },
-        error: function(response) {
-            alert('Error editing preset.');
-        }
-    });
 }
 
 function deletePreset() {
