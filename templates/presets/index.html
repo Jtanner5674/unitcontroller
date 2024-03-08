@@ -2,57 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Presets</title>
+    <title>Create Preset</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
 
-<h2>Edit Presets</h2>
+<h2>Create Preset</h2>
 
 <form id="presetForm">
     <label for="presetName">Preset Name:</label>
-    <input type="text" id="presetName" name="presetName"><br><br>
+    <input type="text" id="presetName" name="presetName" required><br><br>
 
-    <label for="presetValues">Preset Values (JSON):</label>
-    <textarea id="presetValues" name="presetValues" rows="4" cols="50"></textarea><br><br>
-
-    <button type="button" onclick="saveOrUpdatePreset()">Save/Update Preset</button>
-    <button type="button" onclick="deletePreset()">Delete Preset</button>
+    {% for addr in dac_addresses %}
+    <label for="{{ addr }}">DAC {{ addr }}:</label>
+    <input type="number" id="{{ addr }}" name="{{ addr }}" min="0" max="100" required> %<br><br>
+    {% endfor %}
+    
+    <button type="button" onclick="submitForm()">Save Preset</button>
 </form>
 
 <script>
-function saveOrUpdatePreset() {
-    var name = $('#presetName').val();
-    var values = $('#presetValues').val();
-    try {
-        var parsedValues = JSON.parse(values);
-        $.ajax({
-            url: '/save_preset',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({name: name, values: parsedValues}),
-            success: function(response) {
-                alert('Preset saved or updated successfully.');
-            },
-            error: function(response) {
-                alert('Error saving or updating preset.');
-            }
-        });
-    } catch (e) {
-        alert('Invalid JSON for Preset Values.');
-    }
-}
-
-function deletePreset() {
-    var name = $('#presetName').val();
+function submitForm() {
+    var presetName = $('#presetName').val();
+    var dacValues = {};
+    $('input[type="number"]').each(function() {
+        dacValues[this.name] = this.value;
+    });
+    
     $.ajax({
-        url: '/delete_preset/' + encodeURIComponent(name),
+        url: '/save_preset',
         type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({name: presetName, values: dacValues}),
         success: function(response) {
-            alert('Preset deleted successfully.');
+            alert('Preset saved successfully.');
+            window.location.reload();
         },
         error: function(response) {
-            alert('Error deleting preset.');
+            alert('Error saving preset.');
         }
     });
 }

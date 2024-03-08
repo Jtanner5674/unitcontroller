@@ -204,6 +204,10 @@ def get_current_voltage(dac_id):
 
 ########################### Preset Control ####################################
 
+@app.route('/create_preset_form')
+def create_preset_form():
+    dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
+    return render_template('create_preset_form.html', dac_addresses=dac_addresses)
   
 @app.route('/get_presets', methods=['POST'])
 def get_presets():
