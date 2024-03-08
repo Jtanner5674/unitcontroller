@@ -92,6 +92,7 @@ def delete_preset(name):
         del config["presets"][name]
         save_config(config)
 
+@app.route('/get_presets', methods=['POST'])
 def get_presets():
     config = load_config()
     return config.get("presets", {})
