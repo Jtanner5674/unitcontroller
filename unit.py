@@ -260,8 +260,10 @@ def apply_preset(name):
         
 def flush_check(preset):
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
+    preset_addresses = CFG["presets"][preset_name].keys()
+    
     for addr in dac_addresses:
-        if not in preset
+        if addr not in preset_addresses:
             for adr in dac_addresses: 
                 set_voltage_action(adr, 0)
             break
