@@ -3,150 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controller Settings</title>
+    <title>Controller Settings with Presets</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 20px;
-            transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
         }
-
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
+        .container, .preset-form-container, .presets-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
         }
-
-        h1 {
-            color: #333;
+        .preset-form-container, .presets-container {
+            margin-top: 40px;
         }
-
-        h1.dark-mode {
-            color: #aa2b3a;
+        .presets-container {
+            margin-bottom: 40px;
         }
-
-        .collapsible {
-            background-color: #ffbdc4;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-            transition: background-color 0.3s;
-        }
-
-        .collapsible.dark-mode {
-            background-color: #61363b;
-            color: cornsilk;
-        }
-
-        .active, .collapsible:hover {
-            background-color: #ccc;
-        }
-
-        .content {
-            padding: 0 18px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.2s ease-out;
-        }
-
         label {
-            display: block;
             margin-top: 10px;
+            display: block;
         }
-
-        button#saveAllButton {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #aa2b3a;
-            color: #fff;
-            border: none;
-            cursor: pointer;
+        input[type="text"], input[type="number"], input[type="email"], button {
+            margin-top: 5px;
         }
-
-        #settings {
-            display: flex;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
-            z-index: 2;
-            transform: scale(2);
-            gap: 10px;
-            width: 61px;
-            top: 13px;
-            left: 85%;
-            position: absolute;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
         }
-
-
-
-        #dacSettings,
-        #offlineSettings {
-            display: flex;
-            flex-wrap: wrap;
-            overflow: auto;
-            justify-content: flex-start; /* Adjust as needed */
-        }
-
-        .container {
-            border: 2px solid #aa2b3a;
-            margin: 10px;
-            padding: 10px;
-            max-width: 200px;
-            overflow: auto;
-            flex: 0 0 auto; /* Maintain the initial width of each box */
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        #dacSettings .container h2,
-        #offlineSettings .container h2,
-        #dacSettings .container label,
-        #offlineSettings .container label,
-        #dacSettings .container input,
-        #offlineSettings .container input {
-            margin: 5px;
-        }
-
-
-        @media only screen and (max-width: 600px) {
-            #settings {
-                top: 50px;
-                left: 75%;
-            }
-        }
-
-        @media only screen and (max-width: 400px) {
-            #settings {
-                top: 83px;
-                left: 71%;
-        }
-
     </style>
-    <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
 <body>
-    <h1>DAC Configuration</h1>
 
-    <!-- Container for Active DAC Settings -->
-        <div id="dacSettings">
-            <!-- Active DACs settings boxes will be dynamically generated here -->
-        </div>
+<nav class="container-fluid">
+    <ul>
+        <li><strong>Site Navigation</strong></li>
+    </ul>
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#" role="button">Logout</a></li>
+    </ul>
+</nav>
+
+<main class="container">
+    <h1>DAC Configuration</h1>
+    <div id="dacSettings">
+        <!-- Active DACs settings boxes will be dynamically generated here -->
+    </div>
 
     <button class="collapsible">Offline DACs</button>
     <div class="content">
-        <!-- Container for Offline DAC Settings -->
-            <div id="offlineSettings">
-                <!-- Offline DACs will be dynamically generated here -->
-            </div>
+        <div id="offlineSettings">
+            <!-- Offline DACs will be dynamically generated here -->
+        </div>
     </div>
 
-    <script>
+    <!-- Preset Creation Form -->
+    <div class="preset-form-container">
+        <h2>Create Preset</h2>
+        <form id="presetForm">
+            <label for="presetName">Preset Name:</label>
+            <input type="text" id="presetName" name="presetName" required><br><br>
+            <!-- DAC values inputs will be dynamically generated based on DAC addresses -->
+            <button type="button" onclick="submitPresetForm()">Save Preset</button>
+        </form>
+    </div>
+
+    <!-- Existing Presets Display -->
+    <div class="presets-container">
+        <h2>Existing Presets</h2>
+        <div id="presetsContainer">
+            <!-- Existing Presets will be loaded here -->
+        </div>
+    </div>
+</main>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
       function fetchConfig() {
             fetch('/config')
                 .then(response => response.json())
@@ -302,6 +239,71 @@
         function goToHome() {
             window.location.href = '/';
         }
+        $(document).ready(function() {
+        fetchPresets();
+    });
+
+    function submitForm() {
+        var presetName = $('#presetName').val();
+        var dacValues = {};
+        $('input[type="number"]').each(function() {
+            dacValues[this.name] = this.value;
+        });
+        
+        $.ajax({
+            url: '/save_preset',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({name: presetName, values: dacValues}),
+            success: function(response) {
+                alert('Preset saved successfully.');
+                fetchPresets(); // Refresh the list of presets
+            },
+            error: function(response) {
+                alert('Error saving preset.');
+            }
+        });
+    }
+
+    function fetchPresets() {
+        $.ajax({
+            url: '/get_presets',
+            type: 'GET',
+            success: function(response) {
+                renderPresets(response);
+            },
+            error: function() {
+                alert('Failed to load presets.');
+            }
+        });
+    }
+
+    function renderPresets(presets) {
+        $('#presetsContainer').empty(); // Clear existing presets
+        Object.keys(presets).forEach(function(name) {
+            var preset = presets[name];
+            var presetDiv = $('<div>').addClass('preset').append($('<h3>').text(name));
+            Object.entries(preset).forEach(function([addr, value]) {
+                presetDiv.append($('<p>').text(`DAC ${addr}: ${value}%`));
+            });
+            presetDiv.append($('<button onclick="deletePreset(\'' + name + '\')">Delete</button>'));
+            $('#presetsContainer').append(presetDiv);
+        });
+    }
+
+    function deletePreset(name) {
+        $.ajax({
+            url: '/delete_preset/' + encodeURIComponent(name),
+            type: 'POST',
+            success: function() {
+                alert('Preset deleted successfully.');
+                fetchPresets(); // Refresh the list of presets
+            },
+            error: function() {
+                alert('Failed to delete preset.');
+            }
+        });
+        
     </script>
         <div id="settings">
         <!-- Settings button in the top right -->
