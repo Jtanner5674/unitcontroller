@@ -116,7 +116,7 @@ def settings():
 
 @app.route('/presets')
 def presets():
-    return render_template('presets/index.html')
+    return render_template('presets/index.html', dac_addresses=dac_addresses)
 
 ############################ Config Functions ###################################
 
