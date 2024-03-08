@@ -204,16 +204,7 @@ def get_current_voltage(dac_id):
 
 ########################### Preset Control ####################################
 
-@app.route('/delete_preset/<preset_name>', methods=['POST'])
-def delete_preset(preset_name):
-    config = load_config()
-    if "presets" in config and preset_name in config["presets"]:
-        del config["presets"][preset_name]
-        save_config(config)
-        return jsonify({'message': 'Preset deleted successfully'}), 200
-    else:
-        return jsonify({'error': 'Preset not found'}), 404
-    
+  
 @app.route('/get_presets', methods=['POST'])
 def get_presets():
     config = load_config()
