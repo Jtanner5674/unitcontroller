@@ -108,7 +108,7 @@ def index():
 
 @app.route('/settings')
 def settings():
-    return render_template('config/index.html')
+    return render_template('config/index.html', dac_addresses=dac_addresses)
 
 @app.route('/presets')
 def presets():
