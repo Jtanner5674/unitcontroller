@@ -259,7 +259,6 @@ def apply_preset(name):
         print(result)
         
 def flush_check(preset):
-    if an open valve is closed in next preset flush
     for addr in dac_addresses:
         if not in preset
             for adr in dac_addresses: 
