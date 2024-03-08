@@ -359,7 +359,17 @@
                 });
             });
         });
-        
+        document.addEventListener('DOMContentLoaded', function() {
+            const createPresetBtn = document.getElementById('createPresetBtn');
+            if(createPresetBtn) {
+                createPresetBtn.addEventListener('click', function() {
+                    const presetModal = document.getElementById('presetCreationModal');
+                    if(presetModal) {
+                        presetModal.style.display = 'flex'; // Change this to 'block' if 'flex' doesn't work as intended
+                    }
+                });
+            }
+        });
         function fetchPresets() {
     // Fetch presets from the backend and display them
     fetch('/get_presets')
