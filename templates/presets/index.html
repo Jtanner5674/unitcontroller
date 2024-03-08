@@ -12,21 +12,18 @@
     <label for="presetName">Preset Name:</label>
     <input type="text" id="presetName" name="presetName" required><br><br>
 
-    <!-- DAC Address Inputs will be here -->
-
+    {% for addr in dac_addresses %}
+    <label for="{{ addr }}">DAC {{ addr }}:</label>
+    <input type="number" id="{{ addr }}" name="{{ addr }}" min="0" max="100" required> %<br><br>
+    {% endfor %}
+    
     <button type="button" onclick="submitForm()">Save Preset</button>
 </form>
 
-<h2>Existing Presets</h2>
-<div id="presetsContainer">
-    <!-- Existing Presets will be loaded here -->
-</div>
-
 <script>
-$(document).ready(function() {
-    fetchPresets();
-});
 
+const dacAddresses = data.dac_addresses?.dac || [];
+ 
 function submitForm() {
     var presetName = $('#presetName').val();
     var dacValues = {};
@@ -41,50 +38,10 @@ function submitForm() {
         data: JSON.stringify({name: presetName, values: dacValues}),
         success: function(response) {
             alert('Preset saved successfully.');
-            fetchPresets(); // Refresh the list of presets
+            window.location.reload();
         },
         error: function(response) {
             alert('Error saving preset.');
-        }
-    });
-}
-
-function fetchPresets() {
-    $.ajax({
-        url: '/get_presets',
-        type: 'GET',
-        success: function(response) {
-            renderPresets(response);
-        },
-        error: function() {
-            alert('Failed to load presets.');
-        }
-    });
-}
-
-function renderPresets(presets) {
-    $('#presetsContainer').empty(); // Clear existing presets
-    Object.keys(presets).forEach(function(name) {
-        var preset = presets[name];
-        var presetDiv = $('<div>').addClass('preset').append($('<h3>').text(name));
-        Object.entries(preset).forEach(function([addr, value]) {
-            presetDiv.append($('<p>').text(`DAC ${addr}: ${value}%`));
-        });
-        presetDiv.append($('<button onclick="deletePreset(\'' + name + '\')">Delete</button>'));
-        $('#presetsContainer').append(presetDiv);
-    });
-}
-
-function deletePreset(name) {
-    $.ajax({
-        url: '/delete_preset/' + encodeURIComponent(name),
-        type: 'POST',
-        success: function() {
-            alert('Preset deleted successfully.');
-            fetchPresets(); // Refresh the list of presets
-        },
-        error: function() {
-            alert('Failed to delete preset.');
         }
     });
 }
