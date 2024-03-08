@@ -8,7 +8,6 @@
 <body>
 
 <h2>Create Preset</h2>
-
 <form id="presetForm">
     <label for="presetName">Preset Name:</label>
     <input type="text" id="presetName" name="presetName" required><br><br>
@@ -22,6 +21,9 @@
 </form>
 
 <script>
+
+const dacAddresses = data.dac_addresses?.dac || [];
+ 
 function submitForm() {
     var presetName = $('#presetName').val();
     var dacValues = {};
