@@ -24,7 +24,6 @@ def save_config(settings):
         
 def set_voltage_action(addr, value):
     try:
-        
         addr_int = int(addr, 16)  # Convert hex string to integer for comparison
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
         dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0)
@@ -37,6 +36,13 @@ def set_voltage_action(addr, value):
         print('error: Invalid DAC ADDR')
         return jsonify({'error': 'Invalid DAC ADDR'})
     
+def add_preset(name, values):
+    config = load_config()
+    if "presets" not in config:
+        config["presets"] = {}
+    config["presets"][name] = values
+    save_config(config)
+      
 ############################ Initialization ###################################
 def initialize_dacs():
     global CFG
@@ -107,6 +113,10 @@ def index():
 @app.route('/settings')
 def settings():
     return render_template('config/index.html')
+
+@app.route('/presets')
+def settings():
+    return render_template('presets/index.html')
 
 ############################ Config Functions ###################################
 
@@ -194,10 +204,40 @@ def get_current_voltage(dac_id):
 
 ########################### Preset Control ####################################
 
+@app.route('/delete_preset/<preset_name>', methods=['POST'])
+def delete_preset(preset_name):
+    config = load_config()
+    if "presets" in config and preset_name in config["presets"]:
+        del config["presets"][preset_name]
+        save_config(config)
+        return jsonify({'message': 'Preset deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Preset not found'}), 404
+    
 @app.route('/get_presets', methods=['POST'])
 def get_presets():
     config = load_config()
     return config.get("presets", {})
+
+@app.route('/delete_preset/<preset_name>', methods=['POST'])
+def delete_preset(preset_name):
+    config = load_config()
+    if "presets" in config and preset_name in config["presets"]:
+        del config["presets"][preset_name]
+        save_config(config)
+        return jsonify({'message': 'Preset deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Preset not found'}), 404
+
+@app.route('/save_preset', methods=['POST'])
+def save_preset():
+    data = request.json  # Preset data from the request
+    config = load_config()  # Load current config
+    if "presets" not in config:
+        config["presets"] = []
+    config["presets"].append(data)  # Append the new preset
+    save_config(config)  # Save the updated config back to file
+    return jsonify({'message': 'Preset saved successfully'}), 200
 
 def apply_preset(name):
     config = load_config()

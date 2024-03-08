@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Presets</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<h2>Edit Presets</h2>
+
+<form id="presetForm">
+    <label for="presetName">Preset Name:</label>
+    <input type="text" id="presetName" name="presetName"><br><br>
+
+    <label for="presetValues">Preset Values (JSON):</label>
+    <textarea id="presetValues" name="presetValues" rows="4" cols="50"></textarea><br><br>
+
+    <button type="button" onclick="saveOrUpdatePreset()">Save/Update Preset</button>
+    <button type="button" onclick="deletePreset()">Delete Preset</button>
+</form>
+
+<script>
+function saveOrUpdatePreset() {
+    var name = $('#presetName').val();
+    var values = $('#presetValues').val();
+    try {
+        var parsedValues = JSON.parse(values);
+        // Update or save a new preset
+        $.ajax({
+            url: '/save_preset',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({name: name, values: parsedValues}), // Assuming your backend is adjusted to handle this structure
+            success: function(response) {
+                alert('Preset saved or updated successfully.');
+            },
+            error: function(response) {
+                alert('Error saving or updating preset.');
+            }
+        });
+    } catch (e) {
+        alert('Invalid JSON for Preset Values.');
+    }
+}
+
+
+
+function savePreset(name, values) {
+    $.ajax({
+        url: '/save_preset',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({name: name, values: values}),
+        success: function(response) {
+            alert('Preset saved successfully.');
+        },
+        error: function(response) {
+            alert('Error saving preset.');
+        }
+    });
+}
+
+function editPreset(name, values) {
+    $.ajax({
+        url: '/edit_preset/' + encodeURIComponent(name),
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(values),
+        success: function(response) {
+            alert('Preset edited successfully.');
+        },
+        error: function(response) {
+            alert('Error editing preset.');
+        }
+    });
+}
+
+function deletePreset() {
+    var name = $('#presetName').val();
+    $.ajax({
+        url: '/delete_preset/' + encodeURIComponent(name),
+        type: 'POST',
+        success: function(response) {
+            alert('Preset deleted successfully.');
+        },
+        error: function(response) {
+            alert('Error deleting preset.');
+        }
+    });
+}
+</script>
+
+</body>
+</html>
