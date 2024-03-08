@@ -11,11 +11,9 @@ preset_flush_time = 5 #Change this to adjust how long the system flushes in pres
 CFG = None
 dac_objects = {} 
 dac_addresses = {}
-CFG = initialize_dacs() 
-app = Flask(__name__)
-CORS(app)
 
-#Initialization
+
+############################ Initialization ###################################
 def initialize_dacs():
     global CFG
     CFG = load_config()
@@ -71,7 +69,11 @@ def initialize_dacs():
     except Exception as e:
         print("Error while scanning for DACs:", e)
 
-############################Backend Functions###################################
+CFG = initialize_dacs() 
+app = Flask(__name__)
+CORS(app)
+
+############################ Backend Functions ###################################
 
 def load_config():
   with open('config.json', 'r') as file:
@@ -96,7 +98,7 @@ def set_voltage_action(addr, value):
         print('error: Invalid DAC ADDR')
         return jsonify({'error': 'Invalid DAC ADDR'})
     
-############################Flask Pages###################################
+############################ Flask Pages ###################################
 
 @app.route('/')
 def index():
@@ -107,7 +109,7 @@ def index():
 def settings():
     return render_template('config/index.html')
 
-############################Config Functions###################################
+############################ Config Functions ###################################
 
 @app.route('/config', methods=['GET'])
 def get_dac_config():
@@ -160,7 +162,7 @@ def update_all_config():
         traceback.print_exc()  # Print the traceback for detailed error information
         return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
 
-###########################Voltage Control####################################
+########################### Voltage Control ####################################
 
 @app.route('/set_voltage<addr>', methods=['POST'])
 def set_voltage(addr):
@@ -191,7 +193,7 @@ def get_current_voltage(dac_id):
     except Exception as e:
         return jsonify({'error': str(e)})
 
-###########################Preset Control####################################
+########################### Preset Control ####################################
 
 @app.route('/get_presets', methods=['POST'])
 def get_presets():
