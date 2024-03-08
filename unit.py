@@ -36,13 +36,7 @@ def set_voltage_action(addr, value):
     except StopIteration:
         print('error: Invalid DAC ADDR')
         return jsonify({'error': 'Invalid DAC ADDR'})
-    
-def add_preset(name, values):
-    config = load_config()
-    if "presets" not in config:
-        config["presets"] = {}
-    config["presets"][name] = values
-    save_config(config)
+
       
 ############################ Initialization ###################################
 def initialize_dacs():
@@ -205,7 +199,16 @@ def get_current_voltage(dac_id):
         return jsonify({'error': str(e)})
 
 ########################### Preset Control ####################################
-  
+
+    
+def add_preset(name, values):
+    config = load_config()
+    presets = config["existing_configs"]["presets"]
+    if "presets" not in config:
+        config["presets"] = {}
+    config["presets"][name] = values #values = {"addr": "0-100", etc.}
+    save_config(config)
+
 @app.route('/get_presets', methods=['POST'])
 def get_presets():
     config = load_config()
