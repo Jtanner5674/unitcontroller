@@ -94,7 +94,57 @@ function deletePreset(name) {
         }
     });
 }
-</script>
 
+function toggleDarkMode() {
+        const h1 = document.querySelector('h1');
+        h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+        const body = document.body;
+        body.classList.toggle('dark-mode');
+        const collapse = document.querySelector('button.collapsible');
+        collapse.classList.toggle('dark-mode');
+
+        // Toggle the symbols based on the mode
+        const lightModeSymbol = '💡';
+        const darkModeSymbol = '🌙';
+        const toggleButton = document.getElementById('dark-mode-button');
+        const currentSymbol = toggleButton.textContent.trim();
+
+        toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
+
+        // You can also save the user's preference for dark mode in local storage
+        const isDarkModeEnabled = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkModeEnabled);
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Set initial dark mode based on user's preference in local storage
+        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+        const body = document.body;
+        body.classList.toggle('dark-mode', isDarkModeEnabled);
+        const h1 = document.querySelector('h1');
+        h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
+        const collapse = document.querySelector('button.collapsible');
+        collapse.classList.toggle('dark-mode', isDarkModeEnabled);
+
+        const toggleButton = document.getElementById('dark-mode-button');
+        toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+    });
+
+        function goToHome() {
+            window.location.href = '/';
+        }
+    </script>
+        <div id="settings">
+        <!-- Settings button in the top right -->
+        <div id="settings-button" onclick="goToHome()">
+            🏠
+        </div>
+
+        <!-- Dark mode button -->
+        <div id="dark-mode-button" onclick="toggleDarkMode()">
+            🌙
+        </div>
+    </div> 
 </body>
 </html>
