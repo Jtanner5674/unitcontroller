@@ -16,14 +16,12 @@ CFG = None  # Initialize CFG as None
 
 
 def load_config():
-  with open('config.json', 'r') as file:
-    return json.load(file)
+    with open('config.json', 'r') as f:
+        return json.load(f)
 
-
-
-def save_config(settings):
-    with open('config.json', 'w') as file:
-        json.dump({"dac": settings}, file, indent=2)
+def save_config(config):
+    with open('config.json', 'w') as f:
+        json.dump(config, f, indent=4)
 
 
 def initialize_dacs():
@@ -80,6 +78,67 @@ def initialize_dacs():
 
     except Exception as e:
         print("Error while scanning for DACs:", e)
+
+def add_preset(name, values):
+    config = load_config()
+    if "presets" not in config:
+        config["presets"] = {}
+    config["presets"][name] = values
+    save_config(config)
+
+def delete_preset(name):
+    config = load_config()
+    if "presets" in config and name in config["presets"]:
+        del config["presets"][name]
+        save_config(config)
+
+def get_presets():
+    config = load_config()
+    return config.get("presets", {})
+
+def apply_preset(name):
+    config = load_config()
+    presets = config.get("presets", {})
+    if name not in presets:
+        print(f"Preset {name} not found.")
+        return
+    preset_values = presets[name]
+    for dac_addr, percentage in preset_values.items():
+        voltage = int((float(percentage) / 100.0) * 10000)
+        result = set_voltage_action(dac_addr, voltage)
+        print(result)
+
+
+@app.route('/save_preset', methods=['POST'])
+def save_preset():
+    data = request.json  # Preset data from the request
+    config = load_config()  # Load current config
+    if "presets" not in config:
+        config["presets"] = []
+    config["presets"].append(data)  # Append the new preset
+    save_config(config)  # Save the updated config back to file
+    return jsonify({'message': 'Preset saved successfully'}), 200
+
+@app.route('/edit_preset/<preset_name>', methods=['POST'])
+def edit_preset(preset_name):
+    config = load_config()
+    preset_data = request.json
+    if "presets" in config and preset_name in config["presets"]:
+        config["presets"][preset_name] = preset_data
+        save_config(config)
+        return jsonify({'message': 'Preset edited successfully'}), 200
+    else:
+        return jsonify({'error': 'Preset not found'}), 404
+
+@app.route('/delete_preset/<preset_name>', methods=['POST'])
+def delete_preset(preset_name):
+    config = load_config()
+    if "presets" in config and preset_name in config["presets"]:
+        del config["presets"][preset_name]
+        save_config(config)
+        return jsonify({'message': 'Preset deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Preset not found'}), 404
 
 
 # Initialize DACs when the script starts
