@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controller Settings</title>
+    <title>PSU Valve Controller</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
             margin: 20px;
             transition: background-color 0.3s, color 0.3s;
+            max-width: 100%; /* Ensures content doesn't overflow on small screens */
         }
 
         body.dark-mode {
@@ -17,265 +18,224 @@
             color: #ffffff;
         }
 
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #484848;
+        }
+
         h1 {
             color: #333;
+        }
+        
+        h2 {
+            margin: 10px;
         }
 
         h1.dark-mode {
             color: #aa2b3a;
         }
 
-        .collapsible {
-            background-color: #ffbdc4;
-            color: #444;
-            cursor: pointer;
-            padding: 18px;
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 15px;
-            transition: background-color 0.3s;
+        #boxes-container {
+            display: flex;
+            flex-wrap: wrap;  /* This ensures boxes wrap to the next row when there's not enough space */
+            justify-content: flex-start;  /* This positions the boxes to the left */
         }
 
-        .collapsible.dark-mode {
-            background-color: #61363b;
-            color: cornsilk;
+        .dac-box {
+            border: 2px solid #aa2b3a;
+            padding: 10px;
+            margin: 10px;
+            max-width: 200px;
         }
 
-        .active, .collapsible:hover {
-            background-color: #ccc;
-        }
-
-        .content {
-            padding: 0 18px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.2s ease-out;
+        form {
+            margin-bottom: 10px;
+            display:inline-block;
+            margin-top: 10px;
         }
 
         label {
             display: block;
-            margin-top: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            left: 40px;
         }
 
-        button#saveAllButton {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #aa2b3a;
-            color: #fff;
-            border: none;
-            cursor: pointer;
+        input[type="range"] {
+            width: 10%;
+            position: relative;
+            appearance: slider-vertical;
+            left: 37px;
+            accent-color: coral;
+        }
+
+        button {
+        padding: 10px;
+        background-color: #aa2b3a;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+        display:inline;
+        margin: 0 auto;
+        }
+
+        button.set {
+            position: relative;
+            top: -61px;
+            right: -64px;
+            width: 50px;
+        }
+        
+        button.open {
+            position: relative;
+            top: -107px;
+            right: 45px;
+            width: 50px;
+        }
+        
+        button.close {
+            position: relative;
+            top: -14px;
+            left: 9.5px;
+            width: 50px;
         }
 
         #settings {
             display: flex;
+            position: absolute;
             cursor: pointer;
             padding: 10px;
             border-radius: 50%;
             z-index: 2;
             transform: scale(2);
             gap: 10px;
-            width: 61px;
             top: 13px;
             left: 85%;
-            position: absolute;
         }
 
-
-
-        #dacSettings,
-        #offlineSettings {
-            display: flex;
-            flex-wrap: wrap;
-            overflow: auto;
-            justify-content: flex-start; /* Adjust as needed */
-        }
-
-        .container {
-            border: 2px solid #aa2b3a;
-            margin: 10px;
-            padding: 10px;
-            max-width: 200px;
-            overflow: auto;
-            flex: 0 0 auto; /* Maintain the initial width of each box */
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        #dacSettings .container h2,
-        #offlineSettings .container h2,
-        #dacSettings .container label,
-        #offlineSettings .container label,
-        #dacSettings .container input,
-        #offlineSettings .container input {
-            margin: 5px;
-        }
-
-
+        /* Mobile */
         @media only screen and (max-width: 600px) {
             #settings {
-                top: 50px;
-                left: 75%;
-            }
+                top: 61px;
+                left: 65%;
         }
 
         @media only screen and (max-width: 400px) {
             #settings {
-                top: 83px;
-                left: 71%;
+                top: 48px;
+                left: 58%;
         }
 
+
+            body {
+                margin: 10px; /* Adjust margin for smaller screens */
+            }
+
+            .dac-box {
+                width: calc(100% - 20px); /* Set box width to nearly full width with some margin */
+                margin-bottom: 20px; /* Add some spacing between boxes */
+                font-size: 18px; /* Increase font size for better readability */
+                padding: 20px; /* Add padding for better spacing inside boxes */
+            }
+
+            h2 {
+                font-size: 24px; /* Increase font size for better readability */
+                margin: 10px 0; /* Add some vertical margin for better spacing */
+            }
+
+            /* Adjust input range width for smaller screens */
+            input[type="range"] {
+                left: 20%;
+                
+            }
+
+            /* Adjust button positioning for smaller screens */
+            button.set, button.open, button.close {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px; /* Add some margin between buttons */
+            }
+
+            button.set {
+            position: relative;
+            top: -61px;
+            left: 30%;
+            width: 50px;
+        }
+        
+        button.open {
+            position: relative;
+            top: -107px;
+            left: -25%;
+            width: 50px;
+        }
+        
+        button.close {
+            position: relative;
+            top: -14px;
+            left: 3%;
+            width: 50px;
+        }
+    }
     </style>
-    <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
-</head>
-<body>
-    <h1>DAC Configuration</h1>
-
-    <!-- Container for Active DAC Settings -->
-        <div id="dacSettings">
-            <!-- Active DACs settings boxes will be dynamically generated here -->
-        </div>
-
-    <button class="collapsible">Offline DACs</button>
-    <div class="content">
-        <!-- Container for Offline DAC Settings -->
-            <div id="offlineSettings">
-                <!-- Offline DACs will be dynamically generated here -->
-            </div>
-    </div>
-
     <script>
-      function fetchConfig() {
-            fetch('/config')
-                .then(response => response.json())
-                .then(data => {
-                    const dacAddresses = data.dac_addresses?.dac || [];
-                    const existingConfigs = data.existing_configs?.dac || [];
-                    const offlineDacs = existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id));
-
-                    // Check if dacAddresses is an array before using it
-                    if (Array.isArray(dacAddresses)) {
-                        dacAddresses.forEach(dac => {
-                            const hexAddress = dac.id;
-                            if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
-                                return;
-                            }
-
-                            // Create settings box for online DACs
-                            const settingsBox = document.createElement('div');
-                            settingsBox.innerHTML = `
-                            <div class="container" id="activeDacContainer">
-                                <h2>${hexAddress}</h2>
-                                <label for="name-${hexAddress}">Name:</label>
-                                <input type="text" id="name-${hexAddress}" name="name">
-                                <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
-                            </div>
-                            `;
-                            document.getElementById('dacSettings').appendChild(settingsBox);
-
-                            // Find existing config based on the address
-                            const existingConfig = existingConfigs.find(config => config.id === hexAddress);
-                            if (existingConfig) {
-                                document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
-                            }
-                        });
-                    }
-
-                    // Create settings boxes for offline DACs
-                    offlineDacs.forEach(offlineDac => {
-                        const settingsBox = document.createElement('div');
-                        settingsBox.innerHTML = `
-                        <div class="container" id="offlineDacContainer">
-                            <h2>${offlineDac.id}</h2>
-                            <label for="name-offline-${offlineDac.id}">Name:</label>
-                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name || ''}">
-                            <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
-                        </div>    
-                        `;
-                        document.getElementById('offlineSettings').appendChild(settingsBox);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
+        // Function to handle form submissions asynchronously
+        function submitForm(event, url) {
+            console.log('Form submitted:', url, event);
+            event.preventDefault(); // Prevent default form submission behavior
+            let formData = new FormData(event.target);
+            console.log(formData); // Move this statement here
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Handle the response from the Flask server if needed
+                console.log('Form submitted successfully!');
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the fetch
+                console.error('Error submitting form:', error);
+            });
         }
 
-
-
-        function saveAllConfig() {
-            const allSettings = [];
-
-            // Get all online DAC settings
-            const onlineSettings = document.querySelectorAll('[id^=name-]');
-            onlineSettings.forEach(setting => {
-                const id = setting.id.split('-')[1];
-                const nameElement = document.getElementById(`name-${id}`);
-                const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, name });
-            });
-
-            // Get all offline DAC settings
-            const offlineSettings = document.querySelectorAll('[id^=name-offline-]');
-            offlineSettings.forEach(setting => {
-                const id = setting.id.split('-')[2];
-                const nameElement = document.getElementById(`name-offline-${id}`);
-                const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, name });
-            });
-
-            // Send all settings to update the JSON configuration
-            fetch('/config', {
-                method: 'PUT',
+        function sendPostRequest(url) {
+            fetch(url, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ settings: allSettings }) // Wrap settings in an object
+                body: JSON.stringify({}) // Add any payload if required
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(updatedConfig => {
-                    console.log('Updated config:', updatedConfig);
-                })
-                .catch(error => console.error('Error:', error));
+            .then(response => {
+                // Handle the response as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        // Function to navigate to the settings page
+        function goToSettings() {
+            window.location.href = '/settings';
         }
 
-        document.addEventListener('DOMContentLoaded', fetchConfig);
-
-        const coll = document.querySelector('.collapsible');
-        coll.addEventListener('click', function () {
-            this.classList.toggle('active');
-            const content = this.nextElementSibling;
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-            } else {
-                content.style.maxHeight = content.scrollHeight + 'px';
-            }
-        });
-
-        const saveAllButton = document.createElement('button');
-        saveAllButton.id = 'saveAllButton';
-        saveAllButton.textContent = 'Save All';
-        saveAllButton.addEventListener('click', saveAllConfig);
-        document.body.appendChild(saveAllButton);
-
-
-    function toggleDarkMode() {
+        // Function to toggle dark mode
+        function toggleDarkMode() {
         const h1 = document.querySelector('h1');
         h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
         const body = document.body;
-        body.classList.toggle('dark-mode');
-        const collapse = document.querySelector('button.collapsible');
-        collapse.classList.toggle('dark-mode');
+        body.classList.toggle('dark-mode'); 
 
         // Toggle the symbols based on the mode
         const lightModeSymbol = '💡';
         const darkModeSymbol = '🌙';
         const toggleButton = document.getElementById('dark-mode-button');
-        const currentSymbol = toggleButton.textContent.trim();
+        const currentSymbol = toggleButton.textContent;
 
         toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
 
@@ -284,35 +244,129 @@
         localStorage.setItem('darkMode', isDarkModeEnabled);
     }
 
-
     document.addEventListener('DOMContentLoaded', function () {
-        // Set initial dark mode based on user's preference in local storage
-        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
-        const body = document.body;
-        body.classList.toggle('dark-mode', isDarkModeEnabled);
-        const h1 = document.querySelector('h1');
-        h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
-        const collapse = document.querySelector('button.collapsible');
-        collapse.classList.toggle('dark-mode', isDarkModeEnabled);
+    // Set initial dark mode based on user's preference in local storage
+    const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+    const body = document.body;
+    body.classList.toggle('dark-mode', isDarkModeEnabled);
+    
+    const h1 = document.querySelector('h1');
+    h1.classList.toggle('dark-mode', isDarkModeEnabled);
 
-        const toggleButton = document.getElementById('dark-mode-button');
-        toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+    const toggleButton = document.getElementById('dark-mode-button');
+    toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+});
+
+function sendPostRequest(url, dacId, value) {
+    // Set slider value to the specified value
+    document.getElementById('voltage_' + dacId).value = value;
+    // Update displayed value next to the angle label
+    document.getElementById('angle_value_' + dacId).textContent = value;
+    // Send post request
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => {
+        // Handle the response as needed
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
+}
 
-        function goToHome() {
-            window.location.href = '/';
-        }
+function adjustSlider(dacId, value) {
+    // Set slider value to the specified value
+    document.getElementById('voltage_' + dacId).value = value;
+    // Update displayed value next to the angle label
+    document.getElementById('angle_value_' + dacId).textContent = value;
+
+    const url = value === '0' ? '/close1' + dacId : '/open1' + dacId;
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => {
+        // Handle the response as needed
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+function updateSliderValue(slider) {
+    const dacId = slider.id.split('_')[1];
+    document.getElementById('angle_value_' + dacId).textContent = slider.value;
+}
+
+function fetchCurrentVoltage(dacId) {
+    fetch(`/get_current_voltage/${dacId}`)
+    .then(response => response.json())
+    .then(data => {
+        // Convert the voltage value to fit within the range of the slider (0-100)
+        const voltage = Math.round((data.voltage / 10000) * 100);
+        // Update the slider value and displayed voltage
+        document.getElementById(`voltage_${dacId}`).value = voltage;
+        document.getElementById(`angle_value_${dacId}`).textContent = voltage;
+    })
+    .catch(error => {
+        console.error('Error fetching current voltage:', error);
+    });
+}
+
+function updateCurrentVoltages() {
+    // Loop through each DAC object and fetch its current voltage
+    {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
+        fetchCurrentVoltage('{{ dac_id }}');
+    {% endfor %}
+}
+
+setInterval(updateCurrentVoltages, 5000);
+
     </script>
-        <div id="settings">
+    <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
+</head>
+<body>
+    <h1>DAC Control Interface</h1>
+
+    <div id="boxes-container">
+        {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
+            <div class="dac-box">
+                <!-- Display DAC Name or "Unnamed DAC" -->
+                <h2>{{ dac.name or "Unnamed DAC" }}</h2>
+            
+            <!-- Form to set voltage for Channel 1 -->
+            <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
+                <label for="voltage_{{ dac_id }}">Posistion: <span id="angle_value_{{ dac_id }}">0</span>%</label>
+                <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step="1" value="0" onmousemove="updateSliderValue(this)" oninput="updateSliderValue(this)">
+                <button class="set" type="submit">Set</button>
+                
+            
+            
+            <!-- Open and close the channels -->
+            <button class="close" onclick="adjustSlider('{{ dac_id }}', 0)">Close</button>
+            <button class="open" onclick="adjustSlider('{{ dac_id }}', 100)">Open</button>
+        </form>
+        </div>
+    {% endfor %}
+
+    <div id="settings">
         <!-- Settings button in the top right -->
-        <div id="settings-button" onclick="goToHome()">
-            🏠
+        <div id="settings-button" onclick="goToSettings()">
+            ⚙️
         </div>
 
         <!-- Dark mode button -->
         <div id="dark-mode-button" onclick="toggleDarkMode()">
             🌙
         </div>
-    </div> 
+    </div>  
 </body>
 </html>
