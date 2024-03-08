@@ -209,7 +209,7 @@ def add_preset(name, values):
     config["presets"][name] = values #values = {"addr": "0-100", etc.}
     save_config(config)
 
-@app.route('/get_presets', methods=['POST'])
+@app.route('/get_presets', methods=['GET'])
 def get_presets():
     config = load_config()
     return config.get("presets", {})
