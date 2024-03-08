@@ -12,10 +12,16 @@
     <label for="presetName">Preset Name:</label>
     <input type="text" id="presetName" name="presetName" required><br><br>
 
-    <!-- DAC Address Inputs will be here -->
-
+    {% for addr in dac_addresses %}
+    <div>
+        <label for="dac_{{ addr }}">DAC {{ addr }}:</label>
+        <input type="number" id="dac_{{ addr }}" name="{{ addr }}" min="0" max="100" required> %
+    </div>
+    {% endfor %}
+    
     <button type="button" onclick="submitForm()">Save Preset</button>
 </form>
+
 
 <h2>Existing Presets</h2>
 <div id="presetsContainer">
