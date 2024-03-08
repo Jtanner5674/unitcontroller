@@ -23,14 +23,15 @@ def save_config(config):
         json.dump(config, file, indent=2) 
 
         
-def set_voltage_action(addr, value):
+def set_voltage_action(addr, percent):
     try:
-        addr_int = int(addr, 16)  # Convert hex string to integer for comparison
+        volt = int((float(percent) / 100.0) * 10000)
+        addr_int = int(addr, 16)
         dac = next(d for d in CFG["dac"] if int(d["id"], 16) == addr_int)
-        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL0)
-        dac["obj"].set_DAC_out_voltage(value, DFRobot_GP8403.CHANNEL1)
-        volts = float(value / 1000)
-        dac["current_voltage"] = value 
+        dac["obj"].set_DAC_out_voltage(volt, DFRobot_GP8403.CHANNEL0)
+        dac["obj"].set_DAC_out_voltage(volt, DFRobot_GP8403.CHANNEL1)
+        volts = float(volt / 1000)
+        dac["current_voltage"] = volt 
         print(f'{dac["name"]} set to {volts}V')
         return jsonify({'message': f'{dac["name"]} set to {volts}V'})
     except StopIteration:
@@ -172,7 +173,6 @@ def update_all_config():
 @app.route('/set_voltage<addr>', methods=['POST'])
 def set_voltage(addr):
     voltage = float(request.form['voltage'])
-    voltage = int((voltage / 100.0) * 10000)
     return set_voltage_action(addr, voltage)
 
 
@@ -247,6 +247,7 @@ def save_preset():
 
 
 def apply_preset(name):
+    flush_check(name)
     config = load_config()
     presets = config.get("presets", {})
     if name not in presets:
@@ -254,14 +255,17 @@ def apply_preset(name):
         return
     preset_values = presets[name]
     for dac_addr, percentage in preset_values.items():
-        result = set_voltage_action(dac_addr, 0)
-    set_voltage_action(0x58, 100)
-    time.sleep(preset_flush_time)    
-    for dac_addr, percentage in preset_values.items():
-        voltage = int((float(percentage) / 100.0) * 10000)
-        result = set_voltage_action(dac_addr, voltage)
+        result = set_voltage_action(dac_addr, percentage)
         print(result)
         
-
+def flush_check(preset):
+    if an open valve is closed in next preset flush
+    for addr in dac_addresses:
+        if not in preset
+            for adr in dac_addresses: 
+                set_voltage_action(adr, 0)
+            break
+    time.sleep(preset_flush_time)
+    
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
