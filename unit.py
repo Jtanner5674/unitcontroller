@@ -107,13 +107,9 @@ def index():
 
 @app.route('/settings')
 def settings():
+    existing_configs = load_config()
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
-    return render_template('config/index.html', dac_addresses=dac_addresses)
-
-@app.route('/presets')
-def presets():
-    dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
-    return render_template('presets/index.html', dac_addresses=dac_addresses)
+    return render_template('config/index.html', dac_addresses=dac_addresses, dac_objects=dac_objects)
 
 ############################ Config Functions ###################################
 
