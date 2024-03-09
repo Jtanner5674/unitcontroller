@@ -38,7 +38,6 @@ def set_voltage_action(addr, percent):
         print('error: Invalid DAC ADDR')
         return jsonify({'error': 'Invalid DAC ADDR'})
 
-      
 ############################ Initialization ###################################
 def initialize_dacs():
     global CFG
