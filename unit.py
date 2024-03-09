@@ -227,21 +227,19 @@ def delete_preset(preset_name):
 @app.route('/save_preset', methods=['POST'])
 def save_preset():
     data = request.json
-    # Validation check
     if 'name' not in data or 'values' not in data:
         return jsonify({'error': 'Missing name or values'}), 400
 
     name = data['name']
     values = data['values']
-    # Further validation can be added here (e.g., check if values is a dictionary)
-
+    filtered_values = {k: v for k, v in values.items() if v != 0}
+    
     config = load_config()
     if "presets" not in config:
         config["presets"] = {}
     
-    # Correcting the structure to save presets properly
-    config["presets"][name] = values
-    save_config(config)  # This function might need adjustments
+    config["presets"][name] = filtered_values
+    save_config(config)
     
     return jsonify({'message': 'Preset saved successfully'}), 200
 
