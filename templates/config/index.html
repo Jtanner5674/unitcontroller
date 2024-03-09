@@ -349,12 +349,14 @@ function renderPresets(presets) {
         var preset = presets[name];
         var presetDiv = $('<div>').addClass('preset').append($('<h3>').text(name));
         Object.entries(preset).forEach(function([addr, value]) {
-            presetDiv.append($('<p>').text(`DAC ${addr}: ${value}%`));
+            var dacName = dac_objects[addr] ? dac_objects[addr].name || addr : addr;
+            presetDiv.append($('<p>').text(`${dacName}: ${value}%`));
         });
         presetDiv.append($('<button onclick="deletePreset(\'' + name + '\')">Delete</button>'));
         $('#presetsContainer').append(presetDiv);
     });
 }
+
 
 function deletePreset(name) {
     $.ajax({
