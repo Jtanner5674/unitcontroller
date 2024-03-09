@@ -110,6 +110,7 @@ def index():
 def settings():
     existing_configs = load_config()
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
+    dac_objects = {dac["id"]: dac for dac in CFG["dac"] if dac["found"]}
     return render_template('config/index.html', dac_objects=dac_objects, dac_addresses=dac_addresses, existing_configs=existing_configs)
 
 ############################ Config Functions ###################################
