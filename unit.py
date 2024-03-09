@@ -41,56 +41,47 @@ def set_voltage_action(addr, percent):
 ############################ Initialization ###################################
 def initialize_dacs():
     global CFG
-    CFG = load_config()
+    CFG = load_config()  # Ensure this loads a dict with necessary keys
+    if "existing_configs" not in CFG:
+        CFG["existing_configs"] = {"dac": []}  # Initialize if not present
+
     global dac_objects
     dac_objects = {}
+    # Initialize dac_list directly from CFG, assuming it's always present after load_config
     dac_list = CFG.get("dac", [])
-
+    
+    # Reset 'found' status for existing DAC configs to re-discover them
     for item in dac_list:
-        if isinstance(item, dict):
-            item["found"] = False
-            item["current_voltage"] = 0 
+        item["found"] = False
+        item["current_voltage"] = 0
 
     try:
         i2c = busio.I2C(board.SCL, board.SDA)
-
         print("Scanning I2C bus for DACs...")
-        for addr in range(0x58, 0x60):  
+        for addr in range(0x58, 0x60):
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
                 dac.set_DAC_out_voltage(0, DFRobot_GP8403.CHANNEL0)
                 dac.set_DAC_out_voltage(0, DFRobot_GP8403.CHANNEL1)
 
-                found_dac = next((item for item in dac_list if item["id"] == hex(addr)), None)
+                hex_addr = hex(addr)
+                found_dac = next((item for item in dac_list if item["id"] == hex_addr), None)
                 if found_dac:
-                    found_dac["found"] = True
-                    found_dac["obj"] = dac
-                    dac_objects[found_dac["id"]] = found_dac
+                    found_dac.update({"found": True, "obj": dac})
                 else:
-                    new_dac = {"name": "", "id": hex(addr), "found": True, "obj": dac, "current_voltage": 0}
-                    existing_config = next(
-                        (config for config in CFG["existing_configs"]["dac"] if config["id"] == new_dac["id"]),
-                        None)
-                    if existing_config:
-                        new_dac.update(existing_config)
+                    new_dac = {"name": "New DAC", "id": hex_addr, "found": True, "obj": dac, "current_voltage": 0}
                     dac_list.append(new_dac)
-                    dac_objects[new_dac["id"]] = new_dac
 
-                print(f"DAC found at address {hex(addr)}.")
+                dac_objects[hex_addr] = new_dac if not found_dac else found_dac
+                print(f"DAC found at address {hex_addr}.")
             except Exception as e:
                 print(f"No DAC found at address {hex(addr)}")
                 continue
 
-        # Additional cleanup logic if needed
-        dac_list = [item for item in dac_list if item["found"]]
-
-        # Update CFG to be a dictionary
-        CFG = {"dac": dac_list}
-
-        print(CFG)
+        CFG["dac"] = dac_list  # Update CFG with the newly discovered and existing DACs
+        print("DAC configuration after initialization:", CFG)
         return CFG
-
     except Exception as e:
         print("Error while scanning for DACs:", e)
 
