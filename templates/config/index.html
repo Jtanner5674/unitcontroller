@@ -345,25 +345,16 @@ function fetchPresets() {
 
 function renderPresets(presets) {
     $('#presetsContainer').empty(); // Clear existing presets
-    var dacAddressMap = {};
-    dac_addresses.dac.forEach(function(dac) {
-        if (dac.found) { // assuming you only want to include found DACs
-            dacAddressMap[dac.id] = dac.name || dac.id;
-        }
-    });
     Object.keys(presets).forEach(function(name) {
         var preset = presets[name];
         var presetDiv = $('<div>').addClass('preset').append($('<h3>').text(name));
-
         Object.entries(preset).forEach(function([addr, value]) {
-            var displayName = dacAddressMap[addr] || addr; // Use the mapped name or fallback to addr
-            presetDiv.append($('<p>').text(`${displayName}: ${value}%`));
+            presetDiv.append($('<p>').text(`DAC ${addr}: ${value}%`));
         });
-        presetDiv.append($('<button>').attr('onclick', `deletePreset('${name}')`).text('Delete'));
+        presetDiv.append($('<button onclick="deletePreset(\'' + name + '\')">Delete</button>'));
         $('#presetsContainer').append(presetDiv);
     });
 }
-
 
 function deletePreset(name) {
     $.ajax({
