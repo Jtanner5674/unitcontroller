@@ -233,17 +233,25 @@ def save_preset():
 @app.route('/apply_preset', methods=['POST'])
 def apply_preset():
     data = request.json
-    name = data['name']
-    flush_check(name)
+    name = data.get('name') 
+    if not name:
+        return jsonify({'error': 'No preset name provided'}), 400
+
+    flush_check(name) 
     config = load_config()
     presets = config.get("presets", {})
+    
     if name not in presets:
         print(f"Preset {name} not found.")
-        return
+        return jsonify({'error': f'Preset {name} not found'}), 404 
+    
     preset_values = presets[name]
     for dac_addr, percentage in preset_values.items():
         result = set_voltage_action(dac_addr, percentage)
         print(result)
+        
+    return jsonify({'message': f'Preset {name} applied successfully'}), 200
+
         
 def flush_check(preset_name):
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
