@@ -219,7 +219,7 @@ def save_preset():
 
     name = data['name']
     values = data['values']
-    filtered_values = {k: v for k, v in values.items() if v != 0}
+    filtered_values = {k: v for k, v in values.items() if v != "0"}
     
     config = load_config()
     if "presets" not in config:
