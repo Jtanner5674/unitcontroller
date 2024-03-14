@@ -230,15 +230,14 @@ def save_preset():
         except ValueError:
             pass
 
-config = load_config()
-if "presets" not in config:
-    config["presets"] = {}
+    config = load_config()
+    if "presets" not in config:
+        config["presets"] = {}
 
-config["presets"][name] = filtered_values
-save_config(config)
+    config["presets"][name] = filtered_values
+    save_config(config)
 
-return jsonify({'message': 'Preset saved successfully'}), 200
-
+    return jsonify({'message': 'Preset saved successfully'}), 200
 
 @app.route('/apply_preset', methods=['POST'])
 def apply_preset():
