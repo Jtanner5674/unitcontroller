@@ -135,25 +135,20 @@ def update_config(section, index):
 def update_all_config():
     try:
         data = request.json  # New values from the request
-        filtered_settings = [setting for setting in data['settings'] if setting['id'] != 'offline']
-        print("Received data:", filtered_settings)  # Add this line for debugging
-
-        # Update the in-memory representation (CFG["dac"])
-        for setting in filtered_settings:
-            for dac in CFG["dac"]:
-                if dac["id"] == setting["id"]:
-                    dac["name"] = setting["name"]
-
-        # Update the top part of the JSON file
-        CFG["dac_addresses"] = CFG["dac"]
-
-        # Save updated data to the file
-        save_config(filtered_settings)
-
+        current_config = load_config()
+        
+        # This ensures we only update DAC settings and preserve presets
+        if 'settings' in data:
+            for setting in data['settings']:
+                for dac in current_config["dac"]:
+                    if dac["id"] == setting["id"]:
+                        dac["name"] = setting.get("name", dac["name"])
+        
+        save_config(current_config)
         return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         traceback.print_exc()  # Print the traceback for detailed error information
-        return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
+        return jsonify({"error": str(e)}), 500
 
 ########################### Voltage Control ####################################
 
