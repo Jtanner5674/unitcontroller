@@ -231,7 +231,9 @@ def save_preset():
     return jsonify({'message': 'Preset saved successfully'}), 200
 
 @app.route('/apply_preset', methods=['POST'])
-def apply_preset(name):
+def apply_preset():
+    data = request.json
+    name = data['name']
     flush_check(name)
     config = load_config()
     presets = config.get("presets", {})
