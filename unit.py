@@ -134,21 +134,26 @@ def update_config(section, index):
 @app.route('/config', methods=['PUT'])
 def update_all_config():
     try:
-        data = request.json
-        config = load_config()
-        
-        # Assuming 'settings' is a part of the request that contains DAC name updates
-        if 'settings' in data:
-            updated_dacs = {setting['id']: setting['name'] for setting in data['settings']}
-            for dac in config.get("dac", []):
-                if dac["id"] in updated_dacs:
-                    dac["name"] = updated_dacs[dac["id"]]
-        
-        save_config(config)
+        data = request.json  # New values from the request
+        filtered_settings = [setting for setting in data['settings'] if setting['id'] != 'offline']
+        print("Received data:", filtered_settings)  # Add this line for debugging
+
+        # Update the in-memory representation (CFG["dac"])
+        for setting in filtered_settings:
+            for dac in CFG["dac"]:
+                if dac["id"] == setting["id"]:
+                    dac["name"] = setting["name"]
+
+        # Update the top part of the JSON file
+        CFG["dac_addresses"] = CFG["dac"]
+
+        # Save updated data to the file
+        save_config(filtered_settings)
+
         return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        traceback.print_exc()  # Print the traceback for detailed error information
+        return jsonify({"error": str(e)}), 500  # Return an error message and status code 500 for an internal server error
 
 ########################### Voltage Control ####################################
 
@@ -194,8 +199,7 @@ def add_preset(name, values):
 @app.route('/get_presets', methods=['GET'])
 def get_presets():
     config = load_config()
-    presets = config.get("presets", {})  # Assuming config is a dictionary
-    return jsonify(presets)
+    return config.get("presets", {})
 
 @app.route('/delete_preset/<preset_name>', methods=['POST'])
 def delete_preset(preset_name):
