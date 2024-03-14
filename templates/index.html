@@ -336,7 +336,7 @@
                     console.error('Error fetching current voltage:', error);
                 });
         }
-        
+
         function applyPreset(presetName) {
         fetch('/apply_preset', {
             method: 'POST',
@@ -373,7 +373,6 @@
     
     <!-- Presets Section -->
     <div id="presets-container">
-        <h2>Apply a Preset</h2>
         {% if existing_configs.presets %}
             {% for preset_name in existing_configs.presets %}
                 <button onclick="applyPreset('{{ preset_name }}')">{{ preset_name }}</button>
