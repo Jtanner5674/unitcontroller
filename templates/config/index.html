@@ -153,57 +153,48 @@
 
     <script>
         function fetchConfig() {
-            fetch('/config')
-                .then(response => response.json())
-                .then(data => {
-                    const dacAddresses = data.dac_addresses?.dac || [];
-                    const existingConfigs = data.existing_configs?.dac || [];
-                    const offlineDacs = existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id));
+    fetch('/config')
+        .then(response => response.json())
+        .then(data => {
+            const dacConfigs = data.dac_addresses?.dac || [];
+            const existingConfigs = data.existing_configs?.dac || [];
+            const onlineDacs = dacConfigs.filter(dac => dac.found);
+            const offlineDacs = existingConfigs.filter(config => !onlineDacs.some(dac => dac.id === config.id));
 
-                    // Check if dacAddresses is an array before using it
-                    if (Array.isArray(dacAddresses)) {
-                        dacAddresses.forEach(dac => {
-                            const hexAddress = dac.id;
-                            if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
-                                return;
-                            }
+            // Clear existing content
+            document.getElementById('dacSettings').innerHTML = '';
+            document.getElementById('offlineSettings').innerHTML = '';
 
-                            // Create settings box for online DACs
-                            const settingsBox = document.createElement('div');
-                            settingsBox.innerHTML = `
-                            <div class="container" id="activeDacContainer">
-                                <h2>${hexAddress}</h2>
-                                <label for="name-${hexAddress}">Name:</label>
-                                <input type="text" id="name-${hexAddress}" name="name">
-                                <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
-                            </div>
-                            `;
-                            document.getElementById('dacSettings').appendChild(settingsBox);
+            // Create settings boxes for online DACs
+            onlineDacs.forEach(dac => {
+                const hexAddress = dac.id;
+                const settingsBox = document.createElement('div');
+                settingsBox.className = 'container';
+                settingsBox.innerHTML = `
+                    <h2>${hexAddress}</h2>
+                    <label for="name-${hexAddress}">Name:</label>
+                    <input type="text" id="name-${hexAddress}" name="name" value="${dac.name || ''}">
+                    <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
+                `;
+                document.getElementById('dacSettings').appendChild(settingsBox);
+            });
 
-                            // Find existing config based on the address
-                            const existingConfig = existingConfigs.find(config => config.id === hexAddress);
-                            if (existingConfig) {
-                                document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
-                            }
-                        });
-                    }
-
-                    // Create settings boxes for offline DACs
-                    offlineDacs.forEach(offlineDac => {
-                        const settingsBox = document.createElement('div');
-                        settingsBox.innerHTML = `
-                        <div class="container" id="offlineDacContainer">
-                            <h2>${offlineDac.id}</h2>
-                            <label for="name-offline-${offlineDac.id}">Name:</label>
-                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name || ''}">
-                            <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
-                        </div>    
-                        `;
-                        document.getElementById('offlineSettings').appendChild(settingsBox);
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        }
+            // Create settings boxes for offline DACs
+            offlineDacs.forEach(config => {
+                const hexAddress = config.id;
+                const settingsBox = document.createElement('div');
+                settingsBox.className = 'container';
+                settingsBox.innerHTML = `
+                    <h2>${hexAddress}</h2>
+                    <label for="name-offline-${hexAddress}">Name:</label>
+                    <input type="text" id="name-offline-${hexAddress}" name="name" value="${config.name || ''}">
+                    <input type="hidden" id="id-offline-${hexAddress}" name="id" value="${hexAddress}">
+                `;
+                document.getElementById('offlineSettings').appendChild(settingsBox);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
 
 
 
