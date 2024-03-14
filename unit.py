@@ -245,7 +245,7 @@ def apply_preset():
         result = set_voltage_action(dac_addr, percentage)
         print(result)
         
-def flush_check(preset):
+def flush_check(preset_name):
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
     preset_addresses = CFG["presets"][preset_name].keys()
     
