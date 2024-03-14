@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +45,8 @@
             color: cornsilk;
         }
 
-        .active, .collapsible:hover {
+        .active,
+        .collapsible:hover {
             background-color: #ccc;
         }
 
@@ -91,7 +93,8 @@
             display: flex;
             flex-wrap: wrap;
             overflow: auto;
-            justify-content: flex-start; /* Adjust as needed */
+            justify-content: flex-start;
+            /* Adjust as needed */
         }
 
         .container {
@@ -100,7 +103,8 @@
             padding: 10px;
             max-width: 200px;
             overflow: auto;
-            flex: 0 0 auto; /* Maintain the initial width of each box */
+            flex: 0 0 auto;
+            /* Maintain the initial width of each box */
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -126,29 +130,29 @@
             #settings {
                 top: 83px;
                 left: 71%;
-        }
-
+            }
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
+
 <body>
     <h1>DAC Configuration</h1>
 
     <!-- Container for Active DAC Settings -->
-        <div id="dacSettings">
-            <!-- Active DACs settings boxes will be dynamically generated here -->
-        </div>
+    <div id="dacSettings">
+        <!-- Active DACs settings boxes will be dynamically generated here -->
+    </div>
 
     <button class="collapsible">Offline DACs</button>
     <div class="content">
         <!-- Container for Offline DAC Settings -->
-            <div id="offlineSettings">
-                <!-- Offline DACs will be dynamically generated here -->
-            </div>
+        <div id="offlineSettings">
+            <!-- Offline DACs will be dynamically generated here -->
+        </div>
     </div>
 
     <script>
-      function fetchConfig() {
+        function fetchConfig() {
             fetch('/config')
                 .then(response => response.json())
                 .then(data => {
@@ -264,113 +268,113 @@
         document.body.appendChild(saveAllButton);
 
 
-    function toggleDarkMode() {
-        const h1 = document.querySelector('h1');
-        h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
-        const body = document.body;
-        body.classList.toggle('dark-mode');
-        const collapse = document.querySelector('button.collapsible');
-        collapse.classList.toggle('dark-mode');
+        function toggleDarkMode() {
+            const h1 = document.querySelector('h1');
+            h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const collapse = document.querySelector('button.collapsible');
+            collapse.classList.toggle('dark-mode');
 
-        // Toggle the symbols based on the mode
-        const lightModeSymbol = '💡';
-        const darkModeSymbol = '🌙';
-        const toggleButton = document.getElementById('dark-mode-button');
-        const currentSymbol = toggleButton.textContent.trim();
+            // Toggle the symbols based on the mode
+            const lightModeSymbol = '💡';
+            const darkModeSymbol = '🌙';
+            const toggleButton = document.getElementById('dark-mode-button');
+            const currentSymbol = toggleButton.textContent.trim();
 
-        toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
+            toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
 
-        // You can also save the user's preference for dark mode in local storage
-        const isDarkModeEnabled = body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkModeEnabled);
-    }
+            // You can also save the user's preference for dark mode in local storage
+            const isDarkModeEnabled = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled);
+        }
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Set initial dark mode based on user's preference in local storage
-        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
-        const body = document.body;
-        body.classList.toggle('dark-mode', isDarkModeEnabled);
-        const h1 = document.querySelector('h1');
-        h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
-        const collapse = document.querySelector('button.collapsible');
-        collapse.classList.toggle('dark-mode', isDarkModeEnabled);
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set initial dark mode based on user's preference in local storage
+            const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+            const body = document.body;
+            body.classList.toggle('dark-mode', isDarkModeEnabled);
+            const h1 = document.querySelector('h1');
+            h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
+            const collapse = document.querySelector('button.collapsible');
+            collapse.classList.toggle('dark-mode', isDarkModeEnabled);
 
-        const toggleButton = document.getElementById('dark-mode-button');
-        toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
-    });
+            const toggleButton = document.getElementById('dark-mode-button');
+            toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+        });
 
         function goToHome() {
             window.location.href = '/';
         }
 
-        $(document).ready(function() {
-    fetchPresets();
-});
-
-function submitForm() {
-    var presetName = $('#presetName').val();
-    var dacValues = {};
-    $('input[type="number"]').each(function() {
-        dacValues[this.name] = this.value;
-    });
-    
-    $.ajax({
-        url: '/save_preset',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({name: presetName, values: dacValues}),
-        success: function(response) {
-            alert('Preset saved successfully.');
-            fetchPresets(); // Refresh the list of presets
-        },
-        error: function(response) {
-            alert('Error saving preset.');
-        }
-    });
-}
-
-function fetchPresets() {
-    $.ajax({
-        url: '/get_presets',
-        type: 'GET',
-        success: function(response) {
-            renderPresets(response);
-        },
-        error: function() {
-        }
-    });
-}
-
-function renderPresets(presets) {
-    $('#presetsContainer').empty(); // Clear existing presets
-    Object.keys(presets).forEach(function(name) {
-        var preset = presets[name];
-        var presetDiv = $('<div>').addClass('preset').append($('<h3>').text(name));
-        Object.entries(preset).forEach(function([addr, value]) {
-            presetDiv.append($('<p>').text(`DAC ${addr}: ${value}%`));
+        $(document).ready(function () {
+            fetchPresets();
         });
-        presetDiv.append($('<button onclick="deletePreset(\'' + name + '\')">Delete</button>'));
-        $('#presetsContainer').append(presetDiv);
-    });
-}
 
-function deletePreset(name) {
-    $.ajax({
-        url: '/delete_preset/' + encodeURIComponent(name),
-        type: 'POST',
-        success: function() {
-            alert('Preset deleted successfully.');
-            fetchPresets(); // Refresh the list of presets
-        },
-        error: function() {
-            alert('Failed to delete preset.');
+        function submitForm() {
+            var presetName = $('#presetName').val();
+            var dacValues = {};
+            $('input[type="number"]').each(function () {
+                dacValues[this.name] = this.value;
+            });
+
+            $.ajax({
+                url: '/save_preset',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: presetName, values: dacValues }),
+                success: function (response) {
+                    alert('Preset saved successfully.');
+                    fetchPresets(); // Refresh the list of presets
+                },
+                error: function (response) {
+                    alert('Error saving preset.');
+                }
+            });
         }
-    });
-}
+
+        function fetchPresets() {
+            $.ajax({
+                url: '/get_presets',
+                type: 'GET',
+                success: function (response) {
+                    renderPresets(response);
+                },
+                error: function () {
+                }
+            });
+        }
+
+        function renderPresets(presets) {
+            $('#presetsContainer').empty(); // Clear existing presets
+            Object.keys(presets).forEach(function (name) {
+                var preset = presets[name];
+                var presetDiv = $('<div>').addClass('preset').append($('<h3>').text(name));
+                Object.entries(preset).forEach(function ([addr, value]) {
+                    presetDiv.append($('<p>').text(`DAC ${addr}: ${value}%`));
+                });
+                presetDiv.append($('<button onclick="deletePreset(\'' + name + '\')">Delete</button>'));
+                $('#presetsContainer').append(presetDiv);
+            });
+        }
+
+        function deletePreset(name) {
+            $.ajax({
+                url: '/delete_preset/' + encodeURIComponent(name),
+                type: 'POST',
+                success: function () {
+                    alert('Preset deleted successfully.');
+                    fetchPresets(); // Refresh the list of presets
+                },
+                error: function () {
+                    alert('Failed to delete preset.');
+                }
+            });
+        }
 
     </script>
-        <div id="settings">
+    <div id="settings">
         <!-- Settings button in the top right -->
         <div id="settings-button" onclick="goToHome()">
             🏠
@@ -380,28 +384,29 @@ function deletePreset(name) {
         <div id="dark-mode-button" onclick="toggleDarkMode()">
             🌙
         </div>
-    </div> 
+    </div>
 
     <div class="container" id="createPresetContainer">
-    <h2>Create Preset</h2>
-    <form id="presetForm">
-    <label for="presetName">Preset Name:</label>
-    <input type="text" id="presetName" name="presetName" required><br><br>
+        <h2>Create Preset</h2>
+        <form id="presetForm">
+            <label for="presetName">Preset Name:</label>
+            <input type="text" id="presetName" name="presetName" required><br><br>
 
-    {% for addr in dac_addresses %}
-    <div>
-        <label for="dac_{{ addr }}">DAC {{ addr }}:</label>
-        <input type="number" id="dac_{{ addr }}" name="{{ addr }}" min="0" max="100" required> %
+            {% for addr in dac_addresses %}
+            <div>
+                <label for="dac_{{ addr }}">DAC {{ addr }}:</label>
+                <input type="number" id="dac_{{ addr }}" name="{{ addr }}" min="0" max="100" required> %
+            </div>
+            {% endfor %}
+
+            <button type="button" onclick="submitForm()">Save Preset</button>
+        </form>
     </div>
-    {% endfor %}
-    
-    <button type="button" onclick="submitForm()">Save Preset</button>
-</form>
-</div>
 
-<div class="container" id="presetsContainer">
-    <h2>Existing Presets</h2>
-    <!-- Existing Presets will be loaded here -->
-</div>
+    <div class="container" id="presetsContainer">
+        <h2>Existing Presets</h2>
+        <!-- Existing Presets will be loaded here -->
+    </div>
 </body>
+
 </html>
