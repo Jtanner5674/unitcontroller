@@ -219,16 +219,26 @@ def save_preset():
 
     name = data['name']
     values = data['values']
-    filtered_values = {k: v for k, v in values.items() if v != "0"}
-    
-    config = load_config()
-    if "presets" not in config:
-        config["presets"] = {}
-    
-    config["presets"][name] = filtered_values
-    save_config(config)
-    
-    return jsonify({'message': 'Preset saved successfully'}), 200
+    filtered_values = {}
+    for k, v in values.items():
+        try:
+            int_value = int(v)
+            if int_value > 100:
+                filtered_values[k] = "100"
+            elif int_value > 0: 
+                filtered_values[k] = str(int_value)
+        except ValueError:
+            pass
+
+config = load_config()
+if "presets" not in config:
+    config["presets"] = {}
+
+config["presets"][name] = filtered_values
+save_config(config)
+
+return jsonify({'message': 'Preset saved successfully'}), 200
+
 
 @app.route('/apply_preset', methods=['POST'])
 def apply_preset():
