@@ -264,7 +264,7 @@ def apply_preset():
         
 def flush_check(preset_name):
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
-    preset_addresses = CFG["presets"][preset_name].keys()
+    preset_addresses = CFG["presets"].get(preset_name, {}).keys()
     
     for addr in dac_addresses:
         if addr not in preset_addresses:
