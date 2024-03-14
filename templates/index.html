@@ -336,6 +336,24 @@
                     console.error('Error fetching current voltage:', error);
                 });
         }
+        
+        function applyPreset(presetName) {
+        fetch('/apply_preset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: presetName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            // Optionally, alert the user or update the UI to confirm the preset application
+        })
+        .catch(error => {
+            console.error('Error applying preset:', error);
+        });
+    }
 
         function updateCurrentVoltages() {
             // Loop through each DAC object and fetch its current voltage
@@ -352,6 +370,18 @@
 
 <body>
     <h1>DAC Control Interface</h1>
+    
+    <!-- Presets Section -->
+    <div id="presets-container">
+        <h2>Apply a Preset</h2>
+        {% if existing_configs.presets %}
+            {% for preset_name in existing_configs.presets %}
+                <button onclick="applyPreset('{{ preset_name }}')">{{ preset_name }}</button>
+            {% endfor %}
+        {% else %}
+            <p>No presets available.</p>
+        {% endif %}
+    </div>
 
     <div id="boxes-container">
         {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
