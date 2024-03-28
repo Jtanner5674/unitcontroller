@@ -234,24 +234,18 @@ def delete_preset(preset_name):
 @app.route('/save_preset', methods=['POST'])
 def save_preset():
     data = request.json
-    # Temporarily print the data for debugging
-    print("Received preset data:", data)
     if 'name' not in data or 'values' not in data:
         return jsonify({'error': 'Missing name or values'}), 400
 
-    # Load the existing configuration
     config = load_config()
-
-    # If there's no 'presets' field in the configuration, create it
     if "presets" not in config:
         config["presets"] = {}
 
-    # Save the new preset under the provided name
     config["presets"][data['name']] = data['values']
+    print("Preparing to save preset:",
+          config["presets"][data['name']])  # Debug print
 
-    # Save the updated configuration back to file
     save_config(config)
-
     return jsonify({'message': 'Preset saved successfully'}), 200
 
     config = load_config()
