@@ -21,16 +21,8 @@ def load_config():
 
 
 def save_config(config):
-    presets = get_presets()
-    config_to_save = {
-        "dac": [
-            {key: value for key, value in dac.items() if key != "obj"}
-            for dac in config["dac"]
-        ],
-        "presets": presets  # Retain the existing presets
-    }
     with open('config.json', 'w') as file:
-        json.dump(config_to_save, file, indent=2)
+        json.dump(config, file, indent=2)
 
 
 
@@ -155,23 +147,32 @@ def update_config(section, index):
 
 
 @app.route('/config', methods=['PUT'])
+@app.route('/config', methods=['PUT'])
 def update_all_config():
     try:
         data = request.json
         settings = data.get('settings', [])
+        preset_data = data.get('presets', {})
 
+        config = load_config()
+
+        # Update DAC configurations
         for setting in settings:
-            # Find the DAC configuration and update it
-            for dac in CFG["dac"]:
+            for dac in config["dac"]:
                 if dac["id"] == setting["id"]:
                     dac["name"] = setting.get("name", dac["name"])
 
-        # Save only the updated configurations without touching presets
-        save_config(CFG)
+        # Update presets
+        if preset_data:
+            config["presets"].update(preset_data)
+
+        # Save the updated configurations
+        save_config(config)
 
         return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 
 ########################### Voltage Control ####################################
