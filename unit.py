@@ -28,7 +28,7 @@ def save_config(config):
             {key: value for key, value in dac.items() if key != "obj"}
             for dac in config["dac"]
         ],
-        "presets": presets.get()
+        "presets": presets.get("presets", {})
     }
     with open('config.json', 'w') as file:
         json.dump(config_to_save, file, indent=2)
