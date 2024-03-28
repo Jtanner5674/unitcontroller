@@ -7,16 +7,18 @@ import board
 import time
 from flask_cors import CORS
 
-preset_flush_time = 5 #Change this to adjust how long the system flushes in presets
+preset_flush_time = 5  # Change this to adjust how long the system flushes in presets
 CFG = None
-dac_objects = {} 
+dac_objects = {}
 dac_addresses = {}
 
 ############################ Backend Functions ###################################
 
+
 def load_config():
-  with open('config.json', 'r') as file:
-    return json.load(file)
+    with open('config.json', 'r') as file:
+        return json.load(file)
+
 
 def save_config(config):
     config_to_save = {
@@ -28,7 +30,7 @@ def save_config(config):
     with open('config.json', 'w') as file:
         json.dump(config_to_save, file, indent=2)
 
-        
+
 def set_voltage_action(addr, percent):
     try:
         volt = int((float(percent) / 100.0) * 10000)
@@ -37,7 +39,7 @@ def set_voltage_action(addr, percent):
         dac["obj"].set_DAC_out_voltage(volt, DFRobot_GP8403.CHANNEL0)
         dac["obj"].set_DAC_out_voltage(volt, DFRobot_GP8403.CHANNEL1)
         volts = float(volt / 1000)
-        dac["current_voltage"] = volt 
+        dac["current_voltage"] = volt
         print(f'{dac["name"]} set to {volts}V')
         return jsonify({'message': f'{dac["name"]} set to {volts}V'})
     except StopIteration:
@@ -45,6 +47,8 @@ def set_voltage_action(addr, percent):
         return jsonify({'error': 'Invalid DAC ADDR'})
 
 ############################ Initialization ###################################
+
+
 def initialize_dacs():
     global CFG
     CFG = load_config()  # Ensure this loads a dict with necessary keys
@@ -55,7 +59,7 @@ def initialize_dacs():
     dac_objects = {}
     # Initialize dac_list directly from CFG, assuming it's always present after load_config
     dac_list = CFG.get("dac", [])
-    
+
     # Reset 'found' status for existing DAC configs to re-discover them
     for item in dac_list:
         item["found"] = False
@@ -72,11 +76,13 @@ def initialize_dacs():
                 dac.set_DAC_out_voltage(0, DFRobot_GP8403.CHANNEL1)
 
                 hex_addr = hex(addr)
-                found_dac = next((item for item in dac_list if item["id"] == hex_addr), None)
+                found_dac = next(
+                    (item for item in dac_list if item["id"] == hex_addr), None)
                 if found_dac:
                     found_dac.update({"found": True, "obj": dac})
                 else:
-                    new_dac = {"name": "New DAC", "id": hex_addr, "found": True, "obj": dac, "current_voltage": 0}
+                    new_dac = {"name": "New DAC", "id": hex_addr,
+                               "found": True, "obj": dac, "current_voltage": 0}
                     dac_list.append(new_dac)
 
                 dac_objects[hex_addr] = new_dac if not found_dac else found_dac
@@ -85,22 +91,26 @@ def initialize_dacs():
                 print(f"No DAC found at address {hex(addr)}")
                 continue
 
-        CFG["dac"] = dac_list  # Update CFG with the newly discovered and existing DACs
+        # Update CFG with the newly discovered and existing DACs
+        CFG["dac"] = dac_list
         print("DAC configuration after initialization:", CFG)
         return CFG
     except Exception as e:
         print("Error while scanning for DACs:", e)
 
-CFG = initialize_dacs() 
+
+CFG = initialize_dacs()
 app = Flask(__name__)
 CORS(app)
 
 ############################ Flask Pages ###################################
 
+
 @app.route('/')
 def index():
     existing_configs = load_config()
     return render_template('index.html', dac_objects=dac_objects, dac_addresses=dac_addresses, existing_configs=existing_configs)
+
 
 @app.route('/settings')
 def settings():
@@ -111,12 +121,14 @@ def settings():
     return render_template('config/index.html', online_dacs=online_dacs, offline_dacs=offline_dacs, dac_addresses=dac_addresses, dac_objects=dac_objects)
 ############################ Config Functions ###################################
 
+
 @app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
     serialized_cfg = {
         "dac": [
-            {"name": item["name"], "id": item["id"],"found": item["found"], "current_voltage": item["current_voltage"]}
+            {"name": item["name"], "id": item["id"], "found": item["found"],
+                "current_voltage": item["current_voltage"]}
             for item in CFG["dac"]
         ]
     }
@@ -135,24 +147,25 @@ def update_config(section, index):
     data = load_config()
     new_value = request.json
     data[section][index] = new_value
-    save_config(data) 
+    save_config(data)
     return jsonify(data[section][index])
+
 
 @app.route('/config', methods=['PUT'])
 def update_all_config():
     try:
         data = request.json
         settings = data.get('settings', [])
-        
+
         for setting in settings:
             # Find the DAC configuration and update it
             for dac in CFG["dac"]:
                 if dac["id"] == setting["id"]:
                     dac["name"] = setting.get("name", dac["name"])
-        
+
         # Save only the updated configurations without touching presets
         save_config(CFG)
-        
+
         return jsonify({"message": "Configurations updated successfully"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -175,6 +188,7 @@ def close1(addr):
 def open1(addr):
     return set_voltage_action(addr, 10000)
 
+
 @app.route('/get_current_voltage/<string:dac_id>', methods=['GET'])
 def get_current_voltage(dac_id):
     try:
@@ -190,19 +204,21 @@ def get_current_voltage(dac_id):
 
 ########################### Preset Control ####################################
 
-    
+
 def add_preset(name, values):
     config = load_config()
     presets = config["existing_configs"]["presets"]
     if "presets" not in config:
         config["presets"] = {}
-    config["presets"][name] = values #values = {"addr": "0-100", etc.}
+    config["presets"][name] = values  # values = {"addr": "0-100", etc.}
     save_config(config)
+
 
 @app.route('/get_presets', methods=['GET'])
 def get_presets():
     config = load_config()
     return config.get("presets", {})
+
 
 @app.route('/delete_preset/<preset_name>', methods=['POST'])
 def delete_preset(preset_name):
@@ -214,9 +230,12 @@ def delete_preset(preset_name):
     else:
         return jsonify({'error': 'Preset not found'}), 404
 
+
 @app.route('/save_preset', methods=['POST'])
 def save_preset():
     data = request.json
+    # Temporarily print the data for debugging
+    print("Received preset data:", data)
     if 'name' not in data or 'values' not in data:
         return jsonify({'error': 'Missing name or values'}), 400
 
@@ -235,7 +254,6 @@ def save_preset():
 
     return jsonify({'message': 'Preset saved successfully'}), 200
 
-
     config = load_config()
     if "presets" not in config:
         config["presets"] = {}
@@ -245,40 +263,41 @@ def save_preset():
 
     return jsonify({'message': 'Preset saved successfully'}), 200
 
+
 @app.route('/apply_preset', methods=['POST'])
 def apply_preset():
     data = request.json
-    name = data.get('name') 
+    name = data.get('name')
     if not name:
         return jsonify({'error': 'No preset name provided'}), 400
 
-    flush_check(name) 
+    flush_check(name)
     config = load_config()
     presets = config.get("presets", {})
-    
+
     if name not in presets:
         print(f"Preset {name} not found.")
-        return jsonify({'error': f'Preset {name} not found'}), 404 
-    
+        return jsonify({'error': f'Preset {name} not found'}), 404
+
     preset_values = presets[name]
     for dac_addr, percentage in preset_values.items():
         result = set_voltage_action(dac_addr, percentage)
         print(result)
-        
+
     return jsonify({'message': f'Preset {name} applied successfully'}), 200
 
-        
+
 def flush_check(preset_name):
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
     preset_addresses = CFG["presets"].get(preset_name, {}).keys()
-    
+
     for addr in dac_addresses:
         if addr not in preset_addresses:
-            for adr in dac_addresses: 
+            for adr in dac_addresses:
                 set_voltage_action(adr, 0)
             break
     time.sleep(preset_flush_time)
-    
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
-    
