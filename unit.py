@@ -25,7 +25,8 @@ def save_config(config):
         "dac": [
             {key: value for key, value in dac.items() if key != "obj"}
             for dac in config["dac"]
-        ]
+        ],
+        "presets": config.get("presets", {})
     }
     with open('config.json', 'w') as file:
         json.dump(config_to_save, file, indent=2)
@@ -246,15 +247,6 @@ def save_preset():
           config["presets"][data['name']])  # Debug print
 
     save_config(config)
-    return jsonify({'message': 'Preset saved successfully'}), 200
-
-    config = load_config()
-    if "presets" not in config:
-        config["presets"] = {}
-
-    config["presets"][name] = filtered_values
-    save_config(config)
-
     return jsonify({'message': 'Preset saved successfully'}), 200
 
 
