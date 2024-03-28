@@ -220,18 +220,21 @@ def save_preset():
     if 'name' not in data or 'values' not in data:
         return jsonify({'error': 'Missing name or values'}), 400
 
-    name = data['name']
-    values = data['values']
-    filtered_values = {}
-    for k, v in values.items():
-        try:
-            int_value = int(v)
-            if int_value > 100:
-                filtered_values[k] = "100"
-            elif int_value > 0: 
-                filtered_values[k] = str(int_value)
-        except ValueError:
-            pass
+    # Load the existing configuration
+    config = load_config()
+
+    # If there's no 'presets' field in the configuration, create it
+    if "presets" not in config:
+        config["presets"] = {}
+
+    # Save the new preset under the provided name
+    config["presets"][data['name']] = data['values']
+
+    # Save the updated configuration back to file
+    save_config(config)
+
+    return jsonify({'message': 'Preset saved successfully'}), 200
+
 
     config = load_config()
     if "presets" not in config:
