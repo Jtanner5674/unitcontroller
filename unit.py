@@ -22,14 +22,11 @@ def load_config():
 
 def save_config(config):
     config_to_save = {
-        "dac": [
-            {key: value for key, value in dac.items() if key != "obj"}
-            for dac in config["dac"]
-        ],
-        "presets": config.get("presets", {})
+        key: value for key, value in config.items() if key != "obj"
     }
     with open('config.json', 'w') as file:
         json.dump(config_to_save, file, indent=2)
+
 
 
 def set_voltage_action(addr, percent):
