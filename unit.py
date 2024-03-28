@@ -22,6 +22,7 @@ def load_config():
 
 def save_config(config):
     presets = get_presets()
+    print(/n, presets)
     config_to_save = {
         "dac": [
             {key: value for key, value in dac.items() if key != "obj"}
