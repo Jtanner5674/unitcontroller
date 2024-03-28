@@ -199,19 +199,27 @@
                 return { id, name: element.value };
             });
 
-            fetch('/config', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ settings })
-            })
+            const existingPresets = fetch('/get_presets')
                 .then(response => response.json())
-                .then(data => {
-                    console.log("Successfully updated DAC configurations: ", data);
-                    alert("DAC configurations updated successfully.");
+                .catch(error => console.error('Error fetching existing presets:', error));
+
+            Promise.all([existingPresets])
+                .then(([presets]) => {
+                    fetch('/config', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ settings, presets })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Successfully updated DAC configurations: ", data);
+                            alert("DAC configurations updated successfully.");
+                        })
+                        .catch(error => console.error('Error updating DAC configurations:', error));
                 })
-                .catch(error => console.error('Error updating DAC configurations:', error));
+                .catch(error => console.error('Error fetching existing presets:', error));
         }
 
 
