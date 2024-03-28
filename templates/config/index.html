@@ -193,45 +193,28 @@
 
 
         function saveAllConfig() {
-            const allSettings = [];
-
-            // Get all online DAC settings
-            const onlineSettings = document.querySelectorAll('[id^=name-]');
-            onlineSettings.forEach(setting => {
-                const id = setting.id.split('-')[1];
-                const nameElement = document.getElementById(`name-${id}`);
-                const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, name });
+            const dacNameElements = document.querySelectorAll('[id^="name-"]:not([id^="name-offline-"])');
+            const settings = Array.from(dacNameElements).map(element => {
+                const id = element.id.replace("name-", "");
+                return { id, name: element.value };
             });
 
-            // Get all offline DAC settings
-            const offlineSettings = document.querySelectorAll('[id^=name-offline-]');
-            offlineSettings.forEach(setting => {
-                const id = setting.id.split('-')[2];
-                const nameElement = document.getElementById(`name-offline-${id}`);
-                const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, name });
-            });
-
-            // Send all settings to update the JSON configuration
             fetch('/config', {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ settings: allSettings }) // Wrap settings in an object
+                body: JSON.stringify({ settings })
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Successfully updated DAC configurations: ", data);
+                    alert("DAC configurations updated successfully.");
                 })
-                .then(updatedConfig => {
-                    console.log('Updated config:', updatedConfig);
-                })
-                .catch(error => console.error('Error:', error));
+                .catch(error => console.error('Error updating DAC configurations:', error));
         }
+
+
 
         document.addEventListener('DOMContentLoaded', fetchConfig);
 
@@ -298,26 +281,29 @@
         });
 
         function submitForm() {
-            var presetName = $('#presetName').val();
-            var dacValues = {};
-            $('input[type="number"]').each(function () {
-                dacValues[this.name] = this.value;
+            const presetName = document.getElementById('presetName').value;
+            const dacValues = {};
+            document.querySelectorAll('[id^="dac_"]').forEach(input => {
+                const dacId = input.getAttribute('name');
+                dacValues[dacId] = input.value;
             });
 
-            $.ajax({
-                url: '/save_preset',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ name: presetName, values: dacValues }),
-                success: function (response) {
-                    alert('Preset saved successfully.');
-                    fetchPresets(); // Refresh the list of presets
+            fetch('/save_preset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 },
-                error: function (response) {
-                    alert('Error saving preset.');
-                }
-            });
+                body: JSON.stringify({ name: presetName, values: dacValues })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Preset saved successfully: ", data);
+                    alert("Preset saved successfully.");
+                    fetchPresets(); // Refresh the presets display
+                })
+                .catch(error => console.error('Error saving preset:', error));
         }
+
 
         function fetchPresets() {
             $.ajax({
