@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controller Settings</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -21,11 +24,11 @@
         }
 
         h1.dark-mode {
-            color: #0d7760;
+            color: #aa2b3a;
         }
 
         .collapsible {
-            background-color: #eee;
+            background-color: #ffbdc4;
             color: #444;
             cursor: pointer;
             padding: 18px;
@@ -38,11 +41,12 @@
         }
 
         .collapsible.dark-mode {
-            background-color: #2c405e;
+            background-color: #61363b;
             color: cornsilk;
         }
 
-        .active, .collapsible:hover {
+        .active,
+        .collapsible:hover {
             background-color: #ccc;
         }
 
@@ -61,47 +65,46 @@
         button#saveAllButton {
             margin-top: 20px;
             padding: 10px;
-            background-color: #007bff;
+            background-color: #aa2b3a;
             color: #fff;
             border: none;
             cursor: pointer;
         }
 
-        #settings-button,
-        #dark-mode-button {
-            position: absolute;
+        #settings {
+            display: flex;
             cursor: pointer;
             padding: 10px;
             border-radius: 50%;
             z-index: 2;
             transform: scale(2);
+            gap: 10px;
+            width: 61px;
+            top: 13px;
+            left: 85%;
+            position: absolute;
         }
 
-        #settings-button {
-            top: 20px;
-            right: 104px;
-        }
 
-        #dark-mode-button {
-            top: 20px;
-            right: 20px;
-        }
 
         #dacSettings,
-        #offlineSettings {
+        #offlineSettings,
+        #presetsContainer {
             display: flex;
             flex-wrap: wrap;
             overflow: auto;
-            justify-content: flex-start; /* Adjust as needed */
+            justify-content: flex-start;
+            /* Adjust as needed */
         }
 
         .container {
-            border: 2px solid #007bff;
+            border: 2px solid #aa2b3a;
             margin: 10px;
             padding: 10px;
             max-width: 200px;
             overflow: auto;
-            flex: 0 0 auto; /* Maintain the initial width of each box */
+            flex: 0 0 auto;
+            /* Maintain the initial width of each box */
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -116,80 +119,70 @@
             margin: 5px;
         }
 
+        @media only screen and (max-width: 600px) {
+            #settings {
+                top: 50px;
+                left: 75%;
+            }
+        }
 
-
+        @media only screen and (max-width: 400px) {
+            #settings {
+                top: 83px;
+                left: 71%;
+            }
     </style>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
+
 <body>
     <h1>DAC Configuration</h1>
 
     <!-- Container for Active DAC Settings -->
-        <div id="dacSettings">
-            <!-- Active DACs settings boxes will be dynamically generated here -->
-        </div>
+    <div id="dacSettings">
+        <!-- Active DACs settings boxes will be dynamically generated here -->
+    </div>
 
     <button class="collapsible">Offline DACs</button>
     <div class="content">
         <!-- Container for Offline DAC Settings -->
-            <div id="offlineSettings">
-                <!-- Offline DACs will be dynamically generated here -->
-            </div>
+        <div id="offlineSettings">
+            <!-- Offline DACs will be dynamically generated here -->
+        </div>
     </div>
 
     <script>
-      function fetchConfig() {
+        function fetchConfig() {
             fetch('/config')
                 .then(response => response.json())
                 .then(data => {
-                    const dacAddresses = data.dac_addresses?.dac || [];
-                    const existingConfigs = data.existing_configs?.dac || [];
-                    const offlineDacs = existingConfigs.filter(config => !dacAddresses.some(dac => dac.id === config.id));
+                    const dacAddresses = data.dac_addresses.dac || [];
+                    const existingConfigs = data.existing_configs || [];
+                    // Separating online and offline DACs based on the 'found' status
+                    const onlineDacs = dacAddresses.filter(dac => dac.found);
+                    const offlineDacs = dacAddresses.filter(dac => !dac.found);
 
-                    // Check if dacAddresses is an array before using it
-                    if (Array.isArray(dacAddresses)) {
-                        dacAddresses.forEach(dac => {
-                            const hexAddress = dac.id;
-                            if (offlineDacs.some(offlineDac => offlineDac.id === hexAddress)) {
-                                return;
-                            }
-
-                            // Create settings box for online DACs
-                            const settingsBox = document.createElement('div');
-                            settingsBox.innerHTML = `
-                            <div class="container" id="activeDacContainer">
-                                <h2>${hexAddress}</h2>
-                                <label for="chan-${hexAddress}">Channel:</label>
-                                <input type="number" id="chan-${hexAddress}" name="chan" value="0" min="0" max="1">
-                                <label for="name-${hexAddress}">Name:</label>
-                                <input type="text" id="name-${hexAddress}" name="name">
-                                <input type="hidden" id="id-${hexAddress}" name="id" value="${hexAddress}">
-                            </div>
-                            `;
-                            document.getElementById('dacSettings').appendChild(settingsBox);
-
-                            // Find existing config based on the address
-                            const existingConfig = existingConfigs.find(config => config.id === hexAddress);
-                            if (existingConfig) {
-                                document.getElementById(`chan-${hexAddress}`).value = existingConfig.chan;
-                                document.getElementById(`name-${hexAddress}`).value = existingConfig.name || '';
-                            }
-                        });
-                    }
-
-                    // Create settings boxes for offline DACs
-                    offlineDacs.forEach(offlineDac => {
+                    // Populate online DAC settings
+                    onlineDacs.forEach(dac => {
                         const settingsBox = document.createElement('div');
+                        settingsBox.classList.add('container');
                         settingsBox.innerHTML = `
-                        <div class="container" id="offlineDacContainer">
-                            <h2>${offlineDac.id}</h2>
-                            <label for="chan-offline-${offlineDac.id}">Channel:</label>
-                            <input type="number" id="chan-offline-${offlineDac.id}" name="chan" value="${offlineDac.chan || '0'}" min="0" max="1">
-                            <label for="name-offline-${offlineDac.id}">Name:</label>
-                            <input type="text" id="name-offline-${offlineDac.id}" name="name" value="${offlineDac.name || ''}">
-                            <input type="hidden" id="id-offline-${offlineDac.id}" name="id" value="${offlineDac.id}">
-                        </div>    
-                        `;
+                    <h2>${dac.id}</h2>
+                    <label for="name-${dac.id}">Name:</label>
+                    <input type="text" id="name-${dac.id}" name="name" value="${dac.name || ''}">
+                `;
+                        document.getElementById('dacSettings').appendChild(settingsBox);
+                    });
+
+                    // Populate offline DAC settings
+                    offlineDacs.forEach(dac => {
+                        const settingsBox = document.createElement('div');
+                        settingsBox.classList.add('container');
+                        settingsBox.innerHTML = `
+                    <h2>${dac.id}</h2>
+                    <label for="name-offline-${dac.id}">Name (offline):</label>
+                    <input type="text" id="name-offline-${dac.id}" name="name" value="${dac.name || ''}" disabled>
+                `;
                         document.getElementById('offlineSettings').appendChild(settingsBox);
                     });
                 })
@@ -198,48 +191,38 @@
 
 
 
+
         function saveAllConfig() {
-            const allSettings = [];
-
-            // Get all online DAC settings
-            const onlineSettings = document.querySelectorAll('[id^=chan-]');
-            onlineSettings.forEach(setting => {
-                const id = setting.id.split('-')[1];
-                const chan = setting.value;
-                const nameElement = document.getElementById(`name-${id}`);
-                const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, chan, name });
+            const dacNameElements = document.querySelectorAll('[id^="name-"]:not([id^="name-offline-"])');
+            const settings = Array.from(dacNameElements).map(element => {
+                const id = element.id.replace("name-", "");
+                return { id, name: element.value };
             });
 
-            // Get all offline DAC settings
-            const offlineSettings = document.querySelectorAll('[id^=chan-offline-]');
-            offlineSettings.forEach(setting => {
-                const id = setting.id.split('-')[2];
-                const chan = setting.value;
-                const nameElement = document.getElementById(`name-offline-${id}`);
-                const name = nameElement ? nameElement.value : '';
-                allSettings.push({ id, chan, name });
-            });
+            const existingPresets = fetch('/get_presets')
+                .then(response => response.json())
+                .catch(error => console.error('Error fetching existing presets:', error));
 
-            // Send all settings to update the JSON configuration
-            fetch('/config', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ settings: allSettings }) // Wrap settings in an object
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
+            Promise.all([existingPresets])
+                .then(([presets]) => {
+                    fetch('/config', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ settings, presets })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Successfully updated DAC configurations: ", data);
+                            alert("DAC configurations updated successfully.");
+                        })
+                        .catch(error => console.error('Error updating DAC configurations:', error));
                 })
-                .then(updatedConfig => {
-                    console.log('Updated config:', updatedConfig);
-                })
-                .catch(error => console.error('Error:', error));
+                .catch(error => console.error('Error fetching existing presets:', error));
         }
+
+
 
         document.addEventListener('DOMContentLoaded', fetchConfig);
 
@@ -261,54 +244,148 @@
         document.body.appendChild(saveAllButton);
 
 
-    function toggleDarkMode() {
-        const h1 = document.querySelector('h1');
-        h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
-        const body = document.body;
-        body.classList.toggle('dark-mode');
-        const collapse = document.querySelector('button.collapsible');
-        collapse.classList.toggle('dark-mode');
+        function toggleDarkMode() {
+            const h1 = document.querySelector('h1');
+            h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            const collapse = document.querySelector('button.collapsible');
+            collapse.classList.toggle('dark-mode');
 
-        // Toggle the symbols based on the mode
-        const lightModeSymbol = '💡';
-        const darkModeSymbol = '🌙';
-        const toggleButton = document.getElementById('dark-mode-button');
-        const currentSymbol = toggleButton.textContent.trim();
+            // Toggle the symbols based on the mode
+            const lightModeSymbol = '💡';
+            const darkModeSymbol = '🌙';
+            const toggleButton = document.getElementById('dark-mode-button');
+            const currentSymbol = toggleButton.textContent.trim();
 
-        toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
+            toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
 
-        // You can also save the user's preference for dark mode in local storage
-        const isDarkModeEnabled = body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkModeEnabled);
-    }
+            // You can also save the user's preference for dark mode in local storage
+            const isDarkModeEnabled = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled);
+        }
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Set initial dark mode based on user's preference in local storage
-        const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
-        const body = document.body;
-        body.classList.toggle('dark-mode', isDarkModeEnabled);
-        const h1 = document.querySelector('h1');
-        h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
-        const collapse = document.querySelector('button.collapsible');
-        collapse.classList.toggle('dark-mode', isDarkModeEnabled);
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set initial dark mode based on user's preference in local storage
+            const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+            const body = document.body;
+            body.classList.toggle('dark-mode', isDarkModeEnabled);
+            const h1 = document.querySelector('h1');
+            h1.classList.toggle('dark-mode', isDarkModeEnabled); // Toggle the dark-mode class on the body
+            const collapse = document.querySelector('button.collapsible');
+            collapse.classList.toggle('dark-mode', isDarkModeEnabled);
 
-        const toggleButton = document.getElementById('dark-mode-button');
-        toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
-    });
+            const toggleButton = document.getElementById('dark-mode-button');
+            toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+        });
 
         function goToHome() {
             window.location.href = '/';
         }
+
+        $(document).ready(function () {
+            fetchPresets();
+        });
+
+        function submitForm() {
+            const presetName = document.getElementById('presetName').value;
+            const dacValues = {};
+            document.querySelectorAll('[id^="dac_"]').forEach(input => {
+                const dacId = input.getAttribute('name');
+                dacValues[dacId] = input.value;
+            });
+
+            fetch('/save_preset', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: presetName, values: dacValues })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Preset saved successfully: ", data);
+                    alert("Preset saved successfully.");
+                    fetchPresets(); // Refresh the presets display
+                })
+                .catch(error => console.error('Error saving preset:', error));
+        }
+
+
+        function fetchPresets() {
+            $.ajax({
+                url: '/get_presets',
+                type: 'GET',
+                success: function (response) {
+                    renderPresets(response);
+                },
+                error: function () {
+                }
+            });
+        }
+
+        function renderPresets(presets) {
+            $('#presetsContainer').empty(); // Clear existing presets
+            Object.keys(presets).forEach(function (name) {
+                var preset = presets[name];
+                var presetDiv = $('<div>').addClass('preset').append($('<h3>').text(name));
+                Object.entries(preset).forEach(function ([addr, value]) {
+                    presetDiv.append($('<p>').text(`DAC ${addr}: ${value}%`));
+                });
+                presetDiv.append($('<button onclick="deletePreset(\'' + name + '\')">Delete</button>'));
+                $('#presetsContainer').append(presetDiv);
+            });
+        }
+
+        function deletePreset(name) {
+            $.ajax({
+                url: '/delete_preset/' + encodeURIComponent(name),
+                type: 'POST',
+                success: function () {
+                    alert('Preset deleted successfully.');
+                    fetchPresets(); // Refresh the list of presets
+                },
+                error: function () {
+                    alert('Failed to delete preset.');
+                }
+            });
+        }
+
     </script>
-    <!-- Settings button in the top right -->
-    <div id="settings-button" onclick="goToHome()">
-        🏠
+    <div id="settings">
+        <!-- Settings button in the top right -->
+        <div id="settings-button" onclick="goToHome()">
+            🏠
+        </div>
+
+        <!-- Dark mode button -->
+        <div id="dark-mode-button" onclick="toggleDarkMode()">
+            🌙
+        </div>
     </div>
 
-    <!-- Dark mode button -->
-    <div id="dark-mode-button" onclick="toggleDarkMode()">
-        🌙
+    <div class="container" id="createPresetContainer">
+        <h2>Create Preset</h2>
+        <form id="presetForm">
+            <label for="presetName">Preset Name:</label>
+            <input type="text" id="presetName" name="presetName" required><br><br>
+
+            {% for addr in dac_addresses %}
+            <div>
+                <label for="dac_{{ addr }}">DAC {{ addr }}:</label>
+                <input type="number" id="dac_{{ addr }}" name="{{ addr }}" min="0" max="100" required> %
+            </div>
+            {% endfor %}
+
+            <button type="button" onclick="submitForm()">Save Preset</button>
+        </form>
+    </div>
+
+    <div class="container" id="presetsContainer">
+        <h2>Existing Presets</h2>
+        <!-- Existing Presets will be loaded here -->
     </div>
 </body>
+
 </html>

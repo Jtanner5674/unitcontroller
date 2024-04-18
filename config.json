@@ -2,42 +2,34 @@
   "dac": [
     {
       "id": "0x58",
-      "chan": "0",
       "name": ""
     },
     {
       "id": "0x59",
-      "chan": "0",
-      "name": "c"
+      "name": ""
     },
     {
       "id": "0x5a",
-      "chan": "0",
       "name": ""
     },
     {
       "id": "0x5b",
-      "chan": "",
       "name": ""
     },
     {
       "id": "0x5c",
-      "chan": "0",
       "name": ""
     },
     {
       "id": "0x5d",
-      "chan": "0",
       "name": ""
     },
     {
       "id": "0x5e",
-      "chan": "0",
       "name": ""
     },
     {
       "id": "0x5f",
-      "chan": "0",
       "name": ""
     }
   ]

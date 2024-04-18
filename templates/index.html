@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PSU Valve Controller</title>
     <style>
         body {
@@ -9,6 +11,8 @@
             background-color: #f4f4f4;
             margin: 20px;
             transition: background-color 0.3s, color 0.3s;
+            max-width: 100%;
+            /* Ensures content doesn't overflow on small screens */
         }
 
         body.dark-mode {
@@ -16,11 +20,13 @@
             color: #ffffff;
         }
 
-        .active, .collapsible:hover {
+        .active,
+        .collapsible:hover {
             background-color: #ccc;
         }
 
-        .active, .collapsible:hover {
+        .active,
+        .collapsible:hover {
             background-color: #484848;
         }
 
@@ -28,18 +34,24 @@
             color: #333;
         }
 
+        h2 {
+            margin: 10px;
+        }
+
         h1.dark-mode {
-            color: #0d7760;
+            color: #aa2b3a;
         }
 
         #boxes-container {
             display: flex;
-            flex-wrap: wrap;  /* This ensures boxes wrap to the next row when there's not enough space */
-            justify-content: flex-start;  /* This positions the boxes to the left */
+            flex-wrap: wrap;
+            /* This ensures boxes wrap to the next row when there's not enough space */
+            justify-content: flex-start;
+            /* This positions the boxes to the left */
         }
 
         .dac-box {
-            border: 2px solid #007bff;
+            border: 2px solid #aa2b3a;
             padding: 10px;
             margin: 10px;
             max-width: 200px;
@@ -47,52 +59,145 @@
 
         form {
             margin-bottom: 10px;
-            display:inline-block;
+            display: inline-block;
             margin-top: 10px;
         }
 
         label {
             display: block;
             margin-bottom: 10px;
+            position: relative;
+            left: 40px;
         }
 
         input[type="range"] {
-            width: 100%;
+            width: 10%;
+            position: relative;
+            appearance: slider-vertical;
+            left: 37px;
+            accent-color: coral;
         }
 
         button {
-        padding: 10px;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        cursor: pointer;
-        margin-right: 10px;
-        display:inline;
-        margin: 0 auto;
+            padding: 10px;
+            background-color: #aa2b3a;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            display: inline;
+            margin: 0 auto;
         }
 
+        button.set {
+            position: relative;
+            top: -61px;
+            right: -64px;
+            width: 50px;
+        }
 
-        #settings-button,
-        #dark-mode-button {
-            position: fixed;
+        button.open {
+            position: relative;
+            top: -107px;
+            right: 45px;
+            width: 50px;
+        }
+
+        button.close {
+            position: relative;
+            top: -14px;
+            left: 9.5px;
+            width: 50px;
+        }
+
+        #settings {
+            display: flex;
+            position: absolute;
             cursor: pointer;
             padding: 10px;
             border-radius: 50%;
             z-index: 2;
             transform: scale(2);
+            gap: 10px;
+            top: 13px;
+            left: 85%;
         }
 
-        #settings-button {
-            top: 20px;
-            right: 104px;
-        }
+        /* Mobile */
+        @media only screen and (max-width: 600px) {
+            #settings {
+                top: 61px;
+                left: 65%;
+            }
 
-        #dark-mode-button {
-            top: 20px;
-            right: 20px;
-        }
+            @media only screen and (max-width: 400px) {
+                #settings {
+                    top: 48px;
+                    left: 58%;
+                }
 
-        
+
+                body {
+                    margin: 10px;
+                    /* Adjust margin for smaller screens */
+                }
+
+                .dac-box {
+                    width: calc(100% - 20px);
+                    /* Set box width to nearly full width with some margin */
+                    margin-bottom: 20px;
+                    /* Add some spacing between boxes */
+                    font-size: 18px;
+                    /* Increase font size for better readability */
+                    padding: 20px;
+                    /* Add padding for better spacing inside boxes */
+                }
+
+                h2 {
+                    font-size: 24px;
+                    /* Increase font size for better readability */
+                    margin: 10px 0;
+                    /* Add some vertical margin for better spacing */
+                }
+
+                /* Adjust input range width for smaller screens */
+                input[type="range"] {
+                    left: 20%;
+
+                }
+
+                /* Adjust button positioning for smaller screens */
+                button.set,
+                button.open,
+                button.close {
+                    position: relative;
+                    top: 0;
+                    right: 0;
+                    margin-top: 10px;
+                    /* Add some margin between buttons */
+                }
+
+                button.set {
+                    position: relative;
+                    top: -61px;
+                    left: 30%;
+                    width: 50px;
+                }
+
+                button.open {
+                    position: relative;
+                    top: -107px;
+                    left: -25%;
+                    width: 50px;
+                }
+
+                button.close {
+                    position: relative;
+                    top: -14px;
+                    left: 3%;
+                    width: 50px;
+                }
+            }
     </style>
     <script>
         // Function to handle form submissions asynchronously
@@ -105,14 +210,14 @@
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                // Handle the response from the Flask server if needed
-                console.log('Form submitted successfully!');
-            })
-            .catch(error => {
-                // Handle any errors that occurred during the fetch
-                console.error('Error submitting form:', error);
-            });
+                .then(response => {
+                    // Handle the response from the Flask server if needed
+                    console.log('Form submitted successfully!');
+                })
+                .catch(error => {
+                    // Handle any errors that occurred during the fetch
+                    console.error('Error submitting form:', error);
+                });
         }
 
         function sendPostRequest(url) {
@@ -123,12 +228,12 @@
                 },
                 body: JSON.stringify({}) // Add any payload if required
             })
-            .then(response => {
-                // Handle the response as needed
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+                .then(response => {
+                    // Handle the response as needed
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
         // Function to navigate to the settings page
         function goToSettings() {
@@ -137,74 +242,179 @@
 
         // Function to toggle dark mode
         function toggleDarkMode() {
-        const h1 = document.querySelector('h1');
-        h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
-        const body = document.body;
-        body.classList.toggle('dark-mode'); 
+            const h1 = document.querySelector('h1');
+            h1.classList.toggle('dark-mode'); // Toggle the dark-mode class on the body
+            const body = document.body;
+            body.classList.toggle('dark-mode');
 
-        // Toggle the symbols based on the mode
-        const lightModeSymbol = '💡';
-        const darkModeSymbol = '🌙';
-        const toggleButton = document.getElementById('dark-mode-button');
-        const currentSymbol = toggleButton.textContent;
+            // Toggle the symbols based on the mode
+            const lightModeSymbol = '💡';
+            const darkModeSymbol = '🌙';
+            const toggleButton = document.getElementById('dark-mode-button');
+            const currentSymbol = toggleButton.textContent;
 
-        toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
+            toggleButton.textContent = currentSymbol === lightModeSymbol ? darkModeSymbol : lightModeSymbol;
 
-        // You can also save the user's preference for dark mode in local storage
-        const isDarkModeEnabled = body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDarkModeEnabled);
+            // You can also save the user's preference for dark mode in local storage
+            const isDarkModeEnabled = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkModeEnabled);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set initial dark mode based on user's preference in local storage
+            const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
+            const body = document.body;
+            body.classList.toggle('dark-mode', isDarkModeEnabled);
+
+            const h1 = document.querySelector('h1');
+            h1.classList.toggle('dark-mode', isDarkModeEnabled);
+
+            const toggleButton = document.getElementById('dark-mode-button');
+            toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
+        });
+
+        function sendPostRequest(url, dacId, value) {
+            // Set slider value to the specified value
+            document.getElementById('voltage_' + dacId).value = value;
+            // Update displayed value next to the angle label
+            document.getElementById('angle_value_' + dacId).textContent = value;
+            // Send post request
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => {
+                    // Handle the response as needed
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function adjustSlider(dacId, value) {
+            // Set slider value to the specified value
+            document.getElementById('voltage_' + dacId).value = value;
+            // Update displayed value next to the angle label
+            document.getElementById('angle_value_' + dacId).textContent = value;
+
+            const url = value === '0' ? '/close1' + dacId : '/open1' + dacId;
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+                .then(response => {
+                    // Handle the response as needed
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+
+        function updateSliderValue(slider) {
+            const dacId = slider.id.split('_')[1];
+            document.getElementById('angle_value_' + dacId).textContent = slider.value;
+        }
+
+        function fetchCurrentVoltage(dacId) {
+            fetch(`/get_current_voltage/${dacId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Convert the voltage value to fit within the range of the slider (0-100)
+                    const voltage = Math.round((data.voltage / 10000) * 100);
+                    // Update the slider value and displayed voltage
+                    document.getElementById(`voltage_${dacId}`).value = voltage;
+                    document.getElementById(`angle_value_${dacId}`).textContent = voltage;
+                })
+                .catch(error => {
+                    console.error('Error fetching current voltage:', error);
+                });
+        }
+
+        function applyPreset(presetName) {
+        fetch('/apply_preset', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: presetName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message);
+            // Optionally, alert the user or update the UI to confirm the preset application
+        })
+        .catch(error => {
+            console.error('Error applying preset:', error);
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-    // Set initial dark mode based on user's preference in local storage
-    const isDarkModeEnabled = localStorage.getItem('darkMode') === 'true';
-    const body = document.body;
-    body.classList.toggle('dark-mode', isDarkModeEnabled);
-    
-    const h1 = document.querySelector('h1');
-    h1.classList.toggle('dark-mode', isDarkModeEnabled);
+        function updateCurrentVoltages() {
+            // Loop through each DAC object and fetch its current voltage
+            {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
+            fetchCurrentVoltage('{{ dac_id }}');
+            {% endfor %}
+        }
 
-    const toggleButton = document.getElementById('dark-mode-button');
-    toggleButton.textContent = isDarkModeEnabled ? '🌙' : '💡';
-});
-
+        setInterval(updateCurrentVoltages, 5000);
 
     </script>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
 </head>
+
 <body>
     <h1>DAC Control Interface</h1>
+    
+    <!-- Presets Section -->
+    <div id="presets-container">
+        {% if existing_configs.presets %}
+            {% for preset_name in existing_configs.presets %}
+                <button onclick="applyPreset('{{ preset_name }}')">{{ preset_name }}</button>
+            {% endfor %}
+        {% else %}
+            <p>No presets available.</p>
+        {% endif %}
+    </div>
 
     <div id="boxes-container">
         {% for dac_id, dac in dac_objects.items() if dac_id.startswith('0x') %}
-            <div class="dac-box">
-                <!-- Display DAC Name or "Unnamed DAC" -->
-                <h2>{{ dac.name or "Unnamed DAC" }}</h2>
-            
+        <div class="dac-box">
+            <!-- Display DAC Name or "Unnamed DAC" -->
+            <h2>{{ dac.name or "Unnamed DAC" }}</h2>
+
             <!-- Form to set voltage for Channel 1 -->
             <form onsubmit="submitForm(event, '/set_voltage{{ dac_id }}')" method="post">
-                <label for="voltage_{{ dac_id }}">Voltage (0-100%):</label>
-                <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step=".1">
-                <button type="submit">Set</button>
-                <span>Address: {{ dac_id }}</span>
-                
+                <label for="voltage_{{ dac_id }}">Posistion: <span id="angle_value_{{ dac_id }}">0</span>%</label>
+                <input type="range" id="voltage_{{ dac_id }}" name="voltage" min="0" max="100" step="1" value="0"
+                    onmousemove="updateSliderValue(this)" oninput="updateSliderValue(this)">
+                <button class="set" type="submit">Set</button>
+
+
+
+                <!-- Open and close the channels -->
+                <button class="close" onclick="adjustSlider('{{ dac_id }}', 0)">Close</button>
+                <button class="open" onclick="adjustSlider('{{ dac_id }}', 100)">Open</button>
             </form>
-            
-            <!-- Open and close the channels -->
-            <button onclick="sendPostRequest('/close1{{ dac_id }}')">Close</button>
-            <button onclick="sendPostRequest('/open1{{ dac_id }}')">Open</button>
         </div>
-    {% endfor %}
+        {% endfor %}
 
-    
-    <!-- Settings button in the top right -->
-    <div id="settings-button" onclick="goToSettings()">
-        ⚙️
-    </div>
+        <div id="settings">
+            <!-- Settings button in the top right -->
+            <div id="settings-button" onclick="goToSettings()">
+                ⚙️
+            </div>
 
-    <!-- Dark mode button -->
-    <div id="dark-mode-button" onclick="toggleDarkMode()">
-        🌙
-    </div>
+            <!-- Dark mode button -->
+            <div id="dark-mode-button" onclick="toggleDarkMode()">
+                🌙
+            </div>
+        </div>
 </body>
+
 </html>
