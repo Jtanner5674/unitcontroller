@@ -44,8 +44,8 @@ def initialize_dacs():
             try:
                 dac = DFRobot_GP8403.DFRobot_GP8403(addr)
                 dac.set_DAC_outrange(DFRobot_GP8403.OUTPUT_RANGE_10V)
-                dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL0)
-                dac.set_DAC_out_voltage(2000, DFRobot_GP8403.CHANNEL1)
+                dac.setDAC_out_voltage(0000, DFRobot_GP8403.CHANNEL0)
+                dac.set_DAC_out_voltage(0000, DFRobot_GP8403.CHANNEL1)
 
                 found_dac = next((item for item in dac_list if item["id"] == hex(addr)), None)
                 if found_dac:
@@ -80,11 +80,8 @@ def initialize_dacs():
     except Exception as e:
         print("Error while scanning for DACs:", e)
 
-
 # Initialize DACs when the script starts
 CFG = initialize_dacs()
-
-
 
 # Flask Routes
 print(dac_addresses)
@@ -93,12 +90,9 @@ def index():
     existing_configs = load_config()
     return render_template('index.html', dac_objects=dac_objects, dac_addresses=dac_addresses, existing_configs=existing_configs)
 
-
-
 @app.route('/settings')
 def settings():
     return render_template('config/index.html')
-
 
 def set_voltage_action(addr, value):
     try:
