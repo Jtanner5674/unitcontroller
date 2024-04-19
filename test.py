@@ -1,13 +1,15 @@
 import smbus
+import time
 
-# Create an instance of the I2C bus
-bus = smbus.SMBus(1)  # 1 indicates /dev/i2c-1
 
-# I2C address of the device
-address = 0x27
-
-# Data to send (0b11111111, which is 255 in decimal)
-data = 0b11111111
-
-# Sending the data
-bus.write_byte(address, data)
+# Interface methods
+relay = RelayController(bus_number=1, address=0x27)
+relay.on(1)     # Turn on relay 1
+time.sleep(1)
+relay.off(3)    # Turn off relay 3
+time.sleep(1)
+relay.on(1, 4)  # Turn on relay 1 and 4
+time.sleep(1)
+relay.off()     # Turn off all relays
+time.sleep(1)
+relay.on()      # Turn on all relays

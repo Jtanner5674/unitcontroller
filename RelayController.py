@@ -1,42 +1,37 @@
 import smbus
-import time
 
 class RelayController:
-    def __init__(self, address=0x27, bus_number=1):
-        self.address = address
+    def __init__(self, bus_number, address):
         self.bus = smbus.SMBus(bus_number)
+        self.address = address
+        self.current_status = 0b00000000  # Assume all relays are initially off
 
-    def all_relays_off(self):
-        """Turns all relays off."""
-        self.bus.write_byte(self.address, 0b11111111)
+    def _send_update(self):
+        self.bus.write_byte(self.address, self.current_status)
 
-    def relay_on(self, relay_number):
-        """Turns a specific relay on. Relays are numbered 1-4."""
-        if 1 <= relay_number <= 4:
-            mask = 0b11111111 ^ (1 << (relay_number - 1))
-            self.bus.write_byte(self.address, mask)
+    def on(self, *relays):
+        if not relays:  # If no relay number is provided, turn all on
+            self.current_status = 0b11111111
+        else:
+            for relay in relays:
+                self.current_status |= (1 << (relay - 1))
+        self._send_update()
 
-    def relay_off(self, relay_number):
-        """Turns a specific relay off. Relays are numbered 1-4."""
-        if 1 <= relay_number <= 4:
-            mask = 0b11111111 | (1 << (relay_number - 1))
-            self.bus.write_byte(self.address, mask)
+    def off(self, *relays):
+        if not relays:  # If no relay number is provided, turn all off
+            self.current_status = 0b00000000
+        else:
+            for relay in relays:
+                self.current_status &= ~(1 << (relay - 1))
+        self._send_update()
 
-    def control_multiple_relays(self, relays, state):
-        """
-        Controls multiple relays.
-        :param relays: List of relay numbers (1-4)
-        :param state: True to turn on, False to turn off
-        """
-        current_state = 0b11111111
-        for relay in relays:
-            if 1 <= relay <= 4:
-                if state:
-                    current_state &= ~(1 << (relay - 1))
-                else:
-                    current_state |= (1 << (relay - 1))
-        self.bus.write_byte(self.address, current_state)
+# Example usage:
+# Create an instance of the RelayController
+#relay = RelayController(bus_number=1, address=0x27)
 
-    def close(self):
-        """Closes the bus connection."""
-        self.bus.close()
+# Interface methods
+#relay.on(1)     # Turn on relay 1
+#relay.off(3)    # Turn off relay 3
+#relay.on(1, 4)  # Turn on relay 1 and 4
+#relay.off()     # Turn off all relays
+#relay.on()      # Turn on all relays
