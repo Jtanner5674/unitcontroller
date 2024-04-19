@@ -9,9 +9,9 @@ class TestRelayController(unittest.TestCase):
 
     def test_all_relays_on(self):
         """Test that all relays can be turned on."""
-        self.relay.on()  # Modified to use off() without parameters
+        self.relay.on()  # Turns all relays on
         time.sleep(1)  # Wait for 1 second to observe the change
-        self.assertTrue(self.relay.current_status == 0, "All relays should now be off.")
+        self.assertEqual(self.relay.current_status, 0xFF, "All relays should now be on.")
 
     def test_relay_on(self):
         """Test turning a single relay on."""
