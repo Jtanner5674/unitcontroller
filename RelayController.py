@@ -1,10 +1,15 @@
 import smbus
 
 class RelayController:
-    def __init__(self, bus_number, address):
-        self.bus = smbus.SMBus(bus_number)
-        self.address = address
-        self.current_status = 0b00000000  # Assume all relays are initially off
+    def __init__(self, *bus_number, address):
+        if not bus_number:
+            self.bus = 1
+            self.address = address
+            self.current_status = 0b00000000  # Assume all relays are initially off
+        else:    
+            self.bus = smbus.SMBus(bus_number)
+            self.address = address
+            self.current_status = 0b00000000  # Assume all relays are initially off
 
     def _send_update(self):
         self.bus.write_byte(self.address, self.current_status)
