@@ -4,7 +4,7 @@ class RelayController:
     def __init__(self, address, bus_number=1):
         self.bus = smbus.SMBus(bus_number)
         self.address = address
-            self.current_status = 0b00000000  # Assume all relays are initially off
+        self.current_status = 0b00000000  # Assume all relays are initially off
 
     def _send_update(self):
         self.bus.write_byte(self.address, self.current_status)
