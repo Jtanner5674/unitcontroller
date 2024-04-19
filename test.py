@@ -48,7 +48,6 @@ class TestRelayController(unittest.TestCase):
     def tearDown(self):
         """Cleanup actions after each test."""
         self.relay.off()  # Turn off all relays after tests
-        self.relay.close()
 
 if __name__ == '__main__':
     unittest.main()
