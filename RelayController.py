@@ -25,6 +25,7 @@ class RelayController:
                 self.current_status &= ~(1 << (relay - 1))
         self._send_update()
 
+
 # Example usage:
 # Create an instance of the RelayController
 #relay = RelayController(bus_number=1, address=0x27)
