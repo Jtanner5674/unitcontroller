@@ -1,6 +1,6 @@
 import smbus
 import time
-
+import RelayController
 
 # Interface methods
 relay = RelayController(bus_number=1, address=0x27)
