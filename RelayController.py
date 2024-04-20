@@ -29,9 +29,14 @@ class RelayController(PCF8574):
                     raise ValueError("Relay number must be between 1 and 4")
         self.write(self.state)
 
-# Example usage:
-# relay_controller = RelayController(address=0x27)
-# relay_controller.on(1, 4)  # Turns on relay 1 and 4 -> state should be 0b01101111
-# relay_controller.off(2)    # Turns off relay 2
-# relay_controller.on()      # Turns all relays on -> state should be 0b00000000
-# relay_controller.off()     # Turns all relays off -> state should be 0b11111111
+    def toggle(self, relay):
+        """Toggle the specified relay."""
+        if 1 <= relay <= 4:
+            self.state ^= (1 << (relay - 1))
+            self.write(self.state)
+        else:
+            raise ValueError("Relay number must be between 1 and 4")
+
+    def get_state(self):
+        """Return the current state of all relays."""
+        return bin(self.state)
