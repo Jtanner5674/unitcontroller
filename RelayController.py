@@ -7,7 +7,7 @@ class RelayController:
         self.current_status = 0b00000000  # Start with all relays off
 
     def _send_update(self):
-        # Make sure current_status is always a byte when sending to hardware
+        print(f"Sending update to hardware: {self.current_status:08b}")
         self.bus.write_byte(self.address, self.current_status & 0xFF)
 
     def on(self, *relays):
