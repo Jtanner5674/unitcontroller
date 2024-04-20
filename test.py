@@ -12,7 +12,7 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == '1':
-            pattern = input("Enter 8-bit pattern (e.g., 00000000 for all low): ")
+            pattern = input("Enter 8-bit pattern (e.g., 11111111 for all low): ")
             expander.write_pattern(pattern)
             print(f"Pattern {pattern} written to PCF8574")
         elif choice == '2':
