@@ -1,4 +1,3 @@
-import symbus
 import unittest
 
 class RelayController:
