@@ -23,3 +23,4 @@ class PCF8574:
         """Get the status of a single pin."""
         value = self.read()
         return (value >> pin) & 1
+    
