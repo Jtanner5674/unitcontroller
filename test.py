@@ -1,29 +1,41 @@
-from PCF8574 import PCF8574
+import unittest
+from unittest.mock import MagicMock
+from RelayModule import RelayController  # Ensure you import RelayController from the correct location
 
-def main():
-    address = int(input("Enter the I2C address of the PCF8574: "), 16)  # Prompt user for the I2C address
-    expander = PCF8574(address)
+class TestRelayController(unittest.TestCase):
+    def setUp(self):
+        # Mock the SMBus method calls
+        smbus_mock = MagicMock()
+        self.pcf8574 = MagicMock()
+        self.pcf8574.write_byte = MagicMock()
 
-    while True:
-        print("\nMenu:")
-        print("1. Write Bit Pattern")
-        print("2. Read All Pins")
-        print("3. Exit")
-        choice = input("Enter your choice: ")
+        # Patch the SMBus constructor to return the mock
+        patcher = unittest.mock.patch('smbus.SMBus', return_value=smbus_mock)
+        self.addCleanup(patcher.stop)
+        patcher.start()
 
-        if choice == '1':
-            pattern = input("Enter 8-bit pattern (e.g., 11111111 for all low): ")
-            expander.write_pattern(pattern)
-            print(f"Pattern {pattern} written to PCF8574")
-        elif choice == '2':
-            value = expander.read()
-            bin_value = format(value, '08b')
-            print(f"Current state of all pins: {bin_value}")
-        elif choice == '3':
-            print("Exiting...")
-            break
-        else:
-            print("Invalid choice. Please choose again.")
+        # Create an instance of the RelayController
+        self.controller = RelayController(address=0x27)
 
-if __name__ == "__main__":
-    main()
+    def test_all_relays_on(self):
+        """Test turning all relays on."""
+        self.controller.on()
+        self.controller.expander.write.assert_called_once_with(0x00)
+
+    def test_all_relays_off(self):
+        """Test turning all relays off."""
+        self.controller.off()
+        self.controller.expander.write.assert_called_once_with(0xFF)
+
+    def test_relay_on(self):
+        """Test turning a single relay on."""
+        self.controller.on(2)
+        self.controller.expander.write.assert_called_once_with(0xFD)  # 11111101 in binary
+
+    def test_relay_off(self):
+        """Test turning a single relay off."""
+        self.controller.off(1)
+        self.controller.expander.write.assert_called_once_with(0xFF)  # 11111111 in binary
+
+if __name__ == '__main__':
+    unittest.main()
