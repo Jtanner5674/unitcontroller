@@ -32,6 +32,6 @@ def test_relay_operations(controller):
 # Main test execution
 if __name__ == "__main__":
     # Assuming the device address is 0x27; replace with the actual address of your device.
-    relay_controller = RelayController(address=0x27)
+    controller = RelayController(address=0x27)
     
-    test_relay_operations(relay_controller)
+    test_relay_operations(controller)
