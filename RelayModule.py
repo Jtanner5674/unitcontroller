@@ -1,4 +1,4 @@
-import PCF8574
+from PCF8574 import PCF8574
 
 class RelayController(PCF8574):
     def __init__(self, address, bus_number=1):
