@@ -1,4 +1,3 @@
-import smbus
 import unittest
 
 class RelayController:
