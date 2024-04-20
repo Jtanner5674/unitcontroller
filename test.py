@@ -1,44 +1,37 @@
-import unittest
-from unittest.mock import MagicMock, patch
-from RelayModule import RelayController  # Adjust this import path as needed
+from RelayModule import RelayController 
 
-class TestRelayController(unittest.TestCase):
-    def setUp(self):
-        # Patch the SMBus class in the PCF8574 module
-        patcher = patch('PCF8574.smbus.SMBus')
-        self.MockSMBus = patcher.start()
-        self.addCleanup(patcher.stop)
+def test_relay_operations(controller):
+    # Test turning on each relay individually
+    for i in range(1, 5):
+        controller.off()  # Ensure all relays are off
+        controller.on(i)
+        assert controller.state == 0xFF ^ (1 << (i - 1)), f"Relay {i} failed to turn on."
+        print(f"Relay {i} on test passed.")
 
-        # Mock the SMBus instance and its methods
-        self.mock_bus = MagicMock()
-        self.MockSMBus.return_value = self.mock_bus
-        
-        # Create an instance of the RelayController
-        self.controller = RelayController(address=0x27)
-        self.controller.expander.bus = self.mock_bus  # Replace the SMBus instance with the mock
+    # Test turning off each relay individually
+    for i in range(1, 5):
+        controller.on()  # Ensure all relays are on
+        controller.off(i)
+        assert controller.state == 0x00 | (1 << (i - 1)), f"Relay {i} failed to turn off."
+        print(f"Relay {i} off test passed.")
 
-    def test_all_relays_on(self):
-        """Test turning all relays on."""
-        self.controller.on()
-        self.mock_bus.write_byte.assert_called_once_with(0x27, 0x00)
+    # Test turning on all relays at once
+    controller.off()  # Ensure all relays are off
+    controller.on()
+    assert controller.state == 0x00, "All relays failed to turn on."
+    print("All on test passed.")
 
-    def test_all_relays_off(self):
-        """Test turning all relays off."""
-        self.controller.off()
-        self.mock_bus.write_byte.assert_called_once_with(0x27, 0xFF)
+    # Test turning off all relays at once
+    controller.on()  # Ensure all relays are on
+    controller.off()
+    assert controller.state == 0xFF, "All relays failed to turn off."
+    print("All off test passed.")
 
-    def test_relay_on(self):
-        """Test turning a single relay on."""
-        self.controller.on(2)
-        expected_value = 0xFF & ~(1 << (2 - 1))
-        self.mock_bus.write_byte.assert_called_once_with(0x27, expected_value)
+    print("All tests passed.")
 
-    def test_relay_off(self):
-        """Test turning a single relay off."""
-        self.controller.off(1)
-        expected_value = 0xFF | (1 << (1 - 1))
-        self.mock_bus.write_byte.assert_called_once_with(0x27, expected_value)
-
-if __name__ == '__main__':
-    unittest.main()
-s
+# Main test execution
+if __name__ == "__main__":
+    # Assuming the device address is 0x27; replace with the actual address of your device.
+    relay_controller = RelayController(address=0x27)
+    
+    test_relay_operations(relay_controller)

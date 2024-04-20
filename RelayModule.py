@@ -1,26 +1,37 @@
 import PCF8574
 
-class RelayController:
+class RelayController(PCF8574):
     def __init__(self, address, bus_number=1):
-        self.expander = PCF8574.PCF8574(address, bus_number)
-        self.relay_states = 0xFF  # All relays off (1 means off in this context)
+        super().__init__(address, bus_number)
+        self.state = 0xFF  # All relays are off initially (0b11111111)
 
-    def on(self, relay_number=None):
-        """Turns a specific relay or all relays ON. If no relay number is provided, turns all relays ON."""
-        if relay_number is None:
-            self.relay_states = 0x00
+    def on(self, *relays):
+        # If no relay numbers are given, turn all relays on
+        if not relays:
+            self.state = 0x00
         else:
-            self.relay_states &= ~(1 << (relay_number - 1))
-        self.update_relays()
+            for relay in relays:
+                if 1 <= relay <= 4:
+                    self.state &= ~(1 << (relay - 1))
+                else:
+                    raise ValueError("Relay number must be between 1 and 4")
+        self.write(self.state)
 
-    def off(self, relay_number=None):
-        """Turns a specific relay or all relays OFF. If no relay number is provided, turns all relays OFF."""
-        if relay_number is None:
-            self.relay_states = 0xFF
+    def off(self, *relays):
+        # If no relay numbers are given, turn all relays off
+        if not relays:
+            self.state = 0xFF
         else:
-            self.relay_states |= (1 << (relay_number - 1))
-        self.update_relays()
+            for relay in relays:
+                if 1 <= relay <= 4:
+                    self.state |= (1 << (relay - 1))
+                else:
+                    raise ValueError("Relay number must be between 1 and 4")
+        self.write(self.state)
 
-    def update_relays(self):
-        """Update the relay module with the current states."""
-        self.expander.write(self.relay_states)
+# Example usage:
+# relay_controller = RelayController(address=0x27)
+# relay_controller.on(1, 4)  # Turns on relay 1 and 4 -> state should be 0b01101111
+# relay_controller.off(2)    # Turns off relay 2
+# relay_controller.on()      # Turns all relays on -> state should be 0b00000000
+# relay_controller.off()     # Turns all relays off -> state should be 0b11111111
