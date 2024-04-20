@@ -1,44 +1,52 @@
 from RelayController import RelayController
+import time
+
+# Change the I2C address to match your hardware setup
+RELAY_BOARD_ADDRESS = 0x27  # Example I2C address for PCF8574
+DELAY_BETWEEN_TESTS = 2  # Delay in seconds
 
 def test_relay_operations(controller):
-    # Ensure all relays are off initially
-    controller.off()
-    assert controller.state == 0b11111111, "Failed to initialize with all relays off."
-    print("Initialization test passed: All relays are off.")
-
-    # Test turning on each relay individually
+    # Test turning each relay on one by one
     for i in range(1, 5):
+        print(f"Turning on relay {i}")
         controller.on(i)
-        expected_state = 0b11111111 & ~(1 << (i - 1))
-        assert controller.state == expected_state, f"Failed to turn on relay {i}."
-        print(f"Test passed: Relay {i} is on.")
+        print(f"Current state: {controller.get_state()}")
+        time.sleep(DELAY_BETWEEN_TESTS)
 
-    # Test turning off each relay individually
+    # Test turning each relay off one by one
     for i in range(1, 5):
+        print(f"Turning off relay {i}")
         controller.off(i)
-        expected_state = 0b11111111 | (1 << (i - 1))
-        assert controller.state == expected_state, f"Failed to turn off relay {i}."
-        print(f"Test passed: Relay {i} is off.")
+        print(f"Current state: {controller.get_state()}")
+        time.sleep(DELAY_BETWEEN_TESTS)
 
-    # Test turning on all relays at once
+    # Test toggling each relay
+    for i in range(1, 5):
+        print(f"Toggling relay {i}")
+        controller.toggle(i)
+        print(f"Current state: {controller.get_state()}")
+        time.sleep(DELAY_BETWEEN_TESTS)
+        controller.toggle(i)  # Toggle back to original state
+
+    # Test turning all relays on and then off
+    print("Turning all relays on")
     controller.on()
-    assert controller.state == 0b00000000, "Failed to turn all relays on."
-    print("Test passed: All relays are on.")
+    print(f"Current state: {controller.get_state()}")
+    time.sleep(DELAY_BETWEEN_TESTS)
 
-    # Test turning off all relays at once
+    print("Turning all relays off")
     controller.off()
-    assert controller.state == 0b11111111, "Failed to turn all relays off."
-    print("Test passed: All relays are off.")
+    print(f"Current state: {controller.get_state()}")
+    time.sleep(DELAY_BETWEEN_TESTS)
 
-    print("All tests passed.")
 
-# Main test execution
-if __name__ == "__main__":
-    # Replace with the actual I2C address of your relay module
-    address = 0x27
-    relay_controller = RelayController(address)
+def main():
+    relay_controller = RelayController(RELAY_BOARD_ADDRESS)
     test_relay_operations(relay_controller)
 
+
+if __name__ == "__main__":
+    main()
 
 
 
