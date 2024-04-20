@@ -1,4 +1,4 @@
-from pcf8574 import PCF8574
+from PCF8574 import PCF8574
 
 def main():
     address = int(input("Enter the I2C address of the PCF8574: "), 16)  # Prompt user for the I2C address
