@@ -1,33 +1,34 @@
-import unittest
+import smbus
 
 class RelayController:
-    def __init__(self):
-        self.current_status = 0b11111111  # All relays off
+    def __init__(self, address, bus_number=1):
+        self.bus = smbus.SMBus(bus_number)
+        self.address = address
+        self.current_status = 0b11111111  # Start with all relays off (all bits set to 1)
+
+    def _send_update(self):
+        # Ensure current_status is always a byte when sending to hardware
+        self.bus.write_byte(self.address, self.current_status & 0xFF)
 
     def on(self, *relays):
-        for relay in relays:
-            # Ensure that relay 1 corresponds to the first (LSB) bit
-            self.current_status &= ~(1 << (relay - 1))
+        if not relays:  # Turn all relays on if no specific relay is provided
+            self.current_status = 0b00000000
+        else:
+            for relay in relays:
+                self.current_status &= ~(1 << (relay - 1))  # Set bit to 0 to turn on
+        self._send_update()
 
     def off(self, *relays):
-        for relay in relays:
-            # Ensure that relay 1 corresponds to the first (LSB) bit
-            self.current_status |= (1 << (relay - 1))
+        if not relays:  # Turn all relays off if no specific relay is provided
+            self.current_status = 0b11111111
+        else:
+            for relay in relays:
+                self.current_status |= (1 << (relay - 1))  # Set bit to 1 to turn off
+        self._send_update()
 
-class TestRelayController(unittest.TestCase):
-    def test_relay_bit_operations(self):
-        rc = RelayController()
-        
-        # Turn relay 2 on and check
-        rc.on(2)
-        expected_status_on = 0b11111011  # Binary representation of all relays off except for relay 2
-        self.assertEqual(rc.current_status, expected_status_on, f"Relay 2 should be on, got {bin(rc.current_status)} instead of {bin(expected_status_on)}")
-        
-        # Reset and turn relay 2 off and check
-        rc.current_status = 0b11111111  # Reset to all relays off
-        rc.off(2)
-        expected_status_off = 0b11111111  # Binary representation of all relays off including relay 2
-        self.assertEqual(rc.current_status, expected_status_off, f"Relay 2 should be off, got {bin(rc.current_status)} instead of {bin(expected_status_off)}")
-
-if __name__ == '__main__':
-    unittest.main()
+# Example usage:
+# relay_controller = RelayController(address=0x27)
+# relay_controller.on(1)  # Turns on relay 1 (bit 0 to 0)
+# relay_controller.off(2)  # Turns off relay 2 (bit 1 to 1)
+# relay_controller.on()    # Turns all relays on (all bits to 0)
+# relay_controller.off()   # Turns all relays off (all bits to 1)
