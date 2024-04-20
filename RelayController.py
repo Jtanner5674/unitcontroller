@@ -1,53 +1,36 @@
-import unittest
-import time
-from RelayController import RelayController
+import smbus
 
-class TestRelayController(unittest.TestCase):
-    def setUp(self):
-        # Initialize the RelayController with a typical I2C address
-        self.relay = RelayController(address=0x27)
+class RelayController:
+    def __init__(self, address, bus_number=1):
+        self.bus = smbus.SMBus(bus_number)
+        self.address = address
+        self.current_status = 0b11111111  # Start with all relays off (inverted logic)
 
-    def test_all_relays_on(self):
-        """Test that all relays can be turned on."""
-        self.relay.on()  # Attempts to turn all relays on
-        time.sleep(1)  # Wait for 1 second to observe the change
-        self.assertEqual(self.relay.current_status, 0x00, "All relays should now be on.")
+    def _send_update(self):
+        # Format current_status as a binary string with prefix '0b' and padded to 8 bits
+        formatted_status = '0b' + format(self.current_status, '08b')
+        print(f"Sending update to hardware: {formatted_status}")
+        self.bus.write_byte(self.address, self.current_status & 0xFF)
 
-    def test_relay_on(self):
-        """Test turning a single relay on."""
-        self.relay.on(2)
-        time.sleep(1)  # Wait for 1 second to observe the relay turning on
-        self.assertTrue((self.relay.current_status & (1 << 1)) == 0, "Relay 2 should now be on.")
+    def on(self, *relays):
+        if not relays:  # Turn all relays on if no specific relay is provided
+            self.current_status = 0b00000000
+        else:
+            for relay in relays:
+                self.current_status &= ~(1 << (relay - 1))
+        self._send_update()
 
-    def test_relay_off(self):
-        """Test turning a single relay off."""
-        self.relay.on(1)  # Ensure relay 1 is on before testing off
-        time.sleep(1)  # Wait for 1 second to observe the relay turning on
-        self.relay.off(1)
-        time.sleep(1)  # Wait for 1 second to observe the relay turning off
-        self.assertTrue((self.relay.current_status & (1 << 0)) != 0, "Relay 1 should now be off.")
+    def off(self, *relays):
+        if not relays:  # Turn all relays off if no specific relay is provided
+            self.current_status = 0b11111111
+        else:
+            for relay in relays:
+                self.current_status |= (1 << (relay - 1))
+        self._send_update()
 
-    def test_multiple_relays_on(self):
-        """Test turning multiple relays on."""
-        self.relay.on(1, 3)
-        time.sleep(1)  # Wait for 1 second to observe the relays turning on
-        self.assertTrue((self.relay.current_status & (1 << 0)) == 0 and (self.relay.current_status & (1 << 2)) == 0, "Relays 1 and 3 should now be on.")
-
-    def test_relay_state_persistence(self):
-        """Test if turning one relay on affects the other."""
-        self.relay.off()  # Turn all off initially
-        time.sleep(1)
-        self.relay.on(1)
-        time.sleep(1)
-        self.relay.on(2)
-        time.sleep(1)
-        self.relay.off(1)
-        time.sleep(1)  # Wait to ensure Relay 2 is still on after Relay 1 is off
-        self.assertTrue((self.relay.current_status & (1 << 1)) == 0 and (self.relay.current_status & (1 << 0)) != 0, "Relay 1 should now be off, and Relay 2 should still be on.")
-
-    def tearDown(self):
-        """Cleanup actions after each test."""
-        self.relay.off()  # Turn off all relays after tests
-
-if __name__ == '__main__':
-    unittest.main()
+# Example usage:
+# relay_controller = RelayController(address=0x27)
+# relay_controller.on(1)  # Turns on relay 1
+# relay_controller.off(2)  # Turns off relay 2
+# relay_controller.on()    # Turns all relays on
+# relay_controller.off()   # Turns all relays off
