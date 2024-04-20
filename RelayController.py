@@ -1,3 +1,6 @@
+import symbus
+import unittest
+
 class RelayController:
     def __init__(self):
         self.current_status = 0b11111111  # All relays off
