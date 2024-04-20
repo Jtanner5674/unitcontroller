@@ -7,7 +7,7 @@ class TestRelayController(unittest.TestCase):
         # Initialize the RelayController with a typical I2C address
         self.relay = RelayController(address=0x27)
 
-        def test_all_relays_on(self):
+    def test_all_relays_on(self):
         """Test that all relays can be turned on."""
         self.relay.on()  # Turns all relays on
         # With relays on, current_status should be 0 (0b00000000)
