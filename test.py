@@ -38,12 +38,17 @@ def test_relay_operations(controller):
     controller.off()
     print(f"Current state: {controller.get_state()}")
     time.sleep(DELAY_BETWEEN_TESTS)
-
+    
+    print("Running Engine Starter on Relays 1 and 2")
+    print("Relay 1 & 2 should turn on, then 2 should turn off")
+    self.enginestarter(1,2)
+    print(f"Current state: {controller.get_state()}")
+    
 
 def main():
     relay_controller = RelayController(RELAY_BOARD_ADDRESS)
     test_relay_operations(relay_controller)
-
+    time.sleep(DELAY_BETWEEN_TESTS)
 
 if __name__ == "__main__":
     main()
@@ -56,3 +61,4 @@ if __name__ == "__main__":
 # off(*relays): Turns off the specified relay(s). If no relay numbers are provided, all relays are turned off.
 # toggle(relay): Toggles the specified relay. If it's on, it will be turned off, and vice versa.
 # get_state(): Returns the current state of all relays as a binary string.
+# enginestarter(live,starter): Using the two given relay numbers simulates an engine starter
