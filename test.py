@@ -6,42 +6,42 @@ RELAY_BOARD_ADDRESS = 0x27  # Example I2C address for PCF8574
 DELAY_BETWEEN_TESTS = 2  # Delay in seconds
 
 def test_relay_operations(controller):
-    # Test turning each relay on one by one
-    for i in range(1, 5):
-        print(f"Turning on relay {i}")
-        controller.on(i)
-        print(f"Current state: {controller.get_state()}")
-        time.sleep(DELAY_BETWEEN_TESTS)
+    # # Test turning each relay on one by one
+    # for i in range(1, 5):
+    #     print(f"Turning on relay {i}")
+    #     controller.on(i)
+    #     print(f"Current state: {controller.get_state()}")
+    #     time.sleep(DELAY_BETWEEN_TESTS)
 
-    # Test turning each relay off one by one
-    for i in range(1, 5):
-        print(f"Turning off relay {i}")
-        controller.off(i)
-        print(f"Current state: {controller.get_state()}")
-        time.sleep(DELAY_BETWEEN_TESTS)
+    # # Test turning each relay off one by one
+    # for i in range(1, 5):
+    #     print(f"Turning off relay {i}")
+    #     controller.off(i)
+    #     print(f"Current state: {controller.get_state()}")
+    #     time.sleep(DELAY_BETWEEN_TESTS)
 
-    # Test toggling each relay
-    for i in range(1, 5):
-        print(f"Toggling relay {i}")
-        controller.toggle(i)
-        print(f"Current state: {controller.get_state()}")
-        time.sleep(DELAY_BETWEEN_TESTS)
-        controller.toggle(i)  # Toggle back to original state
+    # # Test toggling each relay
+    # for i in range(1, 5):
+    #     print(f"Toggling relay {i}")
+    #     controller.toggle(i)
+    #     print(f"Current state: {controller.get_state()}")
+    #     time.sleep(DELAY_BETWEEN_TESTS)
+    #     controller.toggle(i)  # Toggle back to original state
 
-    # Test turning all relays on and then off
-    print("Turning all relays on")
-    controller.on()
-    print(f"Current state: {controller.get_state()}")
-    time.sleep(DELAY_BETWEEN_TESTS)
+    # # Test turning all relays on and then off
+    # print("Turning all relays on")
+    # controller.on()
+    # print(f"Current state: {controller.get_state()}")
+    # time.sleep(DELAY_BETWEEN_TESTS)
 
-    print("Turning all relays off")
-    controller.off()
-    print(f"Current state: {controller.get_state()}")
-    time.sleep(DELAY_BETWEEN_TESTS)
+    # print("Turning all relays off")
+    # controller.off()
+    # print(f"Current state: {controller.get_state()}")
+    # time.sleep(DELAY_BETWEEN_TESTS)
     
     print("Running Engine Starter on Relays 1 and 2")
     print("Relay 1 & 2 should turn on, then 2 should turn off")
-    self.enginestarter(1,2)
+    controller.enginestarter(1,2)
     print(f"Current state: {controller.get_state()}")
     
 
