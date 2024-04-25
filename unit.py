@@ -12,7 +12,7 @@ preset_flush_time = 5  # Change this to adjust how long the system flushes in pr
 CFG = None
 dac_objects = {}
 dac_addresses = {}
-
+engine_state = False
 ############################ Backend Functions ###################################
 
 
@@ -122,16 +122,17 @@ def settings():
 @app.route('/start-engine', methods=['POST'])
 def start_engine():
     relay_controller = RelayController(address=0x27)
-    state = relay_controller.get_pin(7)  # Make sure this is the correct pin for "live"
     print(f'Current state of live pin: {state}')
     try:
-        if state == 1:
+        if engine_state == True:
             relay_controller.off(1)
-            print('Turning live off')
+            print('Turning Engine off')
+            engine_state = False
             return jsonify({'success': True, 'message': 'Live turned off'})
         else:
             relay_controller.enginestarter(live=1, starter=2)  # Assuming pin numbers are correct
             print('Attempting to start engine')
+            engine_state = True
             return jsonify({'success': True, 'message': 'Engine started, live on'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
