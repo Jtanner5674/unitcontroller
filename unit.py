@@ -13,6 +13,8 @@ CFG = None
 dac_objects = {}
 dac_addresses = {}
 engine_state = False
+relayAdrress = 0x27
+
 ############################ Backend Functions ###################################
 
 
@@ -122,7 +124,8 @@ def settings():
 @app.route('/start-engine', methods=['POST'])
 def start_engine():
     global engine_state
-    relay_controller = RelayController(address=0x27)
+    global relayAdrress
+    relay_controller = RelayController(relayAdrress)
     try:
         if engine_state == True:
             relay_controller.off(1)
