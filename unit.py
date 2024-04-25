@@ -123,6 +123,7 @@ def settings():
 def start_engine():
     relay_controller = RelayController(address=0x27)  
     state = relay_controller.get_pin(1)
+    print(state)
     try:
         if state == True:
             relay_controller.enginestarter(live=1, starter=2) 
