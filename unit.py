@@ -122,7 +122,7 @@ def settings():
 @app.route('/start-engine', methods=['POST'])
 def start_engine():
     relay_controller = RelayController(address=0x27)
-    state = relay_controller.get_pin(0)  # Make sure this is the correct pin for "live"
+    state = relay_controller.get_pin(7)  # Make sure this is the correct pin for "live"
     print(f'Current state of live pin: {state}')
     try:
         if state == 0:
