@@ -122,7 +122,6 @@ def settings():
 @app.route('/start-engine', methods=['POST'])
 def start_engine():
     relay_controller = RelayController(address=0x27)
-    print(f'Current state of live pin: {state}')
     try:
         if engine_state == True:
             relay_controller.off(1)
