@@ -121,6 +121,7 @@ def settings():
 
 @app.route('/start-engine', methods=['POST'])
 def start_engine():
+    global engine_state
     relay_controller = RelayController(address=0x27)
     try:
         if engine_state == True:
