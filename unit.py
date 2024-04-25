@@ -125,7 +125,7 @@ def start_engine():
     state = relay_controller.get_pin(1)
     print(state)
     try:
-        if state == True:
+        if state == 1:
             relay_controller.enginestarter(live=1, starter=2) 
             return jsonify({'success': True, 'message': 'Engine started'})
         else:

@@ -39,9 +39,9 @@ class RelayController(PCF8574):
     def get_state(self):
         return bin(self.state & 0xF0)
 
-    def enginestarter(self, live, starter):
+    def enginestarter(self, live, starter, start_time=2):
         self.on(live, starter) 
-        sleep(2)  # Ensure there is a delay for the starter to engage properly
+        sleep(start_time)  # Ensure there is a delay for the starter to engage properly
         self.off(starter)
         self.state = self.get_state()
         self.state = int(self.state, 2) + live  # Convert the binary string to an integer before addition
