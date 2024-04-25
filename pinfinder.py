@@ -27,7 +27,7 @@ address = 0x27  # Example address, change if different
 pcf8574 = PCF8574(address)
 
 # Test each pin
-for pin in range(8):  # Assuming 8 pins
+for pin in range(9):  # Assuming 8 pins
     print(f'Testing pin {pin}')
     current_state = pcf8574.toggle_pin(pin)
     print(f'Pin {pin} is now {"on" if current_state == 1 else "off"}')
