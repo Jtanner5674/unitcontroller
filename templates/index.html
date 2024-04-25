@@ -363,12 +363,19 @@
         }
 
         setInterval(updateCurrentVoltages, 5000);
-        
-        document.getElementById("startEngineButton").addEventListener("click", function () {
-            fetch('/start-engine', { method: 'POST' })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => console.error('Error:', error));
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var startButton = document.getElementById("startEngineButton");
+            if (startButton) {
+                startButton.addEventListener("click", function () {
+                    fetch('/start-engine', { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => console.log(data))
+                        .catch(error => console.error('Error:', error));
+                });
+            } else {
+                console.error('The button with ID "startEngineButton" was not found.');
+            }
         });
     </script>
     <link href="/static/favicon.ico" rel="icon" type="image/x-icon">
