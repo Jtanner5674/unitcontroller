@@ -122,7 +122,7 @@ def settings():
 @app.route('/start-engine', methods=['POST'])
 def start_engine():
     relay_controller = RelayController(address=0x27)  
-    state = relay_controller.get_pin(1)
+    state = relay_controller.get_pin(0)
     print(state)
     try:
         if state == 1:
