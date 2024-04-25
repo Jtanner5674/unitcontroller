@@ -6,6 +6,7 @@ import busio
 import board
 import time
 from flask_cors import CORS
+from RelayController import RelayController
 
 preset_flush_time = 5  # Change this to adjust how long the system flushes in presets
 CFG = None
@@ -40,6 +41,7 @@ def set_voltage_action(addr, percent):
     except StopIteration:
         print('error: Invalid DAC ADDR')
         return jsonify({'error': 'Invalid DAC ADDR'})
+
 
 ############################ Initialization ###################################
 
@@ -114,9 +116,24 @@ def settings():
     dac_addresses = [dac["id"] for dac in CFG["dac"] if dac["found"]]
     offline_dacs = [dac for dac in CFG["dac"] if not dac["found"]]
     return render_template('config/index.html', online_dacs=online_dacs, offline_dacs=offline_dacs, dac_addresses=dac_addresses, dac_objects=dac_objects)
+
+############################ Engine Starter ###################################
+
+@app.route('/start-engine', methods=['POST'])
+def start_engine():
+    relay_controller = RelayController(address=0x27)  
+    state = relay_controller.get_pin(1)
+    try:
+        if state == True:
+            relay_controller.enginestarter(live=1, starter=2) 
+            return jsonify({'success': True, 'message': 'Engine started'})
+        else:
+            relay_controller.off(1) 
+            return jsonify({'success': True, 'message': 'Engine Halted'})           
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+    
 ############################ Config Functions ###################################
-
-
 @app.route('/config', methods=['GET'])
 def get_dac_config():
     existing_configs = load_config()
