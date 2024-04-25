@@ -125,7 +125,7 @@ def start_engine():
     state = relay_controller.get_pin(7)  # Make sure this is the correct pin for "live"
     print(f'Current state of live pin: {state}')
     try:
-        if state == 0:
+        if state == 1:
             relay_controller.off(1)
             print('Turning live off')
             return jsonify({'success': True, 'message': 'Live turned off'})
