@@ -121,15 +121,17 @@ def settings():
 
 @app.route('/start-engine', methods=['POST'])
 def start_engine():
-    relay_controller = RelayController(address=0x27)  
-    state = relay_controller.get_pin(0)  # Assuming pin 0 is the "live" pin
-    print(state)
+    relay_controller = RelayController(address=0x27)
+    state = relay_controller.get_pin(0)  # Make sure this is the correct pin for "live"
+    print(f'Current state of live pin: {state}')
     try:
         if state == 1:
-            relay_controller.off(1)  # Turn off "live" if it was on
-            return jsonify({'success': True, 'message': 'Engine halted, live off'})
+            relay_controller.off(1)  # Assuming 1 is the correct pin number for "live"
+            print('Turning live off')
+            return jsonify({'success': True, 'message': 'Live turned off'})
         else:
-            relay_controller.enginestarter(live=1, starter=2)  # Turn on "live" and start engine
+            relay_controller.enginestarter(live=1, starter=2)  # Assuming pin numbers are correct
+            print('Attempting to start engine')
             return jsonify({'success': True, 'message': 'Engine started, live on'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
